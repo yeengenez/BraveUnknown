@@ -1,0 +1,6 @@
+Ammunition,Used by,Bundle size,PF1e pack size,PF1e pack cost (gp),PF1e pack weight (lb),Bundle cost (gp),Bundle weight (lb),Effect,Source,Notes
+Arrows,Bows,50,20,1,3,2.5,7.5,,PF1e Core Rulebook,"One bundle carried into combat, refilled from the wagon after the fight"
+Crossbow bolts,Crossbows,50,10,1,1,5,5,,PF1e Core Rulebook,Same bundle rules as arrows
+Sling bullets,Sling,50,10,0.1,5,0.5,25,,PF1e Core Rulebook,Same bundle rules as arrows. A 50-bullet bundle weighs 25 lb at PF1e weights
+Beast-bane arrows,Bows,10,,,,,,To be set,New for this game,Magic bundle: one carried. No refill if the wagon has none. Magic bolts and bullets use the same 10-per-bundle rule
+Fire arrows,Bows,10,,,,,,To be set,New for this game,Magic bundle: one carried. No refill if the wagon has none. Magic bolts and bullets use the same 10-per-bundle rule

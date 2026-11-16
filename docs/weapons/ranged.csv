@@ -1,0 +1,10 @@
+Weapon,Category,Type,Hands,Damage,Crit,Damage type,Range (ft),Weight (lb),Cost (gp),Ammunition,Property,Source,Notes
+Light crossbow,Simple,Crossbow,2,1d8,19–20/×2,Pierce,80,4,35,Crossbow bolts,"Ranged, no STR",PF1e Core Rulebook,Already in the stats doc
+Heavy crossbow,Simple,Crossbow,2,1d10,19–20/×2,Pierce,120,8,50,Crossbow bolts,"Ranged, no STR",PF1e Core Rulebook,
+Dart,Simple,Thrown,1,1d4,20/×2,Pierce,20,0.5,0.5,The weapon itself,"Ranged, Thrown",PF1e Core Rulebook,PF1e adds STR to thrown damage
+Javelin,Simple,Thrown,1,1d6,20/×2,Pierce,30,2,1,The weapon itself,"Ranged, Thrown",PF1e Core Rulebook,PF1e adds STR to thrown damage
+Sling,Simple,Sling,1,1d4,20/×2,Blunt,50,0,0,Sling bullets,Ranged,PF1e Core Rulebook,PF1e adds STR to sling damage
+Shortbow,Martial,Bow,2,1d6,20/×3,Pierce,60,2,30,Arrows,Ranged,PF1e Core Rulebook,
+Composite shortbow,Martial,Bow,2,1d6,20/×3,Pierce,70,2,75,Arrows,"Ranged, adds STR to damage",PF1e Core Rulebook,
+Longbow,Martial,Bow,2,1d8,20/×3,Pierce,100,3,75,Arrows,Ranged,PF1e Core Rulebook,Already in the stats doc
+Composite longbow,Martial,Bow,2,1d8,20/×3,Pierce,110,3,100,Arrows,"Ranged, adds STR to damage",PF1e Core Rulebook,

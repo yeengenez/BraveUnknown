@@ -1,0 +1,26 @@
+Weapon,Category,Size,Hands,Damage,Crit,Damage type,Weight (lb),Cost (gp),Property,PF1e special (no rule yet),Source,Notes
+Dagger,Simple,Light,1,1d4,19–20/×2,Pierce or slash,1,2,Thrown,,PF1e Core Rulebook,Already in the stats doc
+Punching dagger,Simple,Light,1,1d4,20/×3,Pierce,1,2,,,PF1e Core Rulebook,
+Spiked gauntlet,Simple,Light,1,1d4,20/×2,Pierce,1,5,,,PF1e Core Rulebook,
+Light mace,Simple,Light,1,1d6,20/×2,Blunt,4,5,,,PF1e Core Rulebook,
+Sickle,Simple,Light,1,1d6,20/×2,Slash,2,6,,Trip,PF1e Core Rulebook,
+Club,Simple,One-handed,1,1d6,20/×2,Blunt,3,0,Thrown,,PF1e Core Rulebook,
+Heavy mace,Simple,One-handed,1,1d8,20/×2,Blunt,8,12,,,PF1e Core Rulebook,
+Morningstar,Simple,One-handed,1,1d8,20/×2,Blunt and pierce,6,8,,,PF1e Core Rulebook,
+Shortspear,Simple,One-handed,1,1d6,20/×2,Pierce,3,1,Thrown,,PF1e Core Rulebook,"The ""light spear"" in the class design"
+Throwing axe,Martial,Light,1,1d6,20/×2,Slash,2,8,Thrown,,PF1e Core Rulebook,
+Light hammer,Martial,Light,1,1d4,20/×2,Blunt,2,1,Thrown,,PF1e Core Rulebook,
+Handaxe,Martial,Light,1,1d6,20/×3,Slash,3,6,,,PF1e Core Rulebook,
+Kukri,Martial,Light,1,1d4,18–20/×2,Slash,2,8,,,PF1e Core Rulebook,
+Light pick,Martial,Light,1,1d4,20/×4,Pierce,3,4,,,PF1e Core Rulebook,
+Sap,Martial,Light,1,1d6,20/×2,Blunt,2,1,,Nonlethal,PF1e Core Rulebook,
+Short sword,Martial,Light,1,1d6,19–20/×2,Pierce,2,10,,,PF1e Core Rulebook,
+Starknife,Martial,Light,1,1d4,20/×3,Pierce,3,24,Thrown,,PF1e Core Rulebook,
+Battleaxe,Martial,One-handed,1,1d8,20/×3,Slash,6,10,,,PF1e Core Rulebook,Already in the stats doc
+Flail,Martial,One-handed,1,1d8,20/×2,Blunt,5,8,,"Disarm, trip",PF1e Core Rulebook,
+Longsword,Martial,One-handed,1,1d8,19–20/×2,Slash,4,15,,,PF1e Core Rulebook,Already in the stats doc
+Heavy pick,Martial,One-handed,1,1d6,20/×4,Pierce,6,8,,,PF1e Core Rulebook,
+Rapier,Martial,One-handed,1,1d6,18–20/×2,Pierce,2,20,Finesse (DEX to attack),,PF1e Core Rulebook,Already in the stats doc
+Scimitar,Martial,One-handed,1,1d6,18–20/×2,Slash,4,15,,,PF1e Core Rulebook,
+Trident,Martial,One-handed,1,1d8,20/×2,Pierce,4,15,"Thrown, Brace",,PF1e Core Rulebook,
+Warhammer,Martial,One-handed,1,1d8,20/×3,Blunt,5,12,,,PF1e Core Rulebook,
