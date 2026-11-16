@@ -1,0 +1,6 @@
+Weapon,Category,Size,Hands,Damage,Crit,Damage type,Weight (lb),Cost (gp),Property,PF1e special (no rule yet),Source,Notes
+Unarmed strike,Unarmed,Pair,2,1d3,20/×2,Blunt,0,0,Paired (attacks as dual wield),Nonlethal,PF1e Core Rulebook,"Bare fists, anyone can use. Brawler damage scales with level; the scaling table is not set"
+Hand wraps,Unarmed,Pair,2,1d8,20/×2,Blunt,1,5,Paired (attacks as dual wield),,New for this game,"Plain profile, on par with flail or heavy mace"
+Brass knuckles,Unarmed,Pair,2,1d8,19–20/×2,Blunt,1,15,Paired (attacks as dual wield),,Adapted from PF1e Ultimate Equipment,On par with longsword. PF1e value was 1d3
+Cestus,Unarmed,Pair,2,1d6,18–20/×2,Blunt or pierce,2,15,Paired (attacks as dual wield),,Adapted from PF1e Ultimate Equipment,"Crit range profile, on par with scimitar or rapier. PF1e value was 1d4"
+Gauntlet,Unarmed,Pair,2,1d8,20/×3,Blunt,3,12,Paired (attacks as dual wield),,Adapted from PF1e Core Rulebook,"Crit multiplier profile, on par with warhammer. PF1e value was 1d3"

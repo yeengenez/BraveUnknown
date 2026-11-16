@@ -1,0 +1,15 @@
+Weapon,Category,Size,Hands,Damage,Crit,Damage type,Weight (lb),Cost (gp),Property,PF1e special (no rule yet),Source,Notes
+Longspear,Simple,Two-handed,2,1d8,20/×3,Pierce,9,5,"Reach, Brace",,PF1e Core Rulebook,
+Quarterstaff,Simple,Two-handed,2,1d6/1d6,20/×2,Blunt,4,0,,"Double, monk",PF1e Core Rulebook,"A plain weapon. The magic staff for Acolyte and Mage is a separate item, not designed yet"
+Spear,Simple,Two-handed,2,1d8,20/×3,Pierce,6,2,Brace,,PF1e Core Rulebook,"Already in the stats doc, which lists Brace only"
+Falchion,Martial,Two-handed,2,2d4,18–20/×2,Slash,8,75,,,PF1e Core Rulebook,
+Glaive,Martial,Two-handed,2,1d10,20/×3,Slash,10,8,Reach,,PF1e Core Rulebook,
+Greataxe,Martial,Two-handed,2,1d12,20/×3,Slash,12,20,,,PF1e Core Rulebook,Used by the Orc Raider in the stats doc example
+Greatclub,Martial,Two-handed,2,1d10,20/×2,Blunt,8,5,,,PF1e Core Rulebook,
+Heavy flail,Martial,Two-handed,2,1d10,19–20/×2,Blunt,10,15,,"Disarm, trip",PF1e Core Rulebook,
+Greatsword,Martial,Two-handed,2,2d6,19–20/×2,Slash,8,50,,,PF1e Core Rulebook,Already in the stats doc
+Guisarme,Martial,Two-handed,2,2d4,20/×3,Slash,12,9,Reach,Trip,PF1e Core Rulebook,
+Halberd,Martial,Two-handed,2,1d10,20/×3,Pierce or slash,12,10,"Reach, Brace",Trip,PF1e Core Rulebook,Reach follows the stats doc. The PF1e halberd has no reach
+Lance,Martial,Two-handed,2,1d8,20/×3,Pierce,10,10,Reach,Mounted charge,PF1e Core Rulebook,The game has no mounts yet
+Ranseur,Martial,Two-handed,2,2d4,20/×3,Pierce,12,10,Reach,Disarm,PF1e Core Rulebook,
+Scythe,Martial,Two-handed,2,2d4,20/×4,Pierce or slash,10,18,,Trip,PF1e Core Rulebook,
