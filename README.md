@@ -72,6 +72,7 @@ scripts/core/tactics_ai.gd       the five tactics profiles
 scripts/game_state.gd            autoload "Game": gold, guild offers, roster, formation
 scripts/ui/                      the three screens + combat animation
 tests/run_tests.gd               rule checks + balance simulation
+art_source/                      source art, cutting scripts, previews (ignored by Godot)
 ```
 
 To rebalance, edit `game_data.gd` only. Tables copied from the design doc are

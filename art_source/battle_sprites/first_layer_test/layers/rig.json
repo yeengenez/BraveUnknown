@@ -1,0 +1,58 @@
+{
+ "anchors": {
+  "m_1h": {
+   "back": [
+    41,
+    47
+   ],
+   "front": [
+    105,
+    78
+   ]
+  },
+  "m_2h": {
+   "grip": [
+    42,
+    65
+   ]
+  },
+  "f_1h": {
+   "back": [
+    41,
+    46
+   ],
+   "front": [
+    103,
+    77
+   ]
+  },
+  "f_2h": {
+   "grip": [
+    43,
+    66
+   ]
+  }
+ },
+ "weapons": {
+  "longsword": [
+   "m_1h",
+   "back"
+  ],
+  "rapier": [
+   "m_1h",
+   "front"
+  ],
+  "shield_kite": [
+   "m_1h",
+   "front"
+  ],
+  "greatsword": [
+   "m_2h",
+   "grip"
+  ],
+  "glaive": [
+   "m_2h",
+   "grip"
+  ]
+ }
+}

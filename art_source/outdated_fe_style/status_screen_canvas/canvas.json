@@ -1,0 +1,1 @@
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-01T06:20:00Z"},"title":"Unit Status Screen","launch":{"view":"canvas"},"pages":[],"boards":{"Main.dc.html":{"x":0,"y":0,"w":1280,"h":720,"title":"Expeditioner status"},"Enemy.dc.html":{"x":1360,"y":0,"w":1280,"h":720,"title":"Enemy status"}},"order":["Main.dc.html","Enemy.dc.html"],"notes":{},"designSystems":[]}

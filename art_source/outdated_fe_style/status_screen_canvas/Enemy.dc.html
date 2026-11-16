@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Enemy status</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&amp;family=Alegreya+Sans:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#ef8a7c}a:hover{color:#f7b2a8}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; box-sizing: border-box; padding: 28px 32px; background: #1f1a1d; color: #f2eeee; font-family: 'Alegreya Sans', system-ui, sans-serif; display: flex; flex-direction: column; gap: 18px">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px">
+    <div style="display: flex; align-items: baseline; gap: 14px">
+      <span style="font-family: 'Pixelify Sans', monospace; font-size: 15px; letter-spacing: 0.14em; color: {{accent}}; text-transform: uppercase">Enemy scouting</span>
+      <span style="font-size: 15px; color: #bcaeb1">Monster pack · 5 enemies</span>
+    </div>
+    <div style="display: flex; gap: 8px">
+      <button type="button" style="font-family: 'Alegreya Sans', sans-serif; font-size: 15px; font-weight: 700; color: #f2eeee; background: #2f272b; border: 1px solid #4d3f45; border-radius: 6px; padding: 10px 16px; min-height: 44px">‹ Goblin</button>
+      <button type="button" style="font-family: 'Alegreya Sans', sans-serif; font-size: 15px; font-weight: 700; color: #f2eeee; background: #2f272b; border: 1px solid #4d3f45; border-radius: 6px; padding: 10px 16px; min-height: 44px">Boar ›</button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 330px minmax(0, 1fr) 360px; gap: 18px; flex: 1; min-height: 0">
+
+    <section style="background: #2a2327; border: 1px solid #45383e; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <div style="height: 250px; border-radius: 8px; background: #352c31; display: flex; align-items: center; justify-content: center; position: relative">
+        <img src="/_blob/b922f98b6863189338c810480225583f" alt="Wolf" style="width: 280px; height: 136px; image-rendering: pixelated; object-fit: contain">
+        <span style="position: absolute; top: 10px; left: 10px; font-family: 'Pixelify Sans', monospace; font-size: 13px; color: #1f1a1d; background: {{accent}}; border-radius: 4px; padding: 3px 8px">FRONT LINE</span>
+      </div>
+      <h1 style="margin: 0; font-family: 'Pixelify Sans', monospace; font-size: 34px; font-weight: 700; line-height: 1">Wolf</h1>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: -4px">
+        <span style="font-size: 13px; font-weight: 700; color: #f2c47a; border: 1px solid #8c6a3a; border-radius: 99px; padding: 3px 10px">Beast</span>
+        <span style="font-size: 13px; font-weight: 700; color: #bcaeb1; border: 1px solid #5a4a51; border-radius: 99px; padding: 3px 10px">Fast striker</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 700">HP</span><span style="font-variant-numeric: tabular-nums">20 / 20</span></div>
+        <div style="height: 10px; background: #171315; border-radius: 3px; overflow: hidden"><div style="width: 100%; height: 100%; background: #e2675a"></div></div>
+      </div>
+      <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #d9cfd1">Hunts in packs along the river fords. Quick enough to strike twice against slow, heavily armored fighters.</p>
+    </section>
+
+    <section style="background: #2a2327; border: 1px solid #45383e; border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-family: 'Pixelify Sans', monospace; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent}}">Stats</h2>
+        <span style="font-size: 13px; color: #bcaeb1">Fangs · Mt 5 · Hit 75 · Crit 5 · never breaks</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 9px">
+        <sc-for list="{{stats}}" as="s" hint-placeholder-count="8">
+          <div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 34px; align-items: center; gap: 12px">
+            <span style="font-weight: 700; font-size: 15px">{{s.label}}</span>
+            <div style="height: 12px; background: #171315; border-radius: 3px; overflow: hidden"><div style="{{s.bar}}"></div></div>
+            <span style="font-family: 'Pixelify Sans', monospace; font-size: 18px; text-align: right; font-variant-numeric: tabular-nums">{{s.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="border-top: 1px solid #45383e; padding-top: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{combat}}" as="c" hint-placeholder-count="8">
+          <div style="background: #221c1f; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #bcaeb1">{{c.label}}</span>
+            <span style="font-family: 'Pixelify Sans', monospace; font-size: 22px; font-variant-numeric: tabular-nums">{{c.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 18px; min-width: 0">
+      <div style="background: #2a2327; border: 1px solid #45383e; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-family: 'Pixelify Sans', monospace; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent}}">Ability</h2>
+        <span style="font-size: 18px; font-weight: 700">Pack Hunter</span>
+        <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #d9cfd1">+10 Hit while another Wolf is still standing.</p>
+      </div>
+      <div style="background: #2a2327; border: 1px solid #45383e; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; flex: 1">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <h2 style="margin: 0; font-family: 'Pixelify Sans', monospace; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent}}">Forecast</h2>
+          <span style="font-size: 13px; color: #bcaeb1">vs Garrick, Soldier Lv 1</span>
+        </div>
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px">
+          <div style="background: #221c1f; border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #9fc0ff">Garrick hits</span>
+            <span style="font-family: 'Pixelify Sans', monospace; font-size: 26px">9 dmg</span>
+            <span style="font-size: 14px; color: #d9cfd1">78% shown · 91% true</span>
+            <span style="font-size: 14px; color: #d9cfd1">Down in 3 actions</span>
+          </div>
+          <div style="background: #221c1f; border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #f29a8e">Wolf hits</span>
+            <span style="font-family: 'Pixelify Sans', monospace; font-size: 26px">1 × 2</span>
+            <span style="font-size: 14px; color: #d9cfd1">79% shown · 91% true</span>
+            <span style="font-size: 14px; color: #d9cfd1">Doubles: AS 10 vs 2</span>
+          </div>
+        </div>
+        <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #bcaeb1">Favorable. Garrick's armor shrugs off the bites; keep the Archer and Cleric covered.</p>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#ef8a7c","options":["#ef8a7c","#f2c47a","#e6b65a"]},"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#ef8a7c';
+    const bar = (v, cap, color) => 'width: ' + Math.min(100, Math.round(v / cap * 100)) + '%; height: 100%; background: ' + color;
+    const s = (label, value, cap, color) => ({ label, value, bar: bar(value, cap, color || '#ef8a7c') });
+    const stats = [s('HP', 20, 60, '#e2675a'), s('Str', 7, 30), s('Mag', 0, 30), s('Skl', 5, 30), s('Spd', 10, 30), s('Lck', 3, 30), s('Def', 3, 30), s('Res', 0, 30)];
+    const combat = [
+      { label: 'Attack', value: 12 }, { label: 'Hit', value: 86 }, { label: 'Avoid', value: 23 }, { label: 'Crit', value: 7 },
+      { label: 'Atk Spd', value: 10 }, { label: 'Def', value: 3 }, { label: 'Res', value: 0 }, { label: 'Range', value: '1' }
+    ];
+    return { accent, stats, combat };
+  }
+}
+</script>
+</body>
+</html>

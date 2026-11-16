@@ -1,0 +1,318 @@
+<title>Expedition Battle Simulator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: field-journal page — formations face each other across a centre line, log and ledger below */
+:root{
+  --bg:#e8ebe3; --surface:#f5f6f1; --ink:#1f2a24; --muted:#5b685f; --line:#c7cfc2;
+  --accent:#9a5a16; --party:#2b6a8a; --foe:#9a3a2c; --good:#3a7a46; --warn:#a5741a;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131915; --surface:#1b231e; --ink:#e2e8e0; --muted:#98a59c; --line:#2d3932;
+  --accent:#dc9748; --party:#6db0d2; --foe:#e27b67; --good:#7cc28a; --warn:#e0b25a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131915; --surface:#1b231e; --ink:#e2e8e0; --muted:#98a59c; --line:#2d3932;
+  --accent:#dc9748; --party:#6db0d2; --foe:#e27b67; --good:#7cc28a; --warn:#e0b25a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:.01em}
+h1{font-size:2rem;line-height:1.1}
+h2{font-size:1.3rem}
+h3{font-size:1.05rem}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+header{display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between}
+header p{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;font-weight:700;border:1px solid var(--accent);background:var(--accent);color:var(--bg);padding:9px 16px;border-radius:6px;cursor:pointer}
+button.ghost{background:transparent;color:var(--accent)}
+button:focus-visible{outline:3px solid var(--party);outline-offset:2px}
+.seed{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.field{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch}
+.side{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.side.party h2{color:var(--party)} .side.foe h2{color:var(--foe)}
+.vs{display:flex;align-items:center;justify-content:center;font-family:var(--display);color:var(--muted);writing-mode:vertical-rl;letter-spacing:.3em;font-size:.85rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto repeat(6,minmax(26px,auto));gap:4px 8px}
+.colhead{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:center;border-bottom:1px solid var(--line);padding-bottom:4px}
+.lane{border-top:1px dashed var(--line)}
+.chip{grid-row-end:span 2;border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--bg);display:flex;flex-direction:column;gap:3px;font-size:.8rem;line-height:1.25;min-width:0;z-index:1}
+.party .chip{border-left:3px solid var(--party)} .foe .chip{border-left:3px solid var(--foe)}
+.chip b{font-size:.88rem}
+.chip .cls{color:var(--muted)}
+.chip.down{opacity:.45}
+.chip.down b{text-decoration:line-through}
+.bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good)}
+.bar.low i{background:var(--warn)} .bar.crit i{background:var(--foe)}
+.legend{font-size:.78rem;color:var(--muted)}
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.8rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.result{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.outcome{font-family:var(--display);font-size:1.5rem}
+.outcome.win{color:var(--good)} .outcome.lose{color:var(--foe)} .outcome.retreat{color:var(--warn)}
+.log{font-family:var(--mono);font-size:.76rem;line-height:1.55;max-height:560px;overflow:auto;border-top:1px solid var(--line);padding-top:8px}
+.log .rh{font-family:var(--display);font-size:.95rem;color:var(--accent);margin:10px 0 4px}
+.log .rh:first-child{margin-top:0}
+.log div{padding:1px 0}
+.log .p{color:var(--party)} .log .f{color:var(--foe)} .log .x{color:var(--muted)} .log .k{color:var(--foe);font-weight:500} .log .g{color:var(--good)}
+.notes{margin:0;padding-left:18px;font-size:.88rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid currentColor}
+.pill.light{color:var(--warn)} .pill.serious{color:var(--foe)}
+.batch{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.stat .v{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.stat .l{font-size:.75rem;color:var(--muted)}
+.rules{font-size:.85rem;color:var(--muted);columns:2 320px;column-gap:28px}
+.rules p{margin:0 0 6px;break-inside:avoid}
+.rules b{color:var(--ink)}
+@media (max-width:820px){
+  .field{grid-template-columns:1fr} .vs{writing-mode:horizontal-tb;padding:4px 0}
+  .tables,.result{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .4s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Expedition: Brave Unknown · Combat test</div>
+      <h1>Ambush at Mossfall Ford</h1>
+      <p>Your five expeditioners meet a mixed monster pack. Each run rolls a fresh battle with the current rules; run a thousand to see how the numbers balance.</p>
+    </div>
+    <div class="controls">
+      <button id="runBtn" type="button">Run battle</button>
+      <button id="batchBtn" type="button" class="ghost">Run 1,000 battles</button>
+      <span class="seed" id="seed"></span>
+    </div>
+  </header>
+
+  <section class="field" aria-label="Formations">
+    <div class="side party"><h2>Expedition</h2><div class="grid" id="gParty"></div><div class="legend">Rows are half-step lanes 0–4. A unit covers allies behind it in its own lane and the lanes one step either side.</div></div>
+    <div class="vs">FRONT LINES</div>
+    <div class="side foe"><h2>Monster pack</h2><div class="grid" id="gFoe"></div><div class="legend">Shown after the most recent battle. Struck-through units were downed.</div></div>
+  </section>
+
+  <section class="tables" aria-label="Combat stats">
+    <div class="tbl"><table id="tParty"></table></div>
+    <div class="tbl"><table id="tFoe"></table></div>
+  </section>
+
+  <section class="result">
+    <div class="panel">
+      <div class="eyebrow">Battle log</div>
+      <div class="log" id="log"></div>
+    </div>
+    <div class="panel">
+      <div class="eyebrow">Aftermath</div>
+      <div class="outcome" id="outcome"></div>
+      <div id="after"></div>
+      <div class="eyebrow">Gear wear</div>
+      <div class="tbl"><table id="tWear"></table></div>
+    </div>
+  </section>
+
+  <section class="panel" id="batchPanel" hidden>
+    <div class="eyebrow">1,000-battle summary</div>
+    <div class="batch" id="batch"></div>
+    <div class="tbl"><table id="tBatch"></table></div>
+  </section>
+
+  <section class="panel">
+    <div class="eyebrow">Rules in this test</div>
+    <div class="rules">
+      <p><b>Turn order.</b> Every unit on both sides acts once per round, highest Attack Speed first. Ties go to higher Luck, then a coin flip. Ten rounds without a winner means the expedition retreats.</p>
+      <p><b>Attack Speed.</b> Spd − max(0, weapon Wt + armor Wt − Con), never below 0.</p>
+      <p><b>Doubling.</b> If the attacker's AS is 5 or more above the target's, it strikes twice in the same action. No counters.</p>
+      <p><b>Hit.</b> Weapon Hit + Skl×2 + Lck/2 − (target AS×2 + Lck). Rolled with two averaged numbers (true hit).</p>
+      <p><b>Damage.</b> Str or Mag + Might − Def or Res (armor and shell included). Crit = weapon Crit + Skl/2 − target Lck, triples damage.</p>
+      <p><b>Effective.</b> A weapon effective against the target's type doubles its Might.</p>
+      <p><b>Melee.</b> Acts from Front or Mid line, and can only target enemies not covered by blocking. Back-line melee waits.</p>
+      <p><b>Ranged.</b> Picks the best target instead of rolling. First choice is an enemy it can down this action (most likely hit wins); otherwise the enemy taking the most expected damage (damage × true hit × strikes). Ties go to the lowest HP. If the best target is covered, it moves to the next best uncovered one. <b>Sniper</b> ignores cover.</p>
+      <p><b>Flying.</b> Ignores blocking. Rolls target line Front 70 / Mid 20 / Back 10, renormalised over occupied lines. <b>Dive</b> always picks the Back line.</p>
+      <p><b>Durability.</b> Weapons lose 1 per strike. Armor loses 1 per hit taken, 2 per crit, and gives no Def or weight once broken. A broken weapon swaps to the next carried one, or to bare hands.</p>
+      <p><b>Healer.</b> Heals the ally with the lowest HP % if anyone is at or below 70%. Heal = Mag + staff Power. Each heal uses 1 staff charge.</p>
+      <p><b>Injuries.</b> A downed expeditioner is Seriously injured if the final blow was a crit or dealt half their max HP or more; otherwise Lightly injured.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+// ---------- data ----------
+const UNARMED={name:'Bare hands',mt:0,hit:70,crit:0,wt:0,dur:Infinity,max:Infinity,natural:true};
+const BASE_PARTY=[
+ {id:'p1',name:'Garrick',cls:'Knight',kind:'melee',line:0,lane:2,hp:26,str:9,mag:0,skl:5,spd:4,lck:3,def:9,res:2,con:11,
+  weapons:[{name:'Iron Lance',mt:7,hit:80,crit:0,wt:8,dur:45}],armor:{name:'Full Plate',def:7,res:1,wt:8,dur:30}},
+ {id:'p2',name:'Rhea',cls:'Mercenary',kind:'melee',line:0,lane:4,hp:22,str:7,mag:0,skl:9,spd:10,lck:6,def:5,res:1,con:8,
+  weapons:[{name:'Iron Sword',mt:5,hit:90,crit:0,wt:5,dur:40}],armor:{name:'Leather Coat',def:1,res:0,wt:1,dur:18}},
+ {id:'p3',name:'Bram',cls:'Fighter',kind:'melee',line:1,lane:1,hp:28,str:10,mag:0,skl:5,spd:7,lck:3,def:4,res:0,con:10,
+  weapons:[{name:'Worn Iron Axe',mt:8,hit:75,crit:0,wt:10,dur:3},{name:'Hand Axe',mt:7,hit:60,crit:0,wt:9,dur:20}],armor:{name:'Leather Coat',def:1,res:0,wt:1,dur:18}},
+ {id:'p4',name:'Lyse',cls:'Archer',kind:'ranged',line:1,lane:3,hp:18,str:6,mag:0,skl:9,spd:8,lck:5,def:3,res:2,con:6,ability:'Sniper',
+  weapons:[{name:'Iron Bow',mt:6,hit:85,crit:0,wt:5,dur:40,eff:['Flying']}],armor:{name:'Padded Vest',def:0,res:0,wt:1,dur:12}},
+ {id:'p5',name:'Mira',cls:'Cleric',kind:'healer',line:2,lane:2,hp:17,str:0,mag:7,skl:4,spd:7,lck:8,def:1,res:7,con:5,
+  weapons:[],staff:{name:'Heal Staff',power:10,wt:2,dur:15},armor:{name:'Robe',def:0,res:1,wt:0,dur:15}},
+];
+const BASE_FOE=[
+ {id:'f1',name:'Dire Wolf A',cls:'Beast',type:'Beast',kind:'melee',line:0,lane:0,hp:22,str:9,mag:0,skl:5,spd:9,lck:2,def:4,res:0,con:9,weapons:[{name:'Fangs',mt:5,hit:75,crit:5,wt:0,dur:Infinity,natural:true}]},
+ {id:'f2',name:'Dire Wolf B',cls:'Beast',type:'Beast',kind:'melee',line:0,lane:2,hp:22,str:9,mag:0,skl:5,spd:9,lck:2,def:4,res:0,con:9,weapons:[{name:'Fangs',mt:5,hit:75,crit:5,wt:0,dur:Infinity,natural:true}]},
+ {id:'f3',name:'Stone Tortoise',cls:'Armored',type:'Armored',kind:'melee',line:0,lane:4,hp:32,str:11,mag:0,skl:4,spd:2,lck:0,def:6,res:1,con:15,shell:{def:6,hits:4},ability:'Shell',weapons:[{name:'Crushing Bite',mt:6,hit:65,crit:0,wt:0,dur:Infinity,natural:true}]},
+ {id:'f4',name:'Harpy',cls:'Flying',type:'Flying',kind:'flying',line:1,lane:1,hp:18,str:8,mag:0,skl:8,spd:12,lck:5,def:3,res:3,con:6,ability:'Dive',weights:[0,0,100],weapons:[{name:'Talons',mt:4,hit:80,crit:10,wt:0,dur:Infinity,natural:true}]},
+ {id:'f5',name:'Gloomcap',cls:'Fungus',type:'Plant',kind:'ranged',line:2,lane:3,hp:18,str:0,mag:8,skl:6,spd:4,lck:2,def:3,res:6,con:4,weapons:[{name:'Spore Burst',mt:4,hit:70,crit:0,wt:0,dur:Infinity,natural:true,magic:true}]},
+];
+const LINES=['Front','Mid','Back'];
+
+// ---------- rng ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let rng=Math.random;
+const r100=()=>Math.floor(rng()*100);
+const TRUE_HIT=(()=>{const t=[];for(let p=0;p<=100;p++){let c=0;for(let a=0;a<100;a++)for(let b=0;b<100;b++)if((a+b)/2<p)c++;t[p]=c/100}return t})();
+
+// ---------- helpers ----------
+const clone=o=>JSON.parse(JSON.stringify(o,(k,v)=>v===Infinity?'__inf':v),(k,v)=>v==='__inf'?Infinity:v);
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function prep(list,team){return list.map(u=>{const c=clone(u);c.team=team;c.maxhp=c.hp;c.downed=false;c.weapons.forEach(w=>{w.max=w.dur});if(c.armor)c.armor.max=c.armor.dur;if(c.staff)c.staff.max=c.staff.dur;if(c.shell)c.shell.max=c.shell.hits;return c})}
+const weapon=u=>u.weapons.find(w=>w.dur>0)||UNARMED;
+const armorOn=u=>u.armor&&u.armor.dur>0;
+function AS(u){const w=u.kind==='healer'?(u.staff||{wt:0}):weapon(u);const wt=(w.wt||0)+(armorOn(u)?u.armor.wt:0);return Math.max(0,u.spd-Math.max(0,wt-u.con))}
+const DEF=u=>u.def+(armorOn(u)?u.armor.def:0)+(u.shell&&u.shell.hits>0?u.shell.def:0);
+const RES=u=>u.res+(armorOn(u)?u.armor.res:0);
+const AVO=u=>AS(u)*2+u.lck;
+function forecast(a,d){const w=weapon(a);const eff=w.eff&&w.eff.includes(d.type);const atk=(w.magic?a.mag:a.str)+w.mt*(eff?2:1);
+  return{w,eff,dmg:Math.max(0,atk-(w.magic?RES(d):DEF(d))),hit:clamp(w.hit+a.skl*2+Math.floor(a.lck/2)-AVO(d)),crit:clamp(w.crit+Math.floor(a.skl/2)-d.lck)}}
+const alive=t=>t.filter(u=>!u.downed);
+const blocked=(t,team)=>alive(team).some(a=>a!==t&&a.line<t.line&&Math.abs(a.lane-t.lane)<=1);
+const pick=arr=>arr[Math.floor(rng()*arr.length)];
+
+// ---------- simulation ----------
+function simulate(seed,withLog){
+  rng=mulberry32(seed);
+  const P=prep(BASE_PARTY,'p'),F=prep(BASE_FOE,'f');const log=[];const L=s=>{if(withLog)log.push(s)};
+  const enemiesOf=u=>u.team==='p'?F:P, alliesOf=u=>u.team==='p'?P:F;
+  const tag=u=>`<span class="${u.team}">${u.name}</span>`;
+  let round=0,result=null;
+  while(!result){
+    round++;if(round>10){result='retreat';round=10;break}
+    L({rh:`Round ${round}`});
+    const order=[...alive(P),...alive(F)].map(u=>({u,as:AS(u),t:rng()})).sort((a,b)=>b.as-a.as||b.u.lck-a.u.lck||a.t-b.t).map(o=>o.u);
+    for(const u of order){
+      if(u.downed)continue;
+      if(!alive(P).length){result='lose';break} if(!alive(F).length){result='win';break}
+      act(u);
+    }
+    if(!result){if(!alive(P).length)result='lose';else if(!alive(F).length)result='win'}
+  }
+  function act(u){
+    if(u.kind==='healer'){
+      const hurt=alive(alliesOf(u)).filter(a=>a.hp/a.maxhp<=0.7).sort((a,b)=>a.hp/a.maxhp-b.hp/b.maxhp);
+      if(!hurt.length){L(`<span class="x">${u.name} waits; no one needs healing.</span>`);return}
+      if(!u.staff||u.staff.dur<=0){L(`<span class="x">${u.name} has no staff charges left.</span>`);return}
+      const t=hurt[0];const amt=Math.min(u.mag+u.staff.power,t.maxhp-t.hp);t.hp+=amt;u.staff.dur--;
+      L(`${tag(u)} heals ${tag(t)} for <span class="g">+${amt}</span> [${t.hp}/${t.maxhp}] · ${u.staff.name} ${u.staff.dur}/${u.staff.max}`);return}
+    const foes=alive(enemiesOf(u));let target;
+    if(u.kind==='melee'){
+      if(u.line>1){L(`<span class="x">${u.name} is in the Back line and cannot reach anyone.</span>`);return}
+      const open=foes.filter(f=>!blocked(f,enemiesOf(u)));
+      const best=Math.min(...open.map(f=>Math.abs(f.lane-u.lane)));target=pick(open.filter(f=>Math.abs(f.lane-u.lane)===best));
+    }else if(u.kind==='flying'){
+      const w=u.weights||[70,20,10];const occ=[0,1,2].filter(l=>foes.some(f=>f.line===l));
+      let tot=occ.reduce((s,l)=>s+w[l],0);let line;
+      if(tot===0)line=occ[0];else{let r=rng()*tot;for(const l of occ){r-=w[l];if(r<0){line=l;break}}if(line===undefined)line=occ[occ.length-1]}
+      target=pick(foes.filter(f=>f.line===line));
+    }else{
+      const enemies=enemiesOf(u);
+      const scored=foes.map(f=>{const fc=forecast(u,f);const n=AS(u)-AS(f)>=5?2:1;const p=TRUE_HIT[fc.hit]/100;
+        return{f,covered:u.ability!=='Sniper'&&blocked(f,enemies),kill:p>0&&fc.dmg*n>=f.hp,p,exp:fc.dmg*n*p}});
+      const rank=(a,b)=>(b.kill-a.kill)||(a.kill?b.p-a.p:b.exp-a.exp)||(a.f.hp-b.f.hp);
+      scored.sort(rank);
+      const first=scored[0],best=scored.find(x=>!x.covered);
+      target=best.f;
+      const why=best.kill?`can finish it (${Math.round(best.p*100)}% to hit)`:`highest expected damage (${best.exp.toFixed(1)})`;
+      L(`<span class="x">${u.name} aims at ${best.f.name}: ${why}${first!==best?`; ${first.f.name} is covered`:''}.</span>`);
+    }
+    strike(u,target,false);
+    if(!target.downed&&!u.downed&&AS(u)-AS(target)>=5)strike(u,target,true);
+  }
+  function strike(a,d,follow){
+    const fc=forecast(a,d);const w=fc.w;
+    const hitRoll=(r100()+r100())/2;const hit=hitRoll<fc.hit;
+    if(w.dur!==Infinity)w.dur--;
+    let msg=`${tag(a)}${follow?' <b>doubles</b>':''} → ${tag(d)} · ${w.name}${fc.eff?' (effective)':''} · hit ${fc.hit}% (true ${Math.round(TRUE_HIT[fc.hit])}%)`;
+    if(!hit){msg+=` · <span class="x">miss</span>`}
+    else{
+      const isCrit=r100()<fc.crit;const dmg=fc.dmg*(isCrit?3:1);
+      d.hp=Math.max(0,d.hp-dmg);
+      msg+=` · ${isCrit?'<span class="k">CRIT</span> ':''}${dmg} dmg [${d.hp}/${d.maxhp}]`;
+      if(d.armor&&d.armor.dur>0){d.armor.dur=Math.max(0,d.armor.dur-(isCrit?2:1));if(d.armor.dur===0)msg+=` · <span class="k">${d.name}'s ${d.armor.name} breaks</span>`}
+      if(d.shell&&d.shell.hits>0){d.shell.hits--;if(d.shell.hits===0)msg+=` · <span class="k">shell cracks open</span>`}
+      if(d.hp===0){d.downed=true;d.downedBy={crit:isCrit,big:dmg>=d.maxhp/2,by:a.name};msg+=` · <span class="k">${d.name} is downed</span>`}
+    }
+    if(w.dur===0){const next=weapon(a);msg+=` · <span class="k">${w.name} breaks</span>${next!==UNARMED?`, swaps to ${next.name}`:', fights bare-handed'}`}
+    L(msg);
+  }
+  return{P,F,log,result,round};
+}
+
+// ---------- render ----------
+const $=id=>document.getElementById(id);
+function barClass(u){const r=u.hp/u.maxhp;return r<=.25?'crit':r<=.5?'low':''}
+function drawGrid(el,units,mirror){
+  const cols=mirror?[0,1,2]:[2,1,0];let h='';
+  cols.forEach((l,i)=>h+=`<div class="colhead" style="grid-column:${i+1};grid-row:1">${LINES[l]}</div>`);
+  for(let r=0;r<6;r++)for(let c=0;c<3;c++)h+=`<div class="lane" style="grid-column:${c+1};grid-row:${r+2}"></div>`;
+  units.forEach(u=>{const col=cols.indexOf(u.line)+1;const row=u.lane+2;
+    const pct=Math.round(u.hp/u.maxhp*100);
+    const cov=units.filter(a=>a!==u&&a.line<u.line&&Math.abs(a.lane-u.lane)<=1).map(a=>a.name);
+    h+=`<div class="chip${u.downed?' down':''}" style="grid-column:${col};grid-row:${row}" title="Lane ${u.lane}">
+      <b>${u.name}</b><span class="cls">${u.cls} · lane ${u.lane}${u.ability?` · ${u.ability}`:''}</span>
+      <div class="bar ${barClass(u)}"><i style="width:${pct}%"></i></div><span>${u.hp}/${u.maxhp} HP</span>${cov.length?`<span class="cls">covered by ${cov.join(', ')}</span>`:''}</div>`});
+  el.innerHTML=h;
+}
+function statTable(el,units,title){
+  let h=`<thead><tr><th>${title}</th><th>HP</th><th>AS</th><th>Atk</th><th>Hit</th><th>Avo</th><th>Crit</th><th>Def/Res</th></tr></thead><tbody>`;
+  units.forEach(u=>{const w=u.kind==='healer'?null:weapon(u);
+    const atk=w?(w.magic?u.mag:u.str)+w.mt:`heal ${u.mag+u.staff.power}`;
+    const hit=w?w.hit+u.skl*2+Math.floor(u.lck/2):'—';const crit=w?w.crit+Math.floor(u.skl/2):'—';
+    h+=`<tr><td>${u.name}</td><td>${u.maxhp}</td><td>${AS(u)}</td><td>${atk}</td><td>${hit}</td><td>${AVO(u)}</td><td>${crit}</td><td>${DEF(u)}/${RES(u)}</td></tr>`});
+  el.innerHTML=h+'</tbody>';
+}
+function render(seed){
+  const s=simulate(seed,true);
+  $('seed').textContent=`seed ${seed}`;
+  drawGrid($('gParty'),s.P,false);drawGrid($('gFoe'),s.F,true);
+  const o=$('outcome');o.className='outcome '+s.result;
+  o.textContent=s.result==='win'?`Victory in ${s.round} rounds`:s.result==='lose'?`Expedition routed in round ${s.round}`:'Retreat after 10 rounds';
+  const downed=s.P.filter(u=>u.downed);
+  $('after').innerHTML=downed.length?`<ul class="notes">${downed.map(u=>{const ser=u.downedBy.crit||u.downedBy.big;
+    return `<li><b style="color:var(--ink)">${u.name}</b> <span class="pill ${ser?'serious':'light'}">${ser?'Serious':'Light'} injury</span> downed by ${u.downedBy.by}${u.downedBy.crit?' with a crit':u.downedBy.big?' with a heavy blow':''}</li>`}).join('')}</ul>`
+    :`<p style="margin:0;color:var(--muted)">No one was downed. No injuries.</p>`;
+  let w=`<thead><tr><th>Expeditioner</th><th>Gear</th><th>Left</th><th>Used</th></tr></thead><tbody>`;
+  s.P.forEach(u=>{const gear=[...u.weapons,...(u.staff?[u.staff]:[]),...(u.armor?[u.armor]:[])];
+    gear.forEach((g,i)=>w+=`<tr><td>${i?'':u.name}</td><td>${g.name}</td><td>${g.dur}/${g.max}${g.dur===0?' <span class="pill serious">broken</span>':''}</td><td>${g.max-g.dur}</td></tr>`)});
+  $('tWear').innerHTML=w+'</tbody>';
+  $('log').innerHTML=s.log.map(e=>typeof e==='string'?`<div>${e}</div>`:`<div class="rh">${e.rh}</div>`).join('');
+}
+function runBatch(){
+  const N=1000;const base=Math.floor(Math.random()*1e9);const tally={win:0,lose:0,retreat:0},rounds=[];
+  const per={};BASE_PARTY.forEach(u=>per[u.id]={name:u.name,down:0,serious:0,wpn:0,arm:0});
+  for(let i=0;i<N;i++){const s=simulate(base+i,false);tally[s.result]++;rounds.push(s.round);
+    s.P.forEach(u=>{const p=per[u.id];if(u.downed){p.down++;if(u.downedBy.crit||u.downedBy.big)p.serious++}
+      p.wpn+=u.weapons.reduce((t,g)=>t+g.max-g.dur,0)+(u.staff?u.staff.max-u.staff.dur:0);if(u.armor)p.arm+=u.armor.max-u.armor.dur})}
+  const pc=v=>`${(v/N*100).toFixed(1)}%`;const avgR=(rounds.reduce((a,b)=>a+b,0)/N).toFixed(1);
+  $('batch').innerHTML=[['Victories',pc(tally.win)],['Routed',pc(tally.lose)],['Retreats',pc(tally.retreat)],['Average rounds',avgR]]
+    .map(([l,v])=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  let h=`<thead><tr><th>Expeditioner</th><th>Downed</th><th>Serious</th><th>Weapon/staff use</th><th>Armor wear</th></tr></thead><tbody>`;
+  Object.values(per).forEach(p=>h+=`<tr><td>${p.name}</td><td>${pc(p.down)}</td><td>${pc(p.serious)}</td><td>${(p.wpn/N).toFixed(1)}</td><td>${(p.arm/N).toFixed(1)}</td></tr>`);
+  $('tBatch').innerHTML=h+'</tbody>';$('batchPanel').hidden=false;
+}
+statTable($('tParty'),prep(BASE_PARTY,'p'),'Expedition');
+statTable($('tFoe'),prep(BASE_FOE,'f'),'Monsters');
+$('runBtn').addEventListener('click',()=>render(Math.floor(Math.random()*1e9)));
+$('batchBtn').addEventListener('click',runBatch);
+render(20261101);runBatch();
+</script>
