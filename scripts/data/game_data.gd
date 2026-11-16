@@ -23,14 +23,16 @@ const PARTY_MAX := 6
 
 # ---------------------------------------------------------------- weapons
 ## [DOC] Weapon table. threat = lowest d20 roll that threatens a critical.
+## dtype (damage type: slash / pierce / blunt / claw / bite) only picks the
+## strike animation for now. [PLACEHOLDER] The doc does not give damage types.
 const WEAPONS := {
-	"dagger": {"name": "Dagger", "hands": 1, "n": 1, "sides": 4, "threat": 19, "mult": 2, "weight": 1},
-	"longsword": {"name": "Longsword", "hands": 1, "n": 1, "sides": 8, "threat": 19, "mult": 2, "weight": 4},
-	"battleaxe": {"name": "Battleaxe", "hands": 1, "n": 1, "sides": 8, "threat": 20, "mult": 3, "weight": 6},
-	"rapier": {"name": "Rapier", "hands": 1, "n": 1, "sides": 6, "threat": 18, "mult": 2, "weight": 2, "finesse": true},
-	"spear": {"name": "Spear", "hands": 2, "n": 1, "sides": 8, "threat": 20, "mult": 3, "weight": 6, "brace": true},
-	"greatsword": {"name": "Greatsword", "hands": 2, "n": 2, "sides": 6, "threat": 19, "mult": 2, "weight": 8},
-	"halberd": {"name": "Halberd", "hands": 2, "n": 1, "sides": 10, "threat": 20, "mult": 3, "weight": 12, "brace": true, "reach": true},
+	"dagger": {"name": "Dagger", "hands": 1, "n": 1, "sides": 4, "threat": 19, "mult": 2, "weight": 1, "dtype": "pierce"},
+	"longsword": {"name": "Longsword", "hands": 1, "n": 1, "sides": 8, "threat": 19, "mult": 2, "weight": 4, "dtype": "slash"},
+	"battleaxe": {"name": "Battleaxe", "hands": 1, "n": 1, "sides": 8, "threat": 20, "mult": 3, "weight": 6, "dtype": "slash"},
+	"rapier": {"name": "Rapier", "hands": 1, "n": 1, "sides": 6, "threat": 18, "mult": 2, "weight": 2, "finesse": true, "dtype": "pierce"},
+	"spear": {"name": "Spear", "hands": 2, "n": 1, "sides": 8, "threat": 20, "mult": 3, "weight": 6, "brace": true, "dtype": "pierce"},
+	"greatsword": {"name": "Greatsword", "hands": 2, "n": 2, "sides": 6, "threat": 19, "mult": 2, "weight": 8, "dtype": "slash"},
+	"halberd": {"name": "Halberd", "hands": 2, "n": 1, "sides": 10, "threat": 20, "mult": 3, "weight": 12, "brace": true, "reach": true, "dtype": "slash"},
 	"longbow": {"name": "Longbow", "hands": 2, "n": 1, "sides": 8, "threat": 20, "mult": 3, "weight": 3, "ranged": true, "no_str": true},
 	"light_crossbow": {"name": "Light crossbow", "hands": 2, "n": 1, "sides": 8, "threat": 19, "mult": 2, "weight": 4, "ranged": true, "no_str": true},
 }
@@ -174,12 +176,12 @@ const MONSTERS := {
 	"giant_rat": {
 		"name": "Giant Rat", "hp": 4, "armor": 0, "dodge": 2, "init": 2, "con": 10, "threat": 1.0,
 		"attack": 1, "dmg_bonus": 0, "row": 0, "tactic": "Aggressive",
-		"weapon": {"name": "Bite", "n": 1, "sides": 3, "threat": 20, "mult": 2},
+		"weapon": {"name": "Bite", "n": 1, "sides": 3, "threat": 20, "mult": 2, "dtype": "bite"},
 	},
 	"goblin_cutter": {
 		"name": "Goblin Cutter", "hp": 5, "armor": 1, "dodge": 2, "init": 2, "con": 10, "threat": 1.0,
 		"attack": 1, "dmg_bonus": 0, "row": 0, "tactic": "Aggressive",
-		"weapon": {"name": "Rusty blade", "n": 1, "sides": 4, "threat": 19, "mult": 2},
+		"weapon": {"name": "Rusty blade", "n": 1, "sides": 4, "threat": 19, "mult": 2, "dtype": "slash"},
 	},
 	"kobold_slinger": {
 		"name": "Kobold Slinger", "hp": 4, "armor": 1, "dodge": 1, "init": 1, "con": 9, "threat": 1.0,
@@ -194,34 +196,44 @@ const MONSTERS := {
 	"skeleton": {
 		"name": "Skeleton", "hp": 6, "armor": 2, "dodge": 1, "init": 1, "con": 10, "threat": 1.5,
 		"attack": 1, "dmg_bonus": 1, "row": 0, "tactic": "Balanced",
-		"weapon": {"name": "Notched sword", "n": 1, "sides": 6, "threat": 19, "mult": 2},
+		"weapon": {"name": "Notched sword", "n": 1, "sides": 6, "threat": 19, "mult": 2, "dtype": "slash"},
 	},
 	"goblin_hexer": {
 		"name": "Goblin Hexer", "hp": 5, "armor": 0, "dodge": 2, "init": 2, "con": 10, "threat": 2.0,
 		"attack": 0, "dmg_bonus": 0, "row": 2, "tactic": "Aggressive",
-		"weapon": {"name": "Bone knife", "n": 1, "sides": 3, "threat": 20, "mult": 2},
+		"weapon": {"name": "Bone knife", "n": 1, "sides": 3, "threat": 20, "mult": 2, "dtype": "pierce"},
 		"caster": "arcane", "caster_level": 1, "cast_mod": 2, "bab": 0, "dex_mod": 2,
 		"spells": ["frost_ray", "arcane_bolt"], "slots": [1],
 	},
 	"wolf": {
 		"name": "Wolf", "hp": 11, "armor": 1, "dodge": 2, "init": 2, "con": 13, "threat": 2.0,
 		"attack": 2, "dmg_bonus": 1, "row": 0, "tactic": "Aggressive",
-		"weapon": {"name": "Bite", "n": 1, "sides": 6, "threat": 20, "mult": 2},
+		"weapon": {"name": "Bite", "n": 1, "sides": 6, "threat": 20, "mult": 2, "dtype": "bite"},
+	},
+	"goblin_brute": {
+		"name": "Goblin Brute", "hp": 9, "armor": 2, "dodge": 1, "init": 1, "con": 12, "threat": 1.5,
+		"attack": 2, "dmg_bonus": 1, "row": 0, "tactic": "Aggressive",
+		"weapon": {"name": "Club", "n": 1, "sides": 6, "threat": 20, "mult": 2, "dtype": "blunt"},
+	},
+	"cave_ghoul": {
+		"name": "Cave Ghoul", "hp": 8, "armor": 1, "dodge": 2, "init": 2, "con": 10, "threat": 1.5,
+		"attack": 2, "dmg_bonus": 0, "row": 0, "tactic": "Aggressive",
+		"weapon": {"name": "Claws", "n": 1, "sides": 4, "threat": 20, "mult": 2, "dtype": "claw"},
 	},
 	"orc_raider": {  # [DOC] worked example: HP 13, Defense 14 / 10, Greataxe +5, 1d12+4 x3, Init +0
 		"name": "Orc Raider", "hp": 13, "armor": 4, "dodge": 0, "init": 0, "con": 12, "threat": 4.0,
 		"attack": 5, "dmg_bonus": 4, "row": 0, "tactic": "Aggressive",
-		"weapon": {"name": "Greataxe", "n": 1, "sides": 12, "threat": 20, "mult": 3},
+		"weapon": {"name": "Greataxe", "n": 1, "sides": 12, "threat": 20, "mult": 3, "dtype": "slash"},
 	},
 }
 
 ## [PLACEHOLDER] Encounter themes: which monsters appear together, with weights.
 const ENCOUNTER_THEMES := {
 	"Vermin swarm": {"giant_rat": 6, "kobold_slinger": 2},
-	"Goblin warband": {"goblin_cutter": 5, "goblin_archer": 2, "goblin_hexer": 1, "wolf": 1},
-	"Restless dead": {"skeleton": 5, "giant_rat": 2},
+	"Goblin warband": {"goblin_cutter": 5, "goblin_brute": 2, "goblin_archer": 2, "goblin_hexer": 1, "wolf": 1},
+	"Restless dead": {"skeleton": 5, "cave_ghoul": 3, "giant_rat": 2},
 	"Kobold ambushers": {"kobold_slinger": 4, "goblin_cutter": 2, "giant_rat": 2},
-	"Orc raid": {"orc_raider": 2, "goblin_cutter": 4, "goblin_archer": 2, "wolf": 1},
+	"Orc raid": {"orc_raider": 2, "goblin_cutter": 4, "goblin_brute": 1, "goblin_archer": 2, "wolf": 1},
 }
 
 ## [PLACEHOLDER] Encounter size = party power x multiplier, spent on monster
@@ -235,13 +247,16 @@ const ENCOUNTER_MAX_UNITS := 9
 const ENCOUNTER_MAX_CASTERS := 2  ## auto-hit spells from many casters delete a level-1 back-liner
 
 # ---------------------------------------------------------------- names
-const FIRST_NAMES: Array[String] = [
-	"Aldric", "Brann", "Cedany", "Dorian", "Elowen", "Faramond", "Gisela", "Hadrian",
-	"Isolde", "Jorund", "Katrin", "Leofric", "Maelis", "Nerys", "Osric", "Petra",
-	"Quillon", "Rowena", "Sigurd", "Tamsin", "Ulric", "Vesna", "Wystan", "Ysolt",
-	"Anselm", "Brigid", "Corwin", "Dagny", "Edric", "Freya", "Garrick", "Hilde",
-	"Ivo", "Jocosa", "Kestrel", "Lucan", "Mirabel", "Njal", "Odette", "Perrin",
-	"Roderic", "Saskia", "Tobias", "Una", "Varek", "Wilmot", "Yorick", "Zelda",
+## Given names, split so a recruit's name fits their portrait.
+const FIRST_NAMES_M: Array[String] = [
+	"Aldric", "Brann", "Dorian", "Faramond", "Hadrian", "Jorund", "Leofric", "Osric",
+	"Quillon", "Sigurd", "Ulric", "Wystan", "Anselm", "Corwin", "Edric", "Garrick",
+	"Ivo", "Lucan", "Njal", "Perrin", "Roderic", "Tobias", "Varek", "Wilmot", "Yorick",
+]
+const FIRST_NAMES_F: Array[String] = [
+	"Cedany", "Elowen", "Gisela", "Isolde", "Katrin", "Maelis", "Nerys", "Petra",
+	"Rowena", "Tamsin", "Vesna", "Ysolt", "Brigid", "Dagny", "Freya", "Hilde",
+	"Jocosa", "Kestrel", "Mirabel", "Odette", "Saskia", "Una", "Zelda", "Aveline",
 ]
 const BYNAMES: Array[String] = [
 	"of Harrowmere", "the Quiet", "Blackthorn", "Ashdown", "the Younger", "Stonehand",
@@ -264,6 +279,8 @@ static func fill_weapon(src: Dictionary) -> Dictionary:
 			w[key] = false
 	if not w.has("hands"):
 		w["hands"] = 1
+	if not w.has("dtype"):
+		w["dtype"] = "slash"
 	return w
 
 

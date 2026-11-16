@@ -20,6 +20,10 @@ var cost := 0
 var threat := 0.0
 var default_row := 0
 
+## Portrait. Expeditioners: HeroAppearance.to_dict() from the portrait module
+## (res://portraits/). Monsters: PortraitGen.monster(). Drawn by UnitPortrait.
+var look: Dictionary = {}
+
 # ---- gear
 var weapon_id := ""
 var armor_id := ""
@@ -66,6 +70,14 @@ var dead := false
 func _init() -> void:
 	uid = _next_uid
 	_next_uid += 1
+
+
+## New random face, same class and gear.
+func reroll_look() -> void:
+	if is_monster:
+		look = PortraitGen.monster(class_id, Dice.rng.randi())
+	else:
+		look = RecruitGenerator.roll_look(class_id, String(look.get("body", "")))
 
 
 static func ability_mod(score: int) -> int:

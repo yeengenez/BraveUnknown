@@ -24,6 +24,7 @@ static func make_monster(monster_id: String) -> Unit:
 	unit.default_row = int(data["row"])
 	unit.tactic = data["tactic"]
 	unit.weapon = GameData.fill_weapon(data["weapon"])
+	unit.look = PortraitGen.monster(monster_id, Dice.rng.randi())
 	unit.bab = int(data.get("bab", 0))
 	unit.dex_mod = int(data.get("dex_mod", unit.dodge_bonus))
 	unit.caster_type = data.get("caster", "")

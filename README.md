@@ -13,11 +13,50 @@ Godot 4 project (GDScript, no plugins, no art assets). Tested on Godot 4.5 and 4
 | --- | --- |
 | **Guild** | Six pre-rolled adventurers for hire. Hiring costs gold; **New faces** pays 30 g for a fresh list. Roster holds 12. |
 | **Party** | Place 4–6 members on the 3×3 grid (select someone, click a slot; click an occupied slot to swap). Set each member's tactics profile and the party's retreat order. **Make camp** restores HP and spell slots. |
-| **Battle** | Pick an encounter size and a surprise setting, press **New battle**. The party fights on its own. Step turn by turn, auto-play, or skip to the result. Every roll is written to the log. |
+| **Battle** | Pick an encounter size and a surprise setting, press **New battle**. The party fights on its own. Step turn by turn, auto-play (1×–8× speed), or skip to the result. Every roll is written to the log. |
+
+### Combat presentation
+
+Each turn plays back as animation before the next one starts:
+
+- The acting unit glows and gets a gold outline, its target gets a red outline (green for an ally being healed), its line in the turn order lights up, and the centre caption reads *Actor ⟶ weapon/spell ⟶ Target · result*.
+- Melee: the attacker winds up and lunges at the target, then returns.
+- Ranged and spells fire a missile at the target: a fletched arrow (bows), a crossbow bolt, a sling stone, an ice shard (Frost Ray), violet orbs, one per bolt (Arcane Bolt), a fireball (Flame Wave and Searing Ray), a force spear (Force Lance) or a holy star (Holy Spark). Area spells send one missile to every target in the row or lane. Heals send a green orb to the ally; Blessing sends gold motes to everyone.
+- Melee strikes match the weapon's damage type and always travel from the attacker's side to the far side (mirrored for enemies): **slash** is a crescent blade sweep, **pierce** a triangular stab mark shooting through, **blunt** an impact burst with shock waves rolling forward, **claw** three parallel rakes, **bite** two rows of teeth lunging in and snapping shut. Missile hits spray out of the far side of the target.
+- Hit: red flash, knock-back shake, floating damage number. Critical: gold flash, harder knock-back, screen shake, "CRITICAL!". Miss: the target sidesteps and "MISS" floats up.
+- HP on a card changes only when the blow lands. "DOWNED" / "SLAIN" pop up; units that change slot (side-steps, a row collapsing forward) slide over.
+
+Animation code lives in `scripts/ui/battle_screen.gd` (sequencing), `unit_cell.gd` (card motion) and `battle_fx.gd` (arrows, projectiles, numbers). The engine reports each swing as a structured event (`Combat.take_events()`), so the rules never depend on the visuals.
 
 You start with 1,000 g. Winning pays loot. HP and spell slots carry over between
 fights until you make camp. Dead expeditioners leave the roster for good.
 `+500 g` in the top bar is a test helper.
+
+## Portraits
+
+Expeditioners use the **expedition-portraits** module (pixel-art anime bust
+portraits assembled from layered parts and colour ramps), copied in as
+`res://portraits/`. Each recruit rolls a `HeroAppearance` for its class
+outfit when created; it is stored on the unit as `look`
+(`HeroAppearance.to_dict()`), so it never changes unless you press
+**New look** on the Party screen. A recruit's name matches the portrait's
+body type.
+
+`scripts/ui/unit_portrait.gd` shows a unit's portrait anywhere in the UI:
+the full bust on Guild cards and the character sheet, a head-and-shoulders
+crop on battle cards and roster rows (small sizes use smooth mipmapped
+scaling; 180 px and up stay pixel-crisp).
+
+Changes made to the module copy here: mipmaps turned on for the part
+textures (for clean downscaling), and `portraits/robe_tint.gdshader` added.
+
+Placeholders:
+- **Mage** has no outfit in the module yet. Mages wear the cleric robe
+  recoloured violet (`robe_tint.gdshader`); the gold cross still shows. Add
+  `m_body_mage_*` / `f_body_mage_*` parts and list `mage` in
+  `portraits/library.json`, and mages use them automatically.
+- **Monsters** have no art in the module. They still use simple shapes drawn
+  in code (`scripts/core/portrait_gen.gd` + `scripts/ui/monster_portrait.gd`).
 
 ## Where things are
 
@@ -26,10 +65,12 @@ scripts/data/game_data.gd        every table: weapons, armor, classes, spells, m
 scripts/core/unit.gd             one combatant and all derived stats
 scripts/core/recruit_generator.gd  25-point-buy recruits
 scripts/core/encounter_generator.gd  monster groups
+scripts/core/portrait_gen.gd     placeholder monster portrait looks
+portraits/                       expedition-portraits module (hero portraits)
 scripts/core/combat.gd           the battle engine (no UI code)
 scripts/core/tactics_ai.gd       the five tactics profiles
 scripts/game_state.gd            autoload "Game": gold, guild offers, roster, formation
-scripts/ui/                      the three screens
+scripts/ui/                      the three screens + combat animation
 tests/run_tests.gd               rule checks + balance simulation
 ```
 
@@ -54,7 +95,8 @@ Not in the doc, invented so the prototype can run. Replace freely.
 
 - **Classes.** Soldier (d10, full BAB), Archer (d8, full BAB), Cleric (d8, ¾ BAB, divine/WIS), Mage (d6, ½ BAB, arcane/INT), their gear and slot counts. `character_gen_pathfinder.py` was not available when this was built, so these may differ from it.
 - **Spells.** Nine stand-in spells, one per spell shape the doc describes. Casters know every class spell they have slots for; the "prepare spells at camp" step is not built.
-- **Monsters.** All stat blocks except Orc Raider (from the doc's worked example). Encounter budgets, themes, and the cap of two casters per encounter.
+- **Damage types** (slash / pierce / blunt / claw / bite) on weapons only pick the strike animation; they have no rules effect.
+- **Monsters.** All stat blocks except Orc Raider (Goblin Brute with a club and Cave Ghoul with claws were added to show the blunt and claw strikes) (from the doc's worked example). Encounter budgets, themes, and the cap of two casters per encounter.
 - **Economy.** Starting gold, recruit prices (by level: about 100 / 220 / 380 g), refresh price, loot.
 - **Recruits** are level 1–3 and all use 25 points, so "better" means higher level. Scores stay 10–18 because the doc lists no refund for going below 10.
 - **Feats** are left out (list not designed). The doc's worked-example Fighter has two feats, so this prototype's version of him is 1 lower on attack and Defense.

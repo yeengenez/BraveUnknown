@@ -58,12 +58,27 @@ static func roll_abilities(focus: Array) -> Dictionary:
 	return fallback
 
 
-static func random_name(taken: Array) -> String:
+static func random_name(taken: Array, fem: bool = false) -> String:
+	var firsts: Array[String] = GameData.FIRST_NAMES_F if fem else GameData.FIRST_NAMES_M
 	for attempt in 40:
-		var candidate := "%s %s" % [Dice.pick(GameData.FIRST_NAMES), Dice.pick(GameData.BYNAMES)]
+		var candidate := "%s %s" % [Dice.pick(firsts), Dice.pick(GameData.BYNAMES)]
 		if not taken.has(candidate):
 			return candidate
-	return "%s %s" % [Dice.pick(GameData.FIRST_NAMES), Dice.pick(GameData.BYNAMES)]
+	return "%s %s" % [Dice.pick(firsts), Dice.pick(GameData.BYNAMES)]
+
+
+## A random portrait from the portrait module (res://portraits/), stored as
+## HeroAppearance.to_dict(). body: "m", "f" or "" for random.
+## Classes without an outfit in the module (Mage) borrow the cleric robe,
+## recoloured; see UnitPortrait._apply_tint().
+static func roll_look(class_id: String, body: String = "") -> Dictionary:
+	var outfit := class_id if PortraitLibrary.classes().has(class_id) else "cleric"
+	# Roll straight from the shared generator: re-seeding a fresh generator per
+	# recruit gave correlated looks (most recruits got the same hairstyle).
+	var look := HeroAppearance.roll(Dice.rng, body, outfit).to_dict()
+	if outfit != class_id:
+		look["tint"] = class_id
+	return look
 
 
 static func make(taken_names: Array = [], forced_class: String = "", forced_level: int = 0) -> Unit:
@@ -78,7 +93,8 @@ static func make(taken_names: Array = [], forced_class: String = "", forced_leve
 	unit.default_row = int(loadout["row"])
 	unit.abilities = roll_abilities(loadout["focus"])
 	unit.tactic = DEFAULT_TACTIC.get(unit.class_id, "Balanced")
-	unit.unit_name = random_name(taken_names)
+	unit.look = roll_look(unit.class_id)
+	unit.unit_name = random_name(taken_names, unit.look["body"] == "f")
 	unit.recalc(true)
 	# Better recruits cost more gold: price follows level, with some haggle room.
 	var base: int = GameData.RECRUIT_BASE_COST[unit.level]

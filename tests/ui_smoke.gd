@@ -74,14 +74,33 @@ func _ready() -> void:
 	main.call("show_screen", "Battle")
 	var battle: BattleScreen = main.get("_screens")["Battle"]
 	await _frames(2)
+	battle.get("_speed_picker").select(3)  # 8x
 	battle.start_battle()
 	await _frames(2)
 	expect("battle started", battle.is_fighting(), true)
-	for i in 6:
+	var played := 0
+	for i in 5:
+		if battle.is_fighting():
+			await battle.step_once()
+			played += 1
+	expect("animated turns finish and unlock", battle.is_animating(), false)
+	# Mid-animation screenshot of the next turn at full speed.
+	battle.get("_speed_picker").select(0)
+	if battle.is_fighting():
 		battle.step_once()
-	await _frames(3)
-	await _shot("4_battle")
-	battle.finish_now()
+		await get_tree().create_timer(0.62).timeout
+		await _shot("4_battle")
+		while battle.is_animating():
+			await get_tree().process_frame
+	battle.get("_speed_picker").select(3)
+	# Auto-play runs on its own and stops at the end.
+	if battle.is_fighting():
+		battle.get("_auto_button").button_pressed = true
+		var guard := 0
+		while (battle.is_fighting() or battle.is_animating()) and guard < 3000:
+			await get_tree().process_frame
+			guard += 1
+		expect("auto-play reaches the end", battle.is_fighting(), false)
 	await _frames(3)
 	await _shot("5_battle_end")
 	expect("battle finished", battle.combat.finished, true)

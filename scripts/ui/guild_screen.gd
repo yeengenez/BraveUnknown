@@ -112,14 +112,22 @@ func _offer_card(index: int) -> Control:
 		body.add_child(note)
 		return card
 
-	var top := UIKit.hbox(6)
+	var top := UIKit.hbox(10)
 	body.add_child(top)
+	var face := UnitPortrait.new()
+	face.custom_minimum_size = Vector2(96, 96)
+	face.show_unit(recruit)
+	top.add_child(face)
+	var heading := UIKit.vbox(1)
+	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_child(heading)
 	var name_label := UIKit.label(recruit.unit_name, 16, UIKit.TEXT, true)
 	name_label.clip_text = true
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(name_label)
-	top.add_child(UIKit.label("%d g" % recruit.cost, 16, UIKit.GOLD, true))
-	body.add_child(UIKit.label(recruit.title(), 14, UIKit.ALLY))
+	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	heading.add_child(name_label)
+	heading.add_child(UIKit.label(recruit.title(), 14, UIKit.ALLY))
+	heading.add_child(UIKit.label("%d g" % recruit.cost, 17, UIKit.GOLD, true))
+	heading.add_child(UIKit.label("HP %d · Def %d · Init %s" % [recruit.max_hp, recruit.defense(), GameData.signed(recruit.init_mod)], 12, UIKit.MUTED))
 
 	var scores := GridContainer.new()
 	scores.columns = 6
@@ -140,7 +148,6 @@ func _offer_card(index: int) -> Control:
 		scores.add_child(chip)
 	body.add_child(scores)
 
-	body.add_child(UIKit.label("HP %d   ·   Defense %d   ·   Init %s" % [recruit.max_hp, recruit.defense(), GameData.signed(recruit.init_mod)], 13))
 	body.add_child(UIKit.wrapped(recruit.weapon_text(), 13, UIKit.TEXT))
 	body.add_child(UIKit.wrapped("Armor: " + recruit.armor_text(), 13, UIKit.MUTED))
 	if recruit.caster_type != "":
@@ -163,9 +170,15 @@ func _offer_card(index: int) -> Control:
 
 
 func _roster_row(unit: Unit) -> Control:
-	var row_panel := UIKit.panel(UIKit.PANEL, UIKit.BORDER, 8)
+	var row_panel := UIKit.panel(UIKit.PANEL, UIKit.BORDER, 6)
 	var row := UIKit.hbox(8)
 	row_panel.add_child(row)
+	var face := UnitPortrait.new()
+	face.custom_minimum_size = Vector2(44, 44)
+	face.corner = 4
+	face.crop = "face"
+	face.show_unit(unit)
+	row.add_child(face)
 	var text := UIKit.vbox(0)
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(text)

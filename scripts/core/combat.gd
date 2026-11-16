@@ -29,6 +29,14 @@ var surprise := 0  ## 0 none, 1 party surprises the enemy, -1 party is ambushed
 var retreat_threshold := 0  ## party flees when this many members are Downed (0 = never)
 
 var new_lines: Array[String] = []
+## Structured record of what happened, for the battle screen to animate.
+## One entry per swing / spell / move:
+##   {"type": "attack"|"spell"|"fizzle"|"move"|"hold", "actor": Unit,
+##    "fx": "slash"|"pierce"|"blunt"|"claw"|"bite"|"arrow"|"frost"|"fire"|"force"|"bolt"|"holy"|"heal"|"buff",
+##    "label": String, "ranged": bool,
+##    "impacts": [{"target": Unit, "result": "hit"|"crit"|"miss"|"heal"|"buff",
+##                 "amount": int, "downed": bool, "dead": bool, "revived": bool}]}
+var events: Array = []
 var active: Unit = null
 var last_targets: Array = []
 var _melee_this_round := {}  ## target uid -> Array of attacker uids
@@ -192,6 +200,42 @@ func say(line: String) -> void:
 	new_lines.append(line)
 
 
+func take_events() -> Array:
+	var result := events
+	events = []
+	return result
+
+
+func _event(type: String, actor: Unit, fx: String, label: String, ranged: bool) -> Dictionary:
+	var event := {"type": type, "actor": actor, "fx": fx, "label": label, "ranged": ranged, "impacts": []}
+	events.append(event)
+	return event
+
+
+func _impact(event: Dictionary, target: Unit, result: String, amount: int, hp_before: int) -> void:
+	(event["impacts"] as Array).append({
+		"target": target, "result": result, "amount": amount,
+		"downed": hp_before > 0 and target.hp <= 0 and not target.dead,
+		"dead": target.dead and hp_before > -target.con_score,
+		"revived": hp_before <= 0 and target.hp > 0,
+		"hp_after": target.hp, "dead_after": target.dead,
+	})
+
+
+## Visual flavour for a weapon swing.
+static func weapon_fx(weapon: Dictionary) -> String:
+	if weapon["ranged"]:
+		return "arrow"
+	return String(weapon.get("dtype", "slash"))  # slash | pierce | blunt | claw | bite
+
+
+const SPELL_FX := {
+	"frost_ray": "frost", "arcane_bolt": "bolt", "flame_wave": "fire", "searing_ray": "fire",
+	"force_lance": "force", "holy_spark": "holy", "mend_wounds": "heal", "greater_mend": "heal",
+	"blessing": "buff",
+}
+
+
 func take_new_lines() -> Array[String]:
 	var lines := new_lines
 	new_lines = []
@@ -316,9 +360,11 @@ func _take_turn(unit: Unit) -> void:
 			var body := unit_at(unit.side, unit.row, new_lane)
 			if body != null:
 				body.lane = unit.lane  # a Downed ally lying there is stepped around
+			_event("move", unit, "", "", false)["from_lane"] = unit.lane
 			unit.lane = new_lane
 			say("%s — nobody in reach; side-steps to the %s lane." % [tag(unit), GameData.LANES[unit.lane]])
 		_:
+			_event("hold", unit, "", "", false)
 			say("%s — holds position (%s)." % [tag(unit), action.get("reason", "no target")])
 	unit.has_acted = true
 	unit.hit_since_last_turn = false
@@ -411,7 +457,9 @@ func _attack_roll(unit: Unit, target: Unit, penalty: int) -> void:
 
 	# Natural 1 always misses; natural 20 always hits and threatens.
 	var hit := roll == 20 or (roll != 1 and total >= def_value)
+	var event := _event("attack", unit, weapon_fx(weapon), String(weapon["name"]), is_ranged)
 	if not hit:
+		_impact(event, target, "miss", 0, target.hp)
 		say("%s [color=%s]Miss%s.[/color]" % [head, C_DIM, " (natural 1)" if roll == 1 else ""])
 		return
 	counters["hits"] += 1
@@ -438,7 +486,10 @@ func _attack_roll(unit: Unit, target: Unit, penalty: int) -> void:
 	var math := "%d damage" % damage
 	if unit.damage_bonus != 0:
 		math = "%d %s = %d damage" % [rolled, _signed_term(unit.damage_bonus * multiplier), damage]
-	say("%s%s [color=%s]Hit[/color]: %s. %s" % [head, crit_text, C_GOOD, math, _apply_damage(target, damage)])
+	var hp_before := target.hp
+	var result_text := _apply_damage(target, damage)
+	_impact(event, target, "crit" if multiplier > 1 else "hit", damage, hp_before)
+	say("%s%s [color=%s]Hit[/color]: %s. %s" % [head, crit_text, C_GOOD, math, result_text])
 
 
 func _signed_term(value: int) -> String:
@@ -497,6 +548,7 @@ func _do_cast(unit: Unit, action: Dictionary) -> void:
 		var failure_roll := Dice.d(100)
 		if failure_roll <= unit.spell_failure:
 			counters["spells_lost"] += 1
+			_event("fizzle", unit, SPELL_FX.get(spell_id, "bolt"), "Spell failure", false)["spell"] = spell_id
 			say("%s Armor spell failure %d%%: rolled %d. [color=%s]The spell fizzles.[/color]" % [head, unit.spell_failure, failure_roll, C_BAD])
 			return
 
@@ -509,10 +561,16 @@ func _do_cast(unit: Unit, action: Dictionary) -> void:
 		var why := "engaged" if engaged else "hit since last turn"
 		if total < dc:
 			counters["spells_lost"] += 1
+			_event("fizzle", unit, SPELL_FX.get(spell_id, "bolt"), "Concentration lost", false)["spell"] = spell_id
 			say("%s Concentration (%s) %d %s = %d vs DC %d. [color=%s]The spell is lost.[/color]" % [head, why, roll, _signed_term(unit.caster_level + unit.cast_mod), total, dc, C_BAD])
 			return
 		head += " Concentration (%s) %d %s = %d vs DC %d: holds." % [why, roll, _signed_term(unit.caster_level + unit.cast_mod), total, dc]
 
+	var fx: String = SPELL_FX.get(spell_id, "bolt")
+	var event := {}
+	if kind != "ray":
+		event = _event("spell", unit, fx, String(spell["name"]), true)
+		event["spell"] = spell_id
 	match kind:
 		"ray":
 			_cast_ray(unit, spell_id, action["target"], head)
@@ -520,9 +578,13 @@ func _do_cast(unit: Unit, action: Dictionary) -> void:
 			var target: Unit = action["target"]
 			var dice: Array = spell_damage_dice(spell_id, unit.caster_level)
 			var damage := Dice.roll(dice[0], dice[1]) + int(dice[2])
+			event["count"] = int(dice[0])  # number of bolts, for the animation
 			last_targets = [target]
 			target.last_attacker = unit
-			say("%s Auto-hit on %s: %d damage [color=%s](%s)[/color]. %s" % [head, tag(target), damage, C_DIM, GameData.dice_text(dice[0], dice[1], dice[2]), _apply_damage(target, damage)])
+			var hp_before := target.hp
+			var result_text := _apply_damage(target, damage)
+			_impact(event, target, "hit", damage, hp_before)
+			say("%s Auto-hit on %s: %d damage [color=%s](%s)[/color]. %s" % [head, tag(target), damage, C_DIM, GameData.dice_text(dice[0], dice[1], dice[2]), result_text])
 		"area":
 			var shape: String = spell["shape"]
 			var index: int = action["index"]
@@ -534,20 +596,27 @@ func _do_cast(unit: Unit, action: Dictionary) -> void:
 			for target: Unit in targets:
 				var damage := Dice.roll(dice[0], dice[1]) + int(dice[2])
 				target.last_attacker = unit
+				var hp_before := target.hp
 				lines.append("%d → %s" % [damage, _apply_damage(target, damage)])
+				_impact(event, target, "hit", damage, hp_before)
 			# Resist is TBD in the doc: area damage is not reduced.
 			say("%s Hits the enemy %s (%s each): %s" % [head, where, GameData.dice_text(dice[0], dice[1], dice[2]), " ".join(lines)])
 		"heal":
 			var target: Unit = action["target"]
 			var amount := Dice.roll(int(spell["n"]), int(spell["sides"])) + mini(unit.caster_level, int(spell["cl_cap"]))
 			last_targets = [target]
-			say("%s Heals %s for %d. %s" % [head, tag(target), amount, _apply_heal(target, amount)])
+			var hp_before := target.hp
+			var result_text := _apply_heal(target, amount)
+			_impact(event, target, "heal", target.hp - hp_before, hp_before)
+			say("%s Heals %s for %d. %s" % [head, tag(target), amount, result_text])
 		"buff":
 			var bonus: int = spell["attack"]
 			for ally: Unit in allies(unit):
 				if ally.is_standing():
 					ally.attack_buff = maxi(ally.attack_buff, bonus)
 			last_targets = standing(unit.side)
+			for ally: Unit in last_targets:
+				_impact(event, ally, "buff", bonus, ally.hp)
 			say("%s All allies gain %s attack for this fight." % [head, GameData.signed(bonus)])
 
 
@@ -567,9 +636,15 @@ func _cast_ray(unit: Unit, spell_id: String, target: Unit, head: String) -> void
 	last_targets = [target]
 	var text := "%s Ray at %s.%s Roll %d %s = %d vs %s %d." % [head, tag(target), note, roll, _signed_term(bonus), total, defense[1], def_value]
 	var hit := roll == 20 or (roll != 1 and total >= def_value)
+	var event := _event("spell", unit, SPELL_FX.get(spell_id, "bolt"), String(GameData.SPELLS[spell_id]["name"]), true)
+	event["spell"] = spell_id
 	if not hit:
+		_impact(event, target, "miss", 0, target.hp)
 		say("%s [color=%s]Miss.[/color]" % [text, C_DIM])
 		return
 	var dice: Array = spell_damage_dice(spell_id, unit.caster_level)
 	var damage := maxi(1, Dice.roll(dice[0], dice[1]) + int(dice[2]))
-	say("%s [color=%s]Hit[/color]: %d damage [color=%s](%s)[/color]. %s" % [text, C_GOOD, damage, C_DIM, GameData.dice_text(dice[0], dice[1], dice[2]), _apply_damage(target, damage)])
+	var hp_before := target.hp
+	var result_text := _apply_damage(target, damage)
+	_impact(event, target, "hit", damage, hp_before)
+	say("%s [color=%s]Hit[/color]: %d damage [color=%s](%s)[/color]. %s" % [text, C_GOOD, damage, C_DIM, GameData.dice_text(dice[0], dice[1], dice[2]), result_text])

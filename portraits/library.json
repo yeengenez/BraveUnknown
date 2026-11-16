@@ -1,0 +1,46 @@
+{
+ "canvas": [
+  200,
+  200
+ ],
+ "body_types": [
+  "m",
+  "f"
+ ],
+ "bodies": [
+  "soldier",
+  "archer",
+  "cleric"
+ ],
+ "faces": [
+  "neutral",
+  "smile",
+  "stern",
+  "grin",
+  "sleepy"
+ ],
+ "details": [
+  "scar"
+ ],
+ "hair": {
+  "m": [
+   "messy",
+   "sidepart",
+   "spiky",
+   "crewcut",
+   "slicked",
+   "shaggy",
+   "ponytail",
+   "long"
+  ],
+  "f": [
+   "long",
+   "ponytail",
+   "bob",
+   "braids",
+   "wavy",
+   "pixie",
+   "bun"
+  ]
+ }
+}

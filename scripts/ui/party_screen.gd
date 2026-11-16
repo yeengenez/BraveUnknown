@@ -188,6 +188,25 @@ func _roster_button(unit: Unit) -> Button:
 		entry.add_theme_color_override("font_color", UIKit.ALLY)
 	entry.tooltip_text = UIKit.sheet(unit)
 	entry.pressed.connect(_select.bind(unit))
+	# Portrait inside the button, text pushed to its right.
+	entry.custom_minimum_size = Vector2(0, 50)
+	var styles := {
+		"normal": UIKit.box(UIKit.PANEL_ALT, UIKit.BORDER, 1, 5, 8),
+		"hover": UIKit.box(Color("#353c49"), UIKit.GOLD.darkened(0.3), 1, 5, 8),
+		"pressed": UIKit.box(Color("#3c3320"), UIKit.GOLD, 1, 5, 8),
+	}
+	styles["hover_pressed"] = styles["pressed"]
+	for state: String in styles:
+		var box: StyleBoxFlat = styles[state]
+		box.content_margin_left = 54
+		entry.add_theme_stylebox_override(state, box)
+	var face := UnitPortrait.new()
+	face.corner = 4
+	face.crop = "face"
+	face.position = Vector2(6, 5)
+	face.size = Vector2(40, 40)
+	face.show_unit(unit, not unit.is_standing())
+	entry.add_child(face)
 	return entry
 
 
@@ -222,8 +241,25 @@ func _rebuild_detail() -> void:
 		_detail.add_child(UIKit.wrapped("Select someone to see their sheet and set their tactics.", 13))
 		return
 	var unit := _selected
-	_detail.add_child(UIKit.label(unit.unit_name, 18, UIKit.TEXT, true))
-	_detail.add_child(UIKit.label(unit.title(), 14, UIKit.ALLY))
+	var header := UIKit.hbox(10)
+	_detail.add_child(header)
+	var face := UnitPortrait.new()
+	face.custom_minimum_size = Vector2(150, 150)
+	face.show_unit(unit, not unit.is_standing())
+	header.add_child(face)
+	var heading := UIKit.vbox(4)
+	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(heading)
+	var name_label := UIKit.label(unit.unit_name, 18, UIKit.TEXT, true)
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	heading.add_child(name_label)
+	heading.add_child(UIKit.label(unit.title(), 14, UIKit.ALLY))
+	var reroll := UIKit.button("New look", "Roll a new random portrait for this adventurer. Stats do not change.")
+	reroll.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	reroll.pressed.connect(func() -> void:
+		unit.reroll_look()
+		Game.changed.emit())
+	heading.add_child(reroll)
 
 	var scores := GridContainer.new()
 	scores.columns = 3
