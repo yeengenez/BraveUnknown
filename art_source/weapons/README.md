@@ -27,6 +27,9 @@ versions; the user rejected the code-drawn shield and first axe).
 
 ## Aseprite
 
+`aseprite/weapons.aseprite` and `aseprite/merge_examples.aseprite` are the files built on the user's PC (2026-11-17,
+checked: every layer and frame matches the merge script pixel for pixel).
+
 `make_aseprite_pack.py` writes `aseprite/` + layer PNGs: `build_weapons.lua` builds `weapons.aseprite` (one layer
 per weapon, slices `<weapon>_grip` with the hand point as pivot) and `merge_examples.aseprite` (one tagged frame
 per test; layers squares, weapon_back, body, weapon_front, fists) and exports PNGs. On the user's PC:
