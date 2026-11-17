@@ -72,7 +72,13 @@ def merge(key, loadout):
     elif loadout in ('greataxe', 'longspear'):   # both hands on the haft: anchor the back hand, aim at the front hand
         (fx, fy), (bx, by) = rig['front'], rig['back']
         deg = math.degrees(math.atan2(fy - by, fx - bx))
-        place(over, loadout, rig['back'], deg, grip=W[loadout]['grip2']); fists = ['front', 'back']
+        if loadout == 'greataxe':                # painted weapon: drawn at the angle, not pixel-rotated
+            import render_weapons as R
+            img, g = R.greataxe(deg, R.AXE_GRIP2)
+            paste(over, img, CELL + rig['back'][0] - g[0], TOP + rig['back'][1] - g[1])
+        else:
+            place(over, loadout, rig['back'], deg, grip=W[loadout]['grip2'])
+        fists = ['front', 'back']
     out = canvas.copy(); paste(out, under, 0, 0)
     paste(out, body, CELL, TOP); paste(out, over, 0, 0)
     for f in fists:
@@ -88,7 +94,7 @@ if __name__ == '__main__':
     strips = []
     for key, lo in TESTS:
         img = merge(key, lo)
-        pass  # Image.fromarray(img).save(f'merged_{key.replace("/", "_")}_{lo.replace("+", "_")}.png')
+        Image.fromarray(img).save(f'merged_{key.replace("/", "_")}_{lo.replace("+", "_")}.png')
         bg = Image.new('RGBA', (CELL * 3, CH + TOP + 16), (232, 226, 210, 255)); d = ImageDraw.Draw(bg)
         for i in range(3):
             d.rectangle([i * CELL, TOP + 120, (i + 1) * CELL - 1, CH + TOP - 2], fill=(212, 202, 178) if i == 1 else (222, 214, 194), outline=(170, 160, 140))
@@ -97,4 +103,4 @@ if __name__ == '__main__':
     cols = 2; sw, sh = strips[0].size
     sheet = Image.new('RGBA', (sw * cols, sh * ((len(strips) + 1) // cols)), (255, 255, 255, 255))
     for i, s in enumerate(strips): sheet.alpha_composite(s, ((i % cols) * sw, (i // cols) * sh))
-    sheet.save('previews/weapon_merge_test.png'); print(sheet.size)
+    sheet.save('weapon_merge_test.png'); print(sheet.size)

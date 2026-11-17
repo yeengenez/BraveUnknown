@@ -1,27 +1,34 @@
 # Weapon layers (test: sword, shield, great axe, longspear)
 
 Weapons are separate layers merged onto the weapon-less battle sprite bodies (`../battle_sprites/`).
+**Rule from the user (2026-11-17): never generate weapons with Canva.** The sword and shield below were cut
+from images made earlier (the first layer test), which the user picked.
 
-- `pixel_weapons.py` draws each weapon pixel by pixel on one shared 15-colour palette, lying flat with the
-  point to the right. The dark outline is added automatically. Each weapon has a grip point (`grip`, and
-  `grip2` for the second hand on two-handed weapons). Output: `px_<weapon>.png`.
-- `rig.json` holds each body's fist centres (`front` = toward the enemy, `back`) and the blade angle for a
-  one-handed weapon.
-- `merge.py` rotates a weapon with a pixel-art-safe method (scale2x ×3, rotate, sample) and places it by
-  its grip on the fists. Layer order, back to front: weapon_back, body, weapon_front, fists (the body's fist
-  pixels redrawn over the handle).
-  - Sword alone: front hand, over the body.
-  - Sword + shield: shield on the front arm (hides the front fist), sword in the raised back hand, behind the body.
-  - Two-handed and reach: the back hand anchors the weapon, aimed through the front hand.
-- `previews/weapon_merge_test.png`: every test on a three-square strip. The body stands in the middle
-  square; the longspear reaches well into the next square (about 105 px past the cell edge).
+Current set (`previews/weapon_merge_test2.png`):
+
+| Weapon | Source | How |
+|---|---|---|
+| Longsword | Cut from first test image A (`cut_kept.py` → `k_longsword.png`) | Grip replaced by a clean leather grip; hand point right under the guard |
+| Kite shield (fleur-de-lis) | Cut from image A (`../battle_sprites/first_layer_test/layers/shield_kite.png`) | Placed by the front-fist offset |
+| Great axe | Painted in code (`render_weapons.py`): lit at 4x, palette sampled from the bodies, tinted outline | Drawn directly at the held angle (no pixel rotation) |
+| Longspear | Pixel art in code (`pixel_weapons.py`) | Rotated with a pixel-art-safe method |
+
+Holds (`merge2.py`):
+- **Sword alone, front hand:** steep (−66°) like the rapier in image B, guard just above the fist. The body's
+  front fist is a forward punch, so a handle can only pass through it near-vertically.
+- **Sword + shield:** sword raised in the back hand behind the head (−78°), shield on the front arm.
+- **Great axe and longspear:** both drawn **behind the body**, aimed from the back fist through the front fist, so
+  the arms and fists wrap over the shaft (drawn in front, the shaft looked like it pierced the forearm).
+- Long weapons cross into the next formation square; each test is a three-square strip with the body in the middle.
+
+Other files: `rig.json` (fist centres per body), `merge.py` (shared helpers, first test), `k_rapier.png` (rapier
+cut from image B; its guard ring is tangled with the glove, not used yet), `pt_*.png`, `px_*.png` (code-drawn
+versions; the user rejected the code-drawn shield and first axe).
 
 ## Aseprite
 
-`aseprite/build_weapons.lua` builds `weapons.aseprite` (one layer per weapon, slices `<weapon>_grip` /
-`<weapon>_grip2` whose pivot is the hand point) and `merge_examples.aseprite` (one tagged frame per test;
-layers squares, weapon_back, body, weapon_front, fists), and exports PNGs to `export/`. It reads the layer
-PNGs written next to it (`layers/`). On the user's PC it lives in `Documents\BraveUnknownArt\weapons`, run
-from Aseprite via File > Scripts > "Brave Unknown - build weapons" (`launcher.lua` in the Aseprite scripts folder).
-
-Run from this folder: `python3 pixel_weapons.py && python3 merge.py`
+`make_aseprite_pack.py` writes `aseprite/` + layer PNGs: `build_weapons.lua` builds `weapons.aseprite` (one layer
+per weapon, slices `<weapon>_grip` with the hand point as pivot) and `merge_examples.aseprite` (one tagged frame
+per test; layers squares, weapon_back, body, weapon_front, fists) and exports PNGs. On the user's PC:
+`Documents\BraveUnknownArt\weapons`, run from Aseprite via File > Scripts > "Brave Unknown - build weapons"
+(`launcher.lua` in the Aseprite scripts folder).

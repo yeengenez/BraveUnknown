@@ -104,13 +104,14 @@ def longspear():
 WEAPONS = {}
 def build():
     s, grip = sword(); WEAPONS['sword'] = dict(img=s, grip=grip)
-    sh, grip = shield(); WEAPONS['shield'] = dict(img=sh, grip=grip)
-    a, front, back = greataxe(); a = a[::-1].copy(); fl = lambda p: (p[0], a.shape[0] - 1 - p[1])   # edge down, so it faces the enemy when raised
-    WEAPONS['greataxe'] = dict(img=a, grip=fl(front), grip2=fl(back))
+    import render_weapons as R                       # shield and great axe: painted renders (render_weapons.py)
+    sh, grip = R.shield(); WEAPONS['shield'] = dict(img=sh, grip=grip)
+    a, front, back = R.greataxe(); WEAPONS['greataxe'] = dict(img=a, grip=front, grip2=back)
     sp, front, back = longspear(); WEAPONS['longspear'] = dict(img=sp, grip=front, grip2=back)
     return WEAPONS
 
 def to_rgba(idx):
+    if idx.ndim == 3: return Image.fromarray(idx)   # already RGBA (painted weapons)
     out = np.zeros(idx.shape + (4,), np.uint8)
     for k, (_, c) in PAL.items(): out[idx == k] = (*c, 255)
     return Image.fromarray(out)
@@ -126,4 +127,4 @@ if __name__ == '__main__':
     Z = 4; ims = [to_rgba(W[n]['img']) for n in ['sword', 'shield', 'greataxe', 'longspear']]
     sheet = Image.new('RGBA', (240 * Z + 20, sum(i.height * Z + 12 for i in ims) + 10), (220, 228, 214, 255)); y = 8
     for im in ims: sheet.alpha_composite(im.resize((im.width * Z, im.height * Z), Image.NEAREST), (8, y)); y += im.height * Z + 12
-    sheet.save('/tmp/claude-0/-home-claude/3bc4a77f-e6f0-506e-b99c-85cb849449fd/scratchpad/wp/px_zoom.png')
+    sheet.save('previews/px_zoom.png')

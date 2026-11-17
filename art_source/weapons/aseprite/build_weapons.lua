@@ -7,38 +7,16 @@ local dir = app.fs.filePath(debug.getinfo(1, "S").source:sub(2))
 local function P(...) return app.fs.joinPath(dir, ...) end
 app.fs.makeDirectory(P("export"))
 
-local PALETTE = {
-  {34,30,38},
-  {78,84,98},
-  {128,136,150},
-  {180,188,200},
-  {234,238,244},
-  {70,42,26},
-  {108,68,38},
-  {148,98,56},
-  {54,32,24},
-  {100,56,34},
-  {150,104,32},
-  {216,172,66},
-  {28,46,108},
-  {46,80,166},
-  {90,128,212}
-}
-local function setPalette(spr)
-  local p = Palette(#PALETTE + 1)
-  p:setColor(0, Color{r=0, g=0, b=0, a=0})
-  for i, c in ipairs(PALETTE) do p:setColor(i, Color{r=c[1], g=c[2], b=c[3], a=255}) end
-  spr:setPalette(p)
-end
+local function setPalette(spr) end   -- colours come from the layer images (body palette)
 
 ------------------------------------------------------------------ 1. weapons.aseprite
 -- One layer per weapon, lying flat with the point to the right. Each weapon has a slice
 -- "<name>_grip" whose pivot is the hand position (and "<name>_grip2" for the second hand).
 local WEAPONS = {
-  {name="sword", w=68, h=13, y=2, grip={12,6}},
-  {name="shield", w=28, h=38, y=21, grip={14,18}},
-  {name="greataxe", w=120, h=36, y=65, grip={18,5}, grip2={9,5}},
-  {name="longspear", w=242, h=11, y=107, grip={181,5}, grip2={19,5}}
+  {name="sword", w=45, h=74, y=2, grip={10,54}},
+  {name="shield", w=35, h=71, y=82, grip={9,22}},
+  {name="greataxe", w=122, h=48, y=159, grip={21,9}, grip2={12,9}},
+  {name="longspear", w=242, h=11, y=213, grip={181,5}, grip2={19,5}}
 }
 local W, H = 0, 0
 for _, w in ipairs(WEAPONS) do W = math.max(W, w.w + 4); H = w.y + w.h + 2 end
