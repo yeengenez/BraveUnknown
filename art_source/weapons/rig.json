@@ -1,0 +1,13 @@
+{
+ "_note": "Fist centres in body pixels (133x200 body). front = fist toward the enemy; back = the other fist. angle_1h = blade angle for a weapon alone in the front fist (degrees, 0 = pointing right, negative = up).",
+ "soldier/m_1h":   {"front": [105, 77], "back": [41, 45], "angle_1h": -55},
+ "soldier/f_1h":   {"front": [101, 73], "back": [43, 45], "angle_1h": -55},
+ "soldier/m_2h":   {"front": [109, 82], "back": [99, 93]},
+ "soldier/f_2h":   {"front": [101, 80], "back": [95, 86]},
+ "soldier/m_reach":{"front": [113, 90], "back": [24, 104]},
+ "soldier/f_reach":{"front": [114, 87], "back": [21, 109]},
+ "brawler/m_2h":   {"front": [109, 82], "back": [100, 92]},
+ "brawler/f_2h":   {"front": [100, 80], "back": [93, 84]},
+ "acolyte/m_reach":{"front": [113, 93], "back": [24, 106]},
+ "acolyte/f_reach":{"front": [113, 88], "back": [22, 109]}
+}
