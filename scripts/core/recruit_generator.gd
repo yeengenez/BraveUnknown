@@ -69,8 +69,8 @@ static func random_name(taken: Array, fem: bool = false) -> String:
 
 ## A random portrait from the portrait module (res://portraits/), stored as
 ## HeroAppearance.to_dict(). body: "m", "f" or "" for random.
-## Classes without an outfit in the module (Mage) borrow the cleric robe,
-## recoloured; see UnitPortrait._apply_tint().
+## Every class now has its own outfit. A class without one would borrow the
+## cleric robe, recoloured; see UnitPortrait._apply_tint().
 static func roll_look(class_id: String, body: String = "") -> Dictionary:
 	var outfit := class_id if PortraitLibrary.classes().has(class_id) else "cleric"
 	# Roll straight from the shared generator: re-seeding a fresh generator per

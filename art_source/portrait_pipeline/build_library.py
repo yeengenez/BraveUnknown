@@ -71,11 +71,20 @@ def skin_mask(im, fg, seed=(92, 118)):
     # grow into the soft shading and line pixels around the skin, so no original-coloured fringe is left behind
     return ndi.binary_dilation(core, iterations=6, mask=huefam(h) & fg & zone) | core
 
+BARE_SKIN = {'brawler'}          # outfits that show arms or chest: their skin must follow the skin ramp too
+def body_skin(im, fg):
+    """Bare arms, shoulders and chest: big, lit skin-tone areas below the chin, grown a little into their shading."""
+    h = hsv(im)
+    tone = (h[..., 0] >= 4) & (h[..., 0] <= 23) & (h[..., 1] >= 50) & (h[..., 1] <= 190) & (h[..., 2] >= 120) & fg
+    tone[:100] = False
+    core = big(tone, 150)
+    return ndi.binary_dilation(core, iterations=3, mask=huefam(h) & fg & (h[..., 2] >= 70)) | core
+
 # value-map normalisation ranges (fixed so every part shades consistently)
 SKIN_LO, SKIN_HI = 30.0, 235.0
 def skin_value(im): return (lum(im) - SKIN_LO) / (SKIN_HI - SKIN_LO) * 255
 
-meta = {'canvas': [S, S], 'body_types': ['m', 'f'], 'bodies': ['soldier', 'archer', 'cleric'],
+meta = {'canvas': [S, S], 'body_types': ['m', 'f'], 'bodies': ['soldier', 'archer', 'cleric', 'mage', 'brawler', 'rogue'],
         'faces': ['neutral', 'smile', 'stern', 'grin', 'sleepy'], 'details': ['scar']}
 FACE_BOX = np.zeros((S, S), bool); FACE_BOX[56:112, 76:140] = True
 
@@ -115,6 +124,7 @@ def build_set(sex):
     for cls in meta['bodies']:
         im = fit_head(load(f'{sex}/body_{cls}'), base_im, base_sk, tpl)
         fg = foreground(im); sk = skin_mask(im, fg)
+        if cls in BARE_SKIN: sk |= body_skin(im, fg)
         save_rgba(f'{sex}_body_{cls}_fixed', im, fg & ~sk)
         save_value(f'{sex}_body_{cls}_skin', skin_value(im), sk)
     variants = {n: load(f'{sex}/face_{n}', tpl) for n in meta['faces'][1:]}

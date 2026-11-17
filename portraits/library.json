@@ -10,7 +10,10 @@
  "bodies": [
   "soldier",
   "archer",
-  "cleric"
+  "cleric",
+  "mage",
+  "brawler",
+  "rogue"
  ],
  "faces": [
   "neutral",
