@@ -34,7 +34,8 @@
   dark line), and each canvas pixel takes the class covering most of it, so the eyes come out as clean pixel art.
   Output per style: `<sex>_eyes_<style>_fixed.png` (white #FAF8F6 and line #1E161A, never tinted) and
   `<sex>_eyes_<style>_iris.png` (grayscale, tinted with the 6 eye ramps). Stray pixels removed, far eye clipped to the
-  face outline. `preview_eyes_<sex>.png`, `eyes_fit_<sex>.json`.
+  face outline. `preview_eyes_<sex>.png`, `eyes_fit_<sex>.json`. `clean_eye_creases.py` then removes eyelid-crease
+  lines above the male eyes (they read as a second pair of eyebrows); female eyes keep their separate lash strokes.
   Male: neutral_almond, sharp_narrow, heavy_lidded, round_youthful, hooded_stern, tired_droopy, upturned_fierce,
   downturned_gentle, deep_set_brooding, wide_alert, half_closed_calm, narrowed_squint.
   Female: neutral_almond, large_round, cat_eye, doe, sleepy, sharp_narrow, long_lashed_soft, hooded, wide_bright,
