@@ -11,7 +11,21 @@ function M.here()
 end
 
 M.DIR = M.here()
+-- PNG folder: one folder up (when run from the repo), or the path written in portraits_path.txt next to the
+-- scripts (when the scripts were copied into Aseprite's scripts folder).
 M.SRC = app.fs.joinPath(M.DIR, "..")
+if not app.fs.isFile(app.fs.joinPath(M.SRC, "m_head_skin.png")) then
+  local f = io.open(app.fs.joinPath(M.DIR, "portraits_path.txt"), "r")
+  if f then
+    local p = f:read("*l"); f:close()
+    if p then M.SRC = p:gsub("^%s+", ""):gsub("[%s\\/]+$", "") end
+  end
+end
+if not app.fs.isFile(app.fs.joinPath(M.SRC, "m_head_skin.png")) then
+  error("Portrait PNGs not found. Put the full path of art_source/new_art/portraits in portraits_path.txt next to this script.")
+end
+-- .aseprite files are kept with the PNGs, in an "aseprite" subfolder
+M.DIR = app.fs.joinPath(M.SRC, "aseprite")
 M.SEXES = { "m", "f" }
 M.CLASSES = { "soldier", "archer", "cleric", "mage", "warrior", "rogue" }   -- cleric = Acolyte
 

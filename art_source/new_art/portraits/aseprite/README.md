@@ -1,11 +1,11 @@
 # Editing portrait parts in Aseprite
 
 1. `git pull` the `art-source` branch.
-2. Aseprite: **File > Scripts > Open Scripts Folder**, and copy this `aseprite` folder into it
-   (or keep it here and run the scripts with `Aseprite -b --script <file>`; they find the PNGs one folder up
-   from where the script file is, so if you copy the folder, also copy `../*.png`, or better: add this folder's
-   path as an extra scripts folder in Aseprite's preferences).
-3. Run **build_portrait_parts**. It creates, next to the scripts:
+2. In Aseprite: **File > Scripts > Open Scripts Folder**. Copy the three `.lua` files from this folder into it.
+   In that scripts folder, create a text file `portraits_path.txt` with one line: the full path of your
+   `art_source/new_art/portraits` folder, e.g. `C:\Users\you\BraveUnknown\art_source\new_art\portraits`.
+   Then **File > Scripts > Rescan Scripts Folder**. (Running from the repo with `Aseprite -b --script` needs no path file.)
+3. Run **build_portrait_parts**. It creates, in `art_source/new_art/portraits/aseprite/`:
 
    | File | Frames (tags) | Layers (bottom to top) |
    |---|---|---|
