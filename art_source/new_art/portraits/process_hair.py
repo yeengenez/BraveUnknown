@@ -52,6 +52,14 @@ EAR = {
 }
 
 
+# Skin that stays visible under every hairstyle: face below the hairline, the neck and the nape (the ear has its own
+# mask). Anything else on the base head is scalp; styles listed in FILL_BALD get their bald scalp filled with hair.
+FACE = {
+    'm': [(85, 84), (91, 67), (110, 61), (132, 58), (160, 58), (160, 200), (40, 200), (40, 112), (68, 108), (86, 100)],
+}
+FILL_BALD = {'m': {'sidepart', 'spiky', 'crewcut', 'slicked', 'shaggy', 'ponytail', 'long', 'topknot', 'knight_cut'}}
+
+
 def ear_mask(poly):
     from PIL import ImageDraw
     im = Image.new('L', (200, 200), 0)
@@ -59,7 +67,7 @@ def ear_mask(poly):
     return np.asarray(im).astype(bool)
 
 
-def attach(img, B, mann, ear_poly, style):
+def attach(img, B, mann, ear_poly, style, sex):
     """Make the hair sit cleanly on the base head:
     1. ear: if the style left the mannequin's ear visible, the base ear is cut out of the hair (ear in front);
        if the style covered the ear, the hair stays over it.
@@ -80,6 +88,15 @@ def attach(img, B, mann, ear_poly, style):
         idx = ndi.distance_transform_edt(~hair, return_distances=False, return_indices=True)
         val[gap] = val[idx[0][gap], idx[1][gap]]
         hair = hair | gap
+    # bald scalp above the hairline / behind the ear -> nearest hair
+    bald = 0
+    if style in FILL_BALD.get(sex, ()) and sex in FACE:
+        scalp = B & ~ear_mask(FACE[sex]) & ~E & ~hair
+        bald = int(scalp.sum())
+        if bald:
+            idx = ndi.distance_transform_edt(~hair, return_distances=False, return_indices=True)
+            val[scalp] = val[idx[0][scalp], idx[1][scalp]]
+            hair = hair | scalp
     # outline against visible skin
     skin = B & ~hair
     edge = hair & ndi.binary_dilation(skin, structure=[[0, 1, 0], [1, 1, 1], [0, 1, 0]])
@@ -88,7 +105,7 @@ def attach(img, B, mann, ear_poly, style):
     for c in range(3): out[..., c] = np.where(hair, val, 0).astype(np.uint8)
     out[..., 3] = np.where(hair, 255, 0)
     print(f'  {style}: ear {"covered" if ear_hidden >= 0.5 else "in front"} ({ear_hidden:.0%} under hair), '
-          f'{int(gap.sum())} gap px filled')
+          f'{int(gap.sum())} gap px, {bald} bald scalp px filled')
     return out
 
 
@@ -189,7 +206,7 @@ def main(sex):
         img = np.zeros((200, 200, 4), np.uint8)
         for c in range(3): img[..., c] = gray
         img[..., 3] = np.where(wm > 0.45, 255, 0)
-        img = attach(img, B, warp(Cmm, best) > 0.5, EAR[sex], style)
+        img = attach(img, B, warp(Cmm, best) > 0.5, EAR[sex], style, sex)
         fits[style] = dict(fit, cost_before=int(cost(p0)), cost_after=int(cost(best)))
         Image.fromarray(img).save(os.path.join(HERE, f'{sex}_hair_{style}.png'))
         out[style] = img

@@ -15,7 +15,9 @@
   rotation, shift; `hair_fit_m.json`) so the mannequin lies on the base head and no bald skull shows past the hair.
   Then each style is re-cut around the base head's own ear (polygon `EAR` in the script, traced on the head): the ear
   sits in front of the hair unless the style covers it, small skull gaps are filled with the nearest hair, and a
-  1-px dark line is drawn where hair meets skin. Output `m_hair_<style>.png`: 200x200 **hair value maps**
+  1-px dark line is drawn where hair meets skin. For the styles in `FILL_BALD` (user's list: sidepart, spiky,
+  crewcut, slicked, shaggy, ponytail, long, topknot, knight_cut) all bald scalp above the hairline `FACE` and
+  behind the ear is filled with the nearest hair. Output `m_hair_<style>.png`: 200x200 **hair value maps**
   (tinted with the 10 hair ramps). Styles: messy, sidepart, spiky, crewcut, slicked, shaggy, ponytail, long
   (the game's existing 8) + topknot, braided_mohawk, wild_mane, knight_cut (new).
   `preview_hair_m.png`: each style tinted on the base head, then the raw value maps.
