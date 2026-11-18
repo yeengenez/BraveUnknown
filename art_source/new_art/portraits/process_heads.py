@@ -16,7 +16,7 @@ from scipy import ndimage as ndi
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, '..', '..', '..')
-SKULL_TOP, CHIN, CX = 20, 111, 99          # legacy head placement on the 200x200 canvas
+SKULL_TOP, CHIN, CX = 34, 125, 99          # skull top y=34 leaves room for tall hair (14 px lower than legacy)
 
 
 def cut(g, x0, x1):

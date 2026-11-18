@@ -5,8 +5,16 @@
 - `process_heads.py` - cuts each head out of the glow background and writes the game layers.
 - `m_head_skin.png`, `f_head_skin.png` - 200x200 **skin value maps** (grayscale, the game tints them with the
   5 skin ramps in `portraits/palettes.json`). Same convention as the legacy `*_skin.png` parts: outline kept as the
-  darkest values, mid skin ~204, skull top y=20, chin y~111, centred x~99, so they sit on the existing bodies.
+  darkest values, mid skin ~204, skull top y=34, chin y~125, centred x~99 (14 px lower than the legacy heads so tall hair fits inside the canvas; new bodies must use this placement).
   Both heads use one scale (set by the male head), so the female head is slightly smaller.
 - `preview_heads.png` - both heads in all 5 skin tones, and over the legacy Soldier bust.
+
+- `source/hair_m_sheet.png` + `process_hair.py m` - 12 male hairstyles (ChatGPT sheet: grayscale hair on a green
+  mannequin). Each style is cut out, the mannequin and its outline removed, scaled and placed on `m_head_skin.png`
+  by matching the mannequin's ear, face front and chin. Output `m_hair_<style>.png`: 200x200 **hair value maps**
+  (tinted with the 10 hair ramps). Styles: messy, sidepart, spiky, crewcut, slicked, shaggy, ponytail, long
+  (the game's existing 8) + topknot, braided_mohawk, wild_mane, knight_cut (new).
+  `preview_hair_m.png`: each style tinted on the base head, then the raw value maps.
+- Female hair: same script with `f` once `source/hair_f_sheet.png` exists.
 
 Not yet in the game: the faces (eyes, brows, mouth per expression) and hair still have to be drawn for these heads.
