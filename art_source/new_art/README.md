@@ -47,5 +47,10 @@
   Layer order for the new art: head skin -> body skin -> body fixed -> eyes -> hair. `preview_portraits.png` shows
   full assembled portraits (head, body, eyes, hair, varied skin/hair/eye colours).
 
+- `source/brows_<m|f>_sheet.png` + `process_brows.py m|f` - eyebrows for 6 expressions (neutral, smile, stern, grin,
+  sleepy, worried), drawn in red on `templates/face_template_<sex>.png`. Output `<sex>_brows_<expr>.png`: grayscale,
+  **tinted with the hair ramp**. Aligned to the base head, then shifted so the template eyes sit on the base eyes;
+  far brow clipped to the face. Layer order: ... eyes -> brows -> hair. `preview_brows_<sex>.png`.
+
 Not yet in the game: eyebrows, nose and mouth (expressions) still have to be drawn; the game's `library.json` and
 `HeroPortrait` need the new layer names (eyes as their own layer, extra hairstyles) when this art goes in.
