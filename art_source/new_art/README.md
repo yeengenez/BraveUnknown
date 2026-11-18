@@ -52,5 +52,12 @@
   **tinted with the hair ramp**. Aligned to the base head, then shifted so the template eyes sit on the base eyes;
   far brow clipped to the face. Layer order: ... eyes -> brows -> hair. `preview_brows_<sex>.png`.
 
-Not yet in the game: eyebrows, nose and mouth (expressions) still have to be drawn; the game's `library.json` and
-`HeroPortrait` need the new layer names (eyes as their own layer, extra hairstyles) when this art goes in.
+- `source/mouth_<m|f>_sheet.png` + `process_mouths.py m|f` - mouths for the same 6 expressions, placed like the brows.
+  Output `<sex>_mouth_<expr>.png`: fixed colours (line #1E161A, teeth #FAF8F6, inside #6E282A), never tinted.
+  `source/mouth_alt_sheet.png` is an unused alternative male sheet. `preview_mouths.png`.
+- `preview_full.py` -> `preview_full.png`: complete portraits from every layer with random looks.
+  Full layer order: head skin -> body skin -> body -> eyes -> iris -> brows -> mouth -> hair.
+
+Not yet in the game: all portrait layers exist now, but the game's `library.json` and `HeroPortrait` still use the
+legacy parts. Switching needs the new layer names and order (separate eyes, brows tinted by hair, mouths, 6
+expressions, 12 hairstyles per sex, new head placement).

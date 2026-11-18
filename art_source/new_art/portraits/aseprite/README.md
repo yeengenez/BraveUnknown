@@ -12,9 +12,11 @@
    | `m_hair.aseprite`, `f_hair.aseprite` | one per hairstyle | head, hair |
    | `m_eyes.aseprite`, `f_eyes.aseprite` | one per eye pair | head (locked), eyes, iris |
    | `m_bodies.aseprite`, `f_bodies.aseprite` | one per class | head (locked), body_skin, body |
+   | `m_brows.aseprite`, `f_brows.aseprite` | one per expression | head (locked), brows |
+   | `m_mouth.aseprite`, `f_mouth.aseprite` | one per expression | head (locked), mouth |
 
-4. Edit. **head, hair, iris and body_skin are gray value maps** (the game tints them with skin / hair / eye colours):
-   keep them gray, black = deepest shadow, white = highlight. **eyes** and **body** are final colours.
+4. Edit. **head, hair, iris, body_skin and brows are gray value maps** (the game tints them with skin / hair / eye colours):
+   keep them gray, black = deepest shadow, white = highlight. **eyes**, **body** and **mouth** are final colours.
    The head is only editable in the hair file (it is exported from there).
 5. Save the .aseprite files, run **export_portrait_parts**. Every editable layer of every tagged frame is written
    back to its PNG (`m_hair_spiky.png`, `f_eyes_doe_iris.png`, `m_body_warrior_skin.png`, ...).

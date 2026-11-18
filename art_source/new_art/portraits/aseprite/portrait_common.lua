@@ -60,8 +60,24 @@ M.PARTS = {
       if layer == "body_skin" then return sex .. "_body_" .. style .. "_skin.png" end
     end,
   },
+  brows = {
+    pattern = "^(%a)_brows_(.+)%.png$",
+    layers = { "head", "brows" },
+    ref = { head = true },
+    file = function(sex, style, layer)
+      if layer == "brows" then return sex .. "_brows_" .. style .. ".png" end
+    end,
+  },
+  mouth = {
+    pattern = "^(%a)_mouth_(.+)%.png$",
+    layers = { "head", "mouth" },
+    ref = { head = true },
+    file = function(sex, style, layer)
+      if layer == "mouth" then return sex .. "_mouth_" .. style .. ".png" end
+    end,
+  },
 }
-M.ORDER = { "hair", "eyes", "bodies" }
+M.ORDER = { "hair", "eyes", "bodies", "brows", "mouth" }
 
 -- styles of one part for one sex, found from the PNG files (bodies keep the class order)
 function M.styles(part, sex)
