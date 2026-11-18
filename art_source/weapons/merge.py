@@ -4,9 +4,9 @@ import json, math, numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 from pixel_weapons import build, to_rgba
-import os
-B = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'battle_sprites')
-RIG = json.load(open('rig.json')); W = build()
+import os as _os
+B = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', 'battle_sprites')
+RIG = json.load(open(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'rig.json'))); W = build()
 CELL, CH, TOP = 133, 200, 70          # square width, body height, extra room above for raised weapons
 
 def body_rgba(key):

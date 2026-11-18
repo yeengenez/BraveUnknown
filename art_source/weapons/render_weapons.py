@@ -4,7 +4,8 @@ outline (a darkened copy of the colour next to it), like the bodies. No AI image
 import numpy as np
 from PIL import Image
 K = 4
-PALETTE = np.load('body_palette.npy').astype(float)
+import os as _os
+PALETTE = np.load(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'body_palette.npy')).astype(float)
 LIGHT = np.array([-0.55, -0.65, 0.53]); LIGHT /= np.linalg.norm(LIGHT)
 
 RAMPS = {   # dark -> light, from the body palette (steel, blue scarf, leather, wood, gold)
@@ -149,4 +150,4 @@ if __name__ == '__main__':
     Z = 5; ims = [Image.fromarray(a), Image.fromarray(s)]
     sheet = Image.new('RGBA', (sum(i.width * Z + 20 for i in ims) + 20, max(i.height for i in ims) * Z + 20), (226, 220, 204, 255)); xo = 10
     for i in ims: sheet.alpha_composite(i.resize((i.width * Z, i.height * Z), Image.NEAREST), (xo, 10)); xo += i.width * Z + 20
-    sheet.save('previews/pt_zoom.png')
+    sheet.save('/tmp/claude-0/-home-claude/3bc4a77f-e6f0-506e-b99c-85cb849449fd/scratchpad/wp/pt_zoom.png')

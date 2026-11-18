@@ -6,9 +6,10 @@ from PIL import Image, ImageDraw
 import merge as M
 import render_weapons as R
 from pixel_weapons import build, to_rgba
-W = build(); K = json.load(open('k_meta.json'))
-SWORD = np.asarray(Image.open('k_longsword.png').convert('RGBA'))
-SHIELD = np.asarray(Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'battle_sprites', 'first_layer_test') + '/layers/shield_kite.png').convert('RGBA'))
+_HERE = os.path.dirname(os.path.abspath(__file__))
+W = build(); K = json.load(open(os.path.join(_HERE, 'k_meta.json')))
+SWORD = np.asarray(Image.open(os.path.join(_HERE, 'k_longsword.png')).convert('RGBA'))
+SHIELD = np.asarray(Image.open(os.path.join(_HERE, '..', 'battle_sprites', 'first_layer_test', 'layers', 'shield_kite.png')).convert('RGBA'))
 from scipy import ndimage as _ndi
 _lab, _n = _ndi.label(SHIELD[..., 3] > 0); _big = _lab == (1 + int(np.argmax(_ndi.sum(SHIELD[..., 3] > 0, _lab, range(1, _n + 1)))))
 SHIELD = SHIELD.copy(); SHIELD[~_big] = 0                       # drop stray specks from the old cut
@@ -63,4 +64,4 @@ if __name__ == '__main__':
         bg.alpha_composite(Image.fromarray(img)); d.text((4, M.CH + M.TOP + 2), f'{key}  {lo}', fill=(60, 50, 40)); strips.append(bg)
     sw, shh = strips[0].size; sheet = Image.new('RGBA', (sw * 2, shh * 6), 'white')
     for i, s in enumerate(strips): sheet.alpha_composite(s, ((i % 2) * sw, (i // 2) * shh))
-    sheet.save('previews/weapon_merge_test2.png'); print(sheet.size)
+    sheet.save('weapon_merge_test2.png'); print(sheet.size)

@@ -149,6 +149,15 @@ Bodies for the other classes (2026-11-17, **awaiting user review**), made as out
 
 Assumptions to confirm with the user: no Acolyte crossbow pose; the Mage holds a staff in the 1h pose; dual wield and unarmed reuse the 1h pose. Canva ids are listed in `art_source/battle_sprites/README.md`. Known flaws: the male Acolyte reach body has a warmer head colour; the female Acolyte reach body seems to have lost the cross.
 
+## Grip bodies (2026-11-18)
+User: "make sure their hand can grip weapon properly". The first bodies had plain punching fists, so a handle could not pass through them naturally. New method (Soldier done, **awaiting user review** before other classes):
+- Each confirmed body is edited in Canva so the fists grip a flat **magenta guide rod** at the stance angle (1h: front rod up-forward, raised back rod straight up; 2h: one rod through both stacked fists; reach: one long pole at hip height).
+- Code fits a line through the rod pieces on both sides of each fist: that gives each hand's **grip point and angle** (no more guessed fist anchors). The magenta is removed and refilled from the original body.
+- Weapons are placed by their grip point on those grip points, drawn **in front of the body**, fists redrawn on top.
+- Files: `art_source/battle_sprites/grip_bodies/` (raw with rods, clean bodies, grip JSON, scripts, `previews/soldier_grip_sheet.png`).
+- Canva: the connector now uses the team **Benchamarachuthit Chanthaburi** (2026-11-18). Media from the old team is not visible there; the confirmed bodies were re-imported from the public GitHub repo (ids in the README).
+- Known flaw: the male 2h grip body lost its brown gloves.
+
 ## Weapon layers (2026-11-17, test)
 **Rule (user, 2026-11-17): NEVER use Canva to generate weapons.** Existing images may be reused.
 
