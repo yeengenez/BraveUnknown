@@ -56,8 +56,10 @@ EAR = {
 # mask). Anything else on the base head is scalp; styles listed in FILL_BALD get their bald scalp filled with hair.
 FACE = {
     'm': [(85, 84), (91, 67), (110, 61), (132, 58), (160, 58), (160, 200), (40, 200), (40, 112), (68, 108), (86, 100)],
+    'f': [(87, 85), (93, 68), (111, 62), (132, 59), (160, 59), (160, 200), (40, 200), (40, 112), (70, 108), (88, 101)],
 }
-FILL_BALD = {'m': {'sidepart', 'spiky', 'crewcut', 'slicked', 'shaggy', 'ponytail', 'long', 'topknot', 'knight_cut'}}
+FILL_BALD = {'m': {'sidepart', 'spiky', 'crewcut', 'slicked', 'shaggy', 'ponytail', 'long', 'topknot', 'knight_cut'},
+             'f': set(STYLES['f'])}
 
 
 def ear_mask(poly):
@@ -80,6 +82,8 @@ def attach(img, B, mann, ear_poly, style, sex):
     ear_hidden = (hair & E).sum() / E.sum()
     if ear_hidden < 0.5:
         hair = hair & ~E
+        lab, n = ndi.label(hair); sz = ndi.sum(hair, lab, range(1, n + 1))
+        hair = np.isin(lab, [i + 1 for i in range(n) if sz[i] >= 15])      # crumbs left by the ear cut
     # gaps: skull above the ear/face line not covered by hair or the mannequin's visible skin
     top_of_face = ear_poly and min(y for _, y in ear_poly)
     gap = B & ~hair & ~mann & ~E
@@ -115,6 +119,11 @@ def main(sex):
     v = a.mean(2)
     green = (g - r > 50) & (g - b > 50)                 # any shade of the green mannequin
     white = v > 238
+    # only the big white background counts as background: white shine streaks inside the hair stay hair
+    labw, nw = ndi.label(white); szw = ndi.sum(white, labw, range(1, nw + 1))
+    g_near = ndi.binary_dilation((a[..., 1] - a[..., 0] > 50) & (a[..., 1] - a[..., 2] > 50), iterations=3)
+    touch_g = ndi.maximum(g_near, labw, range(1, nw + 1))
+    white = np.isin(labw, [i + 1 for i in range(nw) if szw[i] > 400 or touch_g[i]])
     # cell bounds from the green mannequin columns/rows
     cx = runs(green.any(0)); cy = runs(green.any(1))
     xb = [0] + [(cx[i][1] + cx[i + 1][0]) // 2 for i in range(len(cx) - 1)] + [a.shape[1]]
@@ -132,7 +141,8 @@ def main(sex):
     labm, nm = ndi.label(green); szm = ndi.sum(green, labm, range(1, nm + 1))
     heads = [i + 1 for i in np.argsort(-szm)[:12]]
     cents = [ndi.center_of_mass(labm == h) for h in heads]
-    order = sorted(range(12), key=lambda i: (round(cents[i][0] / 200), cents[i][1]))   # rows, then columns
+    row_of = lambda y: sum(y > b for b in yb[1:-1])
+    order = sorted(range(12), key=lambda i: (row_of(cents[i][0]), cents[i][1]))   # rows, then columns
     heads = [heads[i] for i in order]
     # each mannequin = its face component + every other green piece (neck, ear) closest to it
     big = [int(i) + 1 for i in range(nm) if szm[i] > 200]

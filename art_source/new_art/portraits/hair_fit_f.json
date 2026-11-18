@@ -1,0 +1,110 @@
+{
+ "long": {
+  "sx": 0.85,
+  "sy": 0.943,
+  "rot_deg": 3.44,
+  "dx": 3.3,
+  "dy": -4.7,
+  "cost_before": 1540,
+  "cost_after": 207
+ },
+ "ponytail": {
+  "sx": 0.982,
+  "sy": 0.863,
+  "rot_deg": 2.28,
+  "dx": 2.4,
+  "dy": 1.6,
+  "cost_before": 2219,
+  "cost_after": 1014
+ },
+ "bob": {
+  "sx": 0.939,
+  "sy": 0.904,
+  "rot_deg": 4.22,
+  "dx": 5.2,
+  "dy": -2.2,
+  "cost_before": 2490,
+  "cost_after": 820
+ },
+ "braids": {
+  "sx": 0.987,
+  "sy": 0.943,
+  "rot_deg": 2.48,
+  "dx": 2.4,
+  "dy": -3.4,
+  "cost_before": 1744,
+  "cost_after": 525
+ },
+ "wavy": {
+  "sx": 0.854,
+  "sy": 0.924,
+  "rot_deg": 3.26,
+  "dx": 3.6,
+  "dy": -1.9,
+  "cost_before": 1414,
+  "cost_after": 212
+ },
+ "pixie": {
+  "sx": 0.998,
+  "sy": 0.886,
+  "rot_deg": 1.63,
+  "dx": 3.2,
+  "dy": 0.2,
+  "cost_before": 2286,
+  "cost_after": 964
+ },
+ "bun": {
+  "sx": 0.994,
+  "sy": 0.888,
+  "rot_deg": 2.71,
+  "dx": 2.6,
+  "dy": 0.5,
+  "cost_before": 2109,
+  "cost_after": 1014
+ },
+ "crown_braid": {
+  "sx": 0.988,
+  "sy": 0.89,
+  "rot_deg": 2.62,
+  "dx": 2.6,
+  "dy": 0.3,
+  "cost_before": 2128,
+  "cost_after": 986
+ },
+ "side_braid": {
+  "sx": 0.929,
+  "sy": 0.856,
+  "rot_deg": 0.37,
+  "dx": 3.0,
+  "dy": 1.9,
+  "cost_before": 1529,
+  "cost_after": 535
+ },
+ "twin_buns": {
+  "sx": 0.99,
+  "sy": 0.885,
+  "rot_deg": 2.6,
+  "dx": 2.8,
+  "dy": 0.7,
+  "cost_before": 2061,
+  "cost_after": 945
+ },
+ "curly_mane": {
+  "sx": 0.838,
+  "sy": 0.923,
+  "rot_deg": 3.67,
+  "dx": 4.5,
+  "dy": -2.7,
+  "cost_before": 1498,
+  "cost_after": 202
+ },
+ "warrior_halfup": {
+  "sx": 0.875,
+  "sy": 0.888,
+  "rot_deg": 2.13,
+  "dx": 5.3,
+  "dy": 0.1,
+  "cost_before": 1703,
+  "cost_after": 445
+ }
+}

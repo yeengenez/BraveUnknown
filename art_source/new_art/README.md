@@ -21,7 +21,10 @@
   (tinted with the 10 hair ramps). Styles: messy, sidepart, spiky, crewcut, slicked, shaggy, ponytail, long
   (the game's existing 8) + topknot, braided_mohawk, wild_mane, knight_cut (new).
   `preview_hair_m.png`: each style tinted on the base head, then the raw value maps.
-- Female hair: same script with `f` once `source/hair_f_sheet.png` exists.
+- `source/hair_f_sheet.png` + `process_hair.py f` - 12 female hairstyles, same processing (all 12 get the bald-scalp
+  fill): long, ponytail, bob, braids, wavy, pixie, bun (the game's existing 7) + crown_braid, side_braid, twin_buns,
+  curly_mane, warrior_halfup (new). `preview_hair_f.png`, `hair_fit_f.json`.
+- White shine streaks inside the hair stay hair; only the white background (large, or touching the mannequin) is cut.
 
 - `aseprite/` - for hand touch-ups on your PC: `build_head_hair.lua` makes `m_head_hair.aseprite` (one frame per
   hairstyle, tagged; layers `head` + `hair`), `export_head_hair.lua` writes the edited layers back to the PNGs.
