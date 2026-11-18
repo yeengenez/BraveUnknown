@@ -84,6 +84,15 @@ def main(sex):
         body |= fg & ~head_draw | (fg & ndi.binary_dilation(body, iterations=2) & ~ndi.binary_erosion(head_draw, iterations=3) & ~(neutral & (v > 105) & (v < 226) & ndi.binary_erosion(head_draw, iterations=1)))
         lab, n = ndi.label(body); sz = ndi.sum(body, lab, range(1, n + 1))
         body = np.isin(lab, [i + 1 for i in range(n) if sz[i] > 150])
+        # leftover outline of the drawn head (a thin dark gray ring around the skull): drop dark neutral pixels near the
+        # head unless they hug the coloured outfit (those are the outfit's own outline, e.g. along the collar)
+        darkn = (c.max(2) < 130) & (np.abs(r - g) < 28) & (np.abs(g - b) < 28)
+        ring = body & darkn & ndi.binary_dilation(head_draw, iterations=10)
+        keep_near = ndi.binary_dilation(body & ~ring, iterations=4)
+        body &= ~(ring & ~keep_near)
+        lab, n = ndi.label(body); sz = ndi.sum(body, lab, range(1, n + 1))
+        dk = ndi.mean(darkn, lab, range(1, n + 1))
+        body = np.isin(lab, [i + 1 for i in range(n) if sz[i] > 150 and (dk[i] < 0.6 or sz[i] > 4000)])
         cyan = body & (b - r > 50) & (g - r > 50) & (np.abs(g - b) < 70) & (g > 60)
         # back to the 200x200 canvas: cell pixel (x, y) -> ((x - tx) / s, (y - ty) / s)
         def to_canvas(arr):
