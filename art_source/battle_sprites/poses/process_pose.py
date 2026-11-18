@@ -97,13 +97,13 @@ def process(n):
     else:
         g = orient(grips_for(m, stance, a), ANIM)
     Image.fromarray(clean(a, m)).save(f'bodies/{n}.png')
-    json.dump({'grips': g}, open(f'grips_{n}.json', 'w'))
-    fixed, skin = SL.split(f'bodies/{n}.png')
+    json.dump({'grips': g}, open(f'grips/grips_{n}.json', 'w'))
+    fixed, skin = SL.split(f'bodies/{n}.png', f'grips/grips_{n}.json')
     Image.fromarray(fixed).save(f'layers/{n}_fixed.png'); Image.fromarray(skin, 'LA').save(f'layers/{n}_skin.png')
     return g
 
 if __name__ == '__main__':
-    for d in ('bodies', 'layers'): os.makedirs(d, exist_ok=True)
+    for d in ('bodies', 'layers', 'grips'): os.makedirs(d, exist_ok=True)
     todo = sys.argv[1:] or sorted(os.path.basename(f)[:-4] for f in glob.glob('raw/*.png') if 'rejected' not in f)
     for n in todo:
         g = process(n)

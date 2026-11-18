@@ -24,7 +24,7 @@ def load_state(cls, key, state, ramp):
     if state == 'stand':
         return A.grips(cls, key), A.body(cls, key, ramp)
     n = f'{cls}_{key}_{state.replace("_pose", "")}'
-    g = split2h(json.load(open(f'grips_{n}.json'))['grips'])
+    g = split2h(json.load(open(f'grips/grips_{n}.json'))['grips'])
     fx = np.asarray(Image.open(f'layers/{n}_fixed.png')); sk = np.asarray(Image.open(f'layers/{n}_skin.png'))
     b = tint(fx, sk, ramp)
     k = SCALE.get((key.split('_')[1], state), 1.0)

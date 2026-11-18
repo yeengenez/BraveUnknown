@@ -1,9 +1,10 @@
 """Split each grip body into a fixed colour layer and a skin brightness map (like the portraits), so skin is
 coloured at runtime by the hero's portrait skin ramp. Head and body skin get the same brightness level."""
 import glob, os, json, numpy as np, cv2
+HERE = os.path.dirname(os.path.abspath(__file__))
 from PIL import Image
 from scipy import ndimage as ndi
-PAL = json.load(open('/home/claude/braveunknown/portraits/palettes.json'))['skin']
+PAL = json.load(open(os.path.join(HERE, '..', '..', '..', 'portraits', 'palettes.json')))['skin']
 LO, HI = 40.0, 240.0
 
 def rgba_body(path):
@@ -14,8 +15,8 @@ def rgba_body(path):
 
 BARE_HANDS = {'acolyte', 'mage', 'rogue', 'brawler'}
 
-HEAD_REL = 0.2
-BRAWLER_REL = 0.48
+HEAD_REL = 0.2      # head blob must sit in the top part of the figure (poses with raised arms use 0.34)
+BRAWLER_REL = 0.48  # Brawler bare arms/chest above the belt (poses use 0.62)
 
 def skin_mask(a, fg, cls, name, grips):
     """Skin = the head, plus bare hands at the grip points, plus class-specific bare skin
@@ -40,9 +41,9 @@ def skin_mask(a, fg, cls, name, grips):
     fam = (h <= 24) & (s >= 60) & (v >= 60) & fg                             # the skin's own shading
     return ndi.binary_dilation(core, iterations=2, mask=fam) | core, top
 
-def split(path):
+def split(path, grips_file=None):
     n = os.path.basename(path)[:-4]; cls, name = n.split('_', 1)
-    g = json.load(open(f'grips_{n}.json'))['grips']
+    g = json.load(open(grips_file or os.path.join(HERE, 'grips', f'grips_{n}.json')))['grips']
     grips = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
     a, fg = rgba_body(path); m, top = skin_mask(a, fg, cls, name, grips)
     lum = a[..., 0] * 0.35 + a[..., 1] * 0.45 + a[..., 2] * 0.2
@@ -66,7 +67,7 @@ def tint(fixed, skin, ramp):
     return out
 
 if __name__ == '__main__':
-    os.makedirs('layers', exist_ok=True)
+    os.chdir(HERE); os.makedirs('layers', exist_ok=True)
     for p in sorted(glob.glob('bodies/*.png')):
         n = os.path.basename(p)[:-4]; fixed, skin = split(p)
         Image.fromarray(fixed).save(f'layers/{n}_fixed.png'); Image.fromarray(skin, 'LA').save(f'layers/{n}_skin.png')
@@ -80,4 +81,4 @@ if __name__ == '__main__':
     cols = 4; rows = (len(tiles) + cols - 1) // cols; th, tw = tiles[0].shape[:2]
     sheet = np.full((rows * th, cols * tw, 4), 255, np.uint8)
     for i, t in enumerate(tiles): sheet[(i // cols) * th:(i // cols + 1) * th, (i % cols) * tw:(i % cols + 1) * tw][t[..., 3] > 0] = t[t[..., 3] > 0]
-    Image.fromarray(sheet).save('skin_review.png'); print(sheet.shape, names)
+    Image.fromarray(sheet).save('previews/skin_review.png'); print(sheet.shape, names)
