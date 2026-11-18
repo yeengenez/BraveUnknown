@@ -27,6 +27,27 @@ def rod_mask(a):
     keep = np.unique(lab[seed & m]); keep = keep[keep > 0]
     return np.isin(lab, keep)
 
+def cyan_mask(a):
+    """Off-hand (left) guide rod: flat cyan #00FFFF."""
+    near = (a[..., 1] - a[..., 0] > 60) & (a[..., 2] - a[..., 0] > 60) & (a[..., 1] > 120) & (a[..., 2] > 120)
+    seed = (a[..., 0] <= 120) & (a[..., 1] >= 190) & (a[..., 2] >= 190)
+    m = ndi.binary_dilation(near, iterations=1) & (near | ndi.binary_dilation(seed, iterations=1))
+    lab, n = ndi.label(m, structure=np.ones((3, 3)))
+    keep = np.unique(lab[seed & m]); keep = keep[keep > 0]
+    return np.isin(lab, keep)
+
+def hand_of(m, a):
+    groups = group_collinear(pieces(m, 3)); groups.sort(key=lambda gr: -sum(len(p) for p in gr))
+    gr = groups[0]
+    if len(gr) >= 2: return hand_from(gr)
+    # rod seen on one side of the fist only: the fist is at the end nearer the body
+    pts = gr[0]; c = pts.mean(0); _, _, vt = np.linalg.svd(pts - c); d = vt[0]
+    body = np.argwhere(a.min(2) < 230)[:, ::-1].mean(0)
+    t = (pts - c) @ d; e0, e1 = c + d * t.min(), c + d * t.max()
+    near, far = (e0, e1) if np.linalg.norm(e0 - body) < np.linalg.norm(e1 - body) else (e1, e0)
+    u = (far - near) / max(1e-6, np.linalg.norm(far - near)); p = near - u * 5
+    return dict(point=[round(float(p[0]), 1), round(float(p[1]), 1)], angle=round(float(np.degrees(np.arctan2(u[1], u[0]))), 1), fist_gap=10.0)
+
 def one_sided(m, a):
     """2h rod that only sticks out in front of the fists: the fists sit at the end nearer the body."""
     ps = pieces(m); pts = max(ps, key=len); c = pts.mean(0); _, _, vt = np.linalg.svd(pts - c); d = vt[0]
@@ -68,8 +89,13 @@ def grips_for(m, stance, a):
 def process(n):
     cls, rest = n.split('_', 1); stance = rest.split('_')[1]
     global ANIM; ANIM = rest.split('_')[2]
-    a = load(f'raw/{n}.png'); m = rod_mask(a)
-    g = orient(grips_for(m, stance, a), ANIM)
+    a = load(f'raw/{n}.png'); m = rod_mask(a); c = cyan_mask(a)
+    if stance == '1h' and c.sum() > 8:
+        # right hand (weapon) = magenta -> 'back'; left hand (shield / off-hand) = cyan -> 'front'
+        g = orient({'back': hand_of(m, a)}, ANIM); g['front'] = orient({'f': hand_of(c, a)}, 'hit')['f']
+        m = m | c
+    else:
+        g = orient(grips_for(m, stance, a), ANIM)
     Image.fromarray(clean(a, m)).save(f'bodies/{n}.png')
     json.dump({'grips': g}, open(f'grips_{n}.json', 'w'))
     fixed, skin = SL.split(f'bodies/{n}.png')

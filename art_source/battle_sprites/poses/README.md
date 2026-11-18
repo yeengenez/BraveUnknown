@@ -1,7 +1,7 @@
 # Battle poses: stand / attack / hit
 
-Three single-frame sprites per loadout. The game swaps between them (no tweening):
-`sprites/<class>_<sex>_<loadout>_<stand|attack|hit>.png` (399x270, transparent; the body sits at x=133, y=70 like the stand sprites).
+Single-frame sprites per loadout. The game swaps between them (no tweening):
+`sprites/<class>_<sex>_<loadout>_<stand|attack|hit>.png`; the Archer bow also has `nock` (stand -> nock -> attack = release -> hit) (399x270, transparent; the body sits at x=133, y=70 like the stand sprites).
 
 - **stand** = the existing grip body (`../grip_bodies`).
 - **attack / hit** = Canva edits of each grip body (one per stance: 1h, 2h, reach, bow), redrawn in a strike pose and a flinch pose
@@ -18,3 +18,13 @@ Three single-frame sprites per loadout. The game swaps between them (no tweening
 2. `compose.py` - tints, aligns the feet to the stand sprite, draws weapons and fists, writes `sprites/` and `review.png`.
    - Reach attacks are scaled x1.25 (Canva drew the deep spear lunge smaller; see `headscale.py`).
    - Mage hit: the staff is drawn behind the body so the orb does not cover the face.
+
+## Revision 2026-11-18 (user feedback)
+- **1h weapon is always in the right hand** ('back' = right; in the stand that is the raised fist). The sword-only, dagger and
+  staff stands moved the weapon to that hand. New 1h attack/hit poses for every class use two guide colours:
+  **magenta = right hand (weapon), cyan #00FFFF = left hand (shield / off-hand / second dagger)**.
+- **1h attack follows the user's reference** (sword-and-shield strike): deep lunge, right arm extended forward with the weapon
+  level, left arm braced in front of the chest with the shield. Weapon is drawn over the shield.
+- Small lunges are scaled to the stand's head size (`headscale.py`, 1h attacks with ratio 1.08-1.4).
+- **Archer bow:** new relaxed `stand` (bow lowered, no arrow); `nock` = the full-draw grip body with the arrow; `attack` = release.
+- The first 1h poses (wrong hand) are kept in `raw_v1_1h/`.
