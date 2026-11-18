@@ -71,7 +71,7 @@ def skin_mask(im, fg, seed=(92, 118)):
     # grow into the soft shading and line pixels around the skin, so no original-coloured fringe is left behind
     return ndi.binary_dilation(core, iterations=6, mask=huefam(h) & fg & zone) | core
 
-BARE_SKIN = {'brawler'}          # outfits that show arms or chest: their skin must follow the skin ramp too
+BARE_SKIN = {'brawler', 'rogue'}          # outfits that show arms or chest: their skin must follow the skin ramp too
 def body_skin(im, fg):
     """Bare arms, shoulders and chest: big, lit skin-tone areas below the chin, grown a little into their shading."""
     h = hsv(im)
