@@ -1,0 +1,74 @@
+{
+ "neutral_almond": {
+  "scale": 0.3565,
+  "x": 56.9,
+  "y": 35.2,
+  "overlap_error_px": 267
+ },
+ "sharp_narrow": {
+  "scale": 0.3608,
+  "x": 56.2,
+  "y": 33.9,
+  "overlap_error_px": 210
+ },
+ "heavy_lidded": {
+  "scale": 0.3565,
+  "x": 56.9,
+  "y": 35.2,
+  "overlap_error_px": 259
+ },
+ "round_youthful": {
+  "scale": 0.3608,
+  "x": 56.0,
+  "y": 33.7,
+  "overlap_error_px": 214
+ },
+ "hooded_stern": {
+  "scale": 0.3565,
+  "x": 57.1,
+  "y": 34.6,
+  "overlap_error_px": 250
+ },
+ "tired_droopy": {
+  "scale": 0.3608,
+  "x": 55.9,
+  "y": 33.8,
+  "overlap_error_px": 216
+ },
+ "upturned_fierce": {
+  "scale": 0.3565,
+  "x": 57.1,
+  "y": 34.6,
+  "overlap_error_px": 249
+ },
+ "downturned_gentle": {
+  "scale": 0.3565,
+  "x": 56.9,
+  "y": 35.2,
+  "overlap_error_px": 250
+ },
+ "deep_set_brooding": {
+  "scale": 0.3601,
+  "x": 57.4,
+  "y": 33.9,
+  "overlap_error_px": 242
+ },
+ "wide_alert": {
+  "scale": 0.3601,
+  "x": 57.4,
+  "y": 33.9,
+  "overlap_error_px": 242
+ },
+ "half_closed_calm": {
+  "scale": 0.3601,
+  "x": 57.4,
+  "y": 33.9,
+  "overlap_error_px": 247
+ },
+ "narrowed_squint": {
+  "scale": 0.3611,
+  "x": 55.5,
+  "y": 34.4,
+  "overlap_error_px": 252
+ }
+}

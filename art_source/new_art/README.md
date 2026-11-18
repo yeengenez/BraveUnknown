@@ -29,4 +29,16 @@
 - `aseprite/` - for hand touch-ups on your PC: `build_head_hair.lua` makes `m_head_hair.aseprite` (one frame per
   hairstyle, tagged; layers `head` + `hair`), `export_head_hair.lua` writes the edited layers back to the PNGs.
 
-Not yet in the game: the faces (eyes, brows, mouth per expression) and hair still have to be drawn for these heads.
+- `source/eyes_<m|f>_sheet.png` + `process_eyes.py m|f` - 12 eye pairs per sex (ChatGPT drew them on the eye
+  templates). Each head is aligned to the base head by silhouette, every pixel is classified (white / blue iris /
+  dark line), and each canvas pixel takes the class covering most of it, so the eyes come out as clean pixel art.
+  Output per style: `<sex>_eyes_<style>_fixed.png` (white #FAF8F6 and line #1E161A, never tinted) and
+  `<sex>_eyes_<style>_iris.png` (grayscale, tinted with the 6 eye ramps). Stray pixels removed, far eye clipped to the
+  face outline. `preview_eyes_<sex>.png`, `eyes_fit_<sex>.json`.
+  Male: neutral_almond, sharp_narrow, heavy_lidded, round_youthful, hooded_stern, tired_droopy, upturned_fierce,
+  downturned_gentle, deep_set_brooding, wide_alert, half_closed_calm, narrowed_squint.
+  Female: neutral_almond, large_round, cat_eye, doe, sleepy, sharp_narrow, long_lashed_soft, hooded, wide_bright,
+  gentle_smiling, fierce, half_lidded_mysterious.
+
+Not yet in the game: eyebrows, nose and mouth (expressions) still have to be drawn; the game's `library.json` and
+`HeroPortrait` need the new layer names (eyes as their own layer, extra hairstyles) when this art goes in.
