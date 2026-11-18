@@ -5,11 +5,19 @@ angle from the measured grip points, the fists redrawn over the handles, and sim
 code (`class_weapons.py`: dagger, mace, quarterstaff, mage staff, bow, arrow; `../../weapons/`: longsword and
 kite shield cut from the first test image, painted great axe, pixel longspear). Never generated with Canva.
 
-Run `python3 anim.py [class ...]`. Output:
+**Version 2 (current, `anim2.py`, 2026-11-18).** The user found v1 (only the weapon swinging about a frozen
+fist) laughable and asked for the approach of the first reference animations: the **arm moves with the weapon**.
+The attacking forearm and fist are cut out of the body as one part (the gap is refilled from neighbouring pixels
+inside the body outline) and swung about the elbow with the weapon locked in the fist. Spear thrusts and punches
+push the arms forward (the punch smears the arm to show it stretching). The far (back) arm swings behind the head
+and body. The body leans back on the wind-up, tilts into the strike and lunges; ground shadow; per-frame timing
+with a short hold on impact; slash trails and speed lines drawn behind the character.
+
+Run `python3 anim2.py [class ...]` (it reuses helpers from `anim.py`, the v1 script). Output, **attack and hit
+are separate animations**:
 - `sheets/<class>_<sex>_<loadout>_<attack|hit>.png`: frames left to right, transparent, 399×270 each (three
-  formation squares; the body stands in the middle one so long weapons and missiles can cross into the next).
-  Attack: 8 frames. Hit: 6 frames.
-- `gif/<class>.gif`: every loadout of the class, attack then hit, for review.
+  formation squares, body in the middle). `.txt` next to each sheet: frame durations in ms.
+- `gif/<class>_attack.gif`, `gif/<class>_hit.gif`: every loadout of the class, for review.
 
 | Class | Loadouts (attack) |
 |---|---|
@@ -20,8 +28,5 @@ Run `python3 anim.py [class ...]`. Output:
 | Brawler | unarmed (lunging punch with impact burst), great axe (chop), longspear (thrust) |
 | Rogue | dual daggers (front then back slash) |
 
-Get hit (all): red flash, knockback with a white flash and shake, recover. Preview skin tones vary per class to
+Get hit (all): white flash with an impact burst, red flash and knockback with a lean back, recover. Preview skin tones vary per class to
 show the skin layer (the game uses each hero's own tone).
-
-Motion notes: one-handed weapons rotate about the hand. Two-handed weapons turn only a little (they pivot on both
-hands) and most of the motion comes from the body lunge. Spears slide through the fists on the thrust.
