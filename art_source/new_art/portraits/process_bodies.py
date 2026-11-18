@@ -37,10 +37,13 @@ def main(sex):
         # head = the grey part above the shoulders: rows from the top until the figure gets much wider than the skull
         ys, xs = np.where(fg)
         top = ys.min()
+        # the template head is gray: measure how gray on this sheet (skull area) and use that as the head colour test
+        sat = c.max(2) - c.min(2)
+        skull = fg & (np.arange(c.shape[0])[:, None] < top + 60) & (c.mean(2) > 105)
+        neutral = sat <= max(6, np.percentile(sat[skull], 97) + 2)
         widths = np.array([fg[y].sum() for y in range(c.shape[0])])
         skull_w = widths[top:top + 60].max()
         shoulder = next(y for y in range(top + 60, c.shape[0]) if widths[y] > 1.8 * skull_w)
-        neutral = (np.abs(r - g) < 14) & (np.abs(g - b) < 14)
         # fit the base head (scale + shift) to the drawn head above the shoulder line
         upper = np.zeros_like(fg); upper[:shoulder] = fg[:shoulder]
         s0 = (shoulder - top) / (by.max() - b_top) * 1.0
@@ -73,6 +76,8 @@ def main(sex):
         fitted = ndi.binary_dilation(head_in_cell(best), iterations=6)
         inside = ndi.mean(fitted, labh, range(1, nh + 1))          # share of each grey blob inside the fitted head
         head_draw = ndi.binary_fill_holes(np.isin(labh, [i + 1 for i in range(nh) if inside[i] > 0.6]))
+        # a white collar can touch the grey neck and join its blob: the drawn head never reaches past the fitted base head
+        head_draw &= ndi.binary_dilation(head_in_cell(best), iterations=4)
         outline = ndi.binary_dilation(head_draw, iterations=5) & ~head_draw & neutral & (v <= 105)
         head_draw = ndi.binary_fill_holes(head_draw | outline)
         body = fg & ~head_draw
