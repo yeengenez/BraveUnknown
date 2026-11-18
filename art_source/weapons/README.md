@@ -1,5 +1,7 @@
 # Weapon layers (test: sword, shield, great axe, longspear)
 
+> **LEGACY — reference only (2026-11-18).** The longsword and kite shield were cut from a Canva image and are Legacy. The great axe and longspear drawn in code are not. See [`../LEGACY.md`](../LEGACY.md).
+
 Weapons are separate layers merged onto the weapon-less battle sprite bodies (`../battle_sprites/`).
 **Rule from the user (2026-11-17): never generate weapons with Canva.** The sword and shield below were cut
 from images made earlier (the first layer test), which the user picked.

@@ -1,0 +1,37 @@
+{
+  "decision": "Canva-generated assets and anything cut, edited or composed from them are Legacy: reference only.",
+  "decided": "2026-11-18",
+  "in_game_until_replaced": ["portraits/parts/*"],
+  "legacy": [
+    "portraits/parts/*",
+    "art_source/portrait_pipeline/raw/**",
+    "art_source/portrait_pipeline/previews/**",
+    "art_source/battle_sprites/*/bodies/**",
+    "art_source/battle_sprites/soldier/previews/**",
+    "art_source/battle_sprites/style_reference/**",
+    "art_source/battle_sprites/first_layer_test/**",
+    "art_source/battle_sprites/grip_bodies/raw/**",
+    "art_source/battle_sprites/grip_bodies/bodies/**",
+    "art_source/battle_sprites/grip_bodies/layers/**",
+    "art_source/battle_sprites/grip_bodies/previews/**",
+    "art_source/battle_sprites/poses/raw/**",
+    "art_source/battle_sprites/poses/raw_v1_1h/**",
+    "art_source/battle_sprites/poses/bodies/**",
+    "art_source/battle_sprites/poses/layers/**",
+    "art_source/battle_sprites/poses/sprites/**",
+    "art_source/battle_sprites/poses/review.png",
+    "art_source/battle_sprites/animation/sheets/**",
+    "art_source/battle_sprites/animation/gif/**",
+    "art_source/weapons/k_longsword.png",
+    "art_source/weapons/k_rapier.png",
+    "art_source/weapons/weapon_merge_test2.png",
+    "art_source/weapons/previews/**",
+    "art_source/enemies/*.png"
+  ],
+  "not_legacy": [
+    "scripts, pipelines and data formats (grip JSON, palettes.json, library.json, HeroAppearance)",
+    "weapons drawn in code: great axe, longspear, dagger, mace, quarterstaff, mage staff, bow, arrow",
+    "art_source/old_battle_sprites (user's own reference art; already reference only)",
+    "art_source/battle_sprites/archer/*.md, *.json, *.py (Archer handoff docs)"
+  ]
+}

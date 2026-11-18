@@ -1,5 +1,7 @@
 # Portrait pipeline
 
+> **LEGACY — reference only (2026-11-18).** Source images were generated in Canva; the portrait parts made from them are Legacy, though they stay in the game until replaced. The scripts are still usable with new art. See [`../LEGACY.md`](../LEGACY.md).
+
 How `res://portraits/parts/` was made. You only need this to add or redo portrait parts.
 
 1. `raw/` holds the generated source images (Canva, pixel-art style A). Every part was generated as an

@@ -1,6 +1,6 @@
 # Archer asset handoff
 
-## Existing production assets
+## Existing assets (Legacy: Canva, reference only since 2026-11-18, see `../../LEGACY.md`)
 The branch already contains Archer portrait layers and composed battle sprites:
 - Portrait outfit layers: `portraits/parts/*body_archer*`
 - Weapon-free grip bodies: `art_source/battle_sprites/grip_bodies/bodies/archer_{m|f}_{1h|bow}.png`

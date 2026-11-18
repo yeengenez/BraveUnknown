@@ -1,5 +1,7 @@
 # Attack and get-hit animations (2026-11-18)
 
+> **LEGACY — reference only (2026-11-18).** Sheets and GIFs are built on the Canva grip bodies. The code-drawn weapons are not Legacy. See [`../../LEGACY.md`](../../LEGACY.md).
+
 Built from layers, not drawn frame by frame: tinted grip body (`../grip_bodies/`), weapons drawn at each frame's
 angle from the measured grip points, the fists redrawn over the handles, and simple effects. Weapons are drawn in
 code (`class_weapons.py`: dagger, mace, quarterstaff, mage staff, bow, arrow; `../../weapons/`: longsword and

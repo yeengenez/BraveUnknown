@@ -1,5 +1,7 @@
 # Grip bodies (2026-11-18)
 
+> **LEGACY — reference only (2026-11-18).** The bodies are Canva edits. Use the images for reference only; the grip-measurement scripts are still usable. See [`../../LEGACY.md`](../../LEGACY.md).
+
 Battle sprite bodies for **every class** whose fists actually close around a handle, plus the skin layer.
 These replace `../<class>/bodies/` as the bodies to use.
 

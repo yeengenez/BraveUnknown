@@ -1,5 +1,7 @@
 # Battle sprites (in progress)
 
+> **LEGACY — reference only (2026-11-18).** All Canva-made bodies, grip bodies, poses and sprites here are Legacy and were not put into the game. Scripts and the grip JSON format are still usable. See [`../LEGACY.md`](../LEGACY.md).
+
 Full-body sprites that match the hero portraits. Same idea as the portraits: a hero is assembled
 from layers (body, weapon, shield, later hair and skin tint) driven by the same `HeroAppearance`.
 

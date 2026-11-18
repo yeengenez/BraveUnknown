@@ -1,5 +1,7 @@
 # Battle poses: stand / attack / hit
 
+> **LEGACY — reference only (2026-11-18).** The attack/hit poses are Canva redraws and the sprites are built from them. Reference only; scripts are still usable. See [`../../LEGACY.md`](../../LEGACY.md).
+
 Single-frame sprites per loadout. The game swaps between them (no tweening):
 `sprites/<class>_<sex>_<loadout>_<stand|attack|hit>.png`; the Archer bow also has `nock` (stand -> nock -> attack = release -> hit) (399x270, transparent; the body sits at x=133, y=70 like the stand sprites).
 
