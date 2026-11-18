@@ -34,6 +34,9 @@ fights until you make camp. Dead expeditioners leave the roster for good.
 
 ## Portraits
 
+> **Legacy art (2026-11-18):** the portrait images were made from Canva art and are Legacy,
+> reference only. They stay in the game until replacement art exists. See `portraits/LEGACY.md`.
+
 Expeditioners use the **expedition-portraits** module (pixel-art anime bust
 portraits assembled from layered parts and colour ramps), copied in as
 `res://portraits/`. Each recruit rolls a `HeroAppearance` for its class
