@@ -16,7 +16,11 @@ ROOT = os.path.join(HERE, '..', '..', '..')
 EXPR = ['neutral', 'smile', 'stern', 'grin', 'sleepy', 'worried']
 
 
-def main(sex):
+SCALE = None
+
+
+def main(sex, scale=None):
+    global SCALE; SCALE = scale
     a = np.asarray(Image.open(os.path.join(HERE, 'source', f'brows_{sex}_sheet.png')).convert('RGB')).astype(int)
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
     green = (g - r > 60) & (g - b > 60)
@@ -53,11 +57,13 @@ def main(sex):
         cr, cg, cb = ac[..., 0], ac[..., 1], ac[..., 2]
         cblue = (cb - cr > 40) & (cb - cg > 20)
         # eye refinement: drawn blue iris centroid -> base iris centroid
-        pb = place(best, cblue, Image.BOX)
-        if pb.sum() > 3:
-            yy, xx = np.indices(pb.shape)
-            dx = ix.mean() - (xx * pb).sum() / pb.sum(); dy = iy.mean() - (yy * pb).sum() / pb.sum()
-            if abs(dx) < 6 and abs(dy) < 6: best = [best[0], best[1] + dx, best[2] + dy]
+        # brows must keep their distance to the eyes: place the cell so its drawn iris lands exactly on the base iris
+        # (scale from the silhouette fit, median over the sheet; position from the eyes only)
+        cyy, cxx = np.where(cblue & (np.indices(cblue.shape)[1] < np.percentile(np.where(cblue)[1], 100)))
+        near = cxx < cxx.min() + 0.6 * (cxx.max() - cxx.min())         # near (left) eye only: the far eye is clipped
+        S = SCALE if SCALE else best[0]
+        bnear = ix < ix.min() + 0.6 * (ix.max() - ix.min())
+        best = [S, ix[bnear].mean() - cxx[near].mean() * S, iy[bnear].mean() - cyy[near].mean() * S]
         fits[expr] = dict(scale=round(float(best[0]), 4), x=round(float(best[1]), 1), y=round(float(best[2]), 1))
         red = (cr - cg > 60) & (cr - cb > 50)
         cov = place(best, red, Image.BOX)
@@ -98,4 +104,7 @@ def main(sex):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else 'm')
+    sx = sys.argv[1] if len(sys.argv) > 1 else 'm'
+    main(sx)                                          # first pass: per-cell silhouette scales
+    sc = float(np.median([v['scale'] for v in json.load(open(os.path.join(HERE, f'brows_fit_{sx}.json'))).values()]))
+    main(sx, sc)                                      # second pass: one scale for the sheet, eyes as anchor
