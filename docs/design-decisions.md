@@ -13,7 +13,7 @@ Key points from that doc that are easy to get wrong:
 - Class roles, gear, Hit Die and BAB are set (see "Class design" below; **not yet written into the stats doc**). Spell slots per class and feature numbers are still not designed.
 
 ## Class design (2026-11-16, user direction)
-Six classes. **Cleric is renamed Acolyte.** This section is the baseline.
+Six classes. **Cleric is renamed Acolyte. Brawler is renamed Warrior** (2026-11-18, user: same stats, different art style; it keeps the exclusive unarmed weapon pair). This section is the baseline.
 
 Armor ladder: **cloth → light → medium → heavy**. "Up to X" includes every category below X.
 
@@ -23,10 +23,12 @@ Armor ladder: **cloth → light → medium → heavy**. "Up to X" includes every
 | Archer | d8 | Full | Cloth to light | — | Bow, crossbow, **light simple weapons only** |
 | Acolyte | d8 | ¾ | Cloth | Yes | Simple, magic items (wand, staff) |
 | Mage | d6 | ½ | Cloth | — | **Light simple weapons only**, magic items (wand, staff) |
-| Brawler | d10 | Full | Cloth to medium | — | Simple, martial, unarmed. **No bows or crossbows** |
+| Warrior | d10 | Full | Cloth to medium | — | Simple, martial, unarmed. **No bows or crossbows** |
 | Rogue | d8 | ¾ | Cloth to light | — | All one-handed weapons |
 
 Archer and Mage melee weapons limited to **light** weapons on 2026-11-16 (user: "wear only light weapon", read as weapons, not armor). Read as light **simple** weapons, since both classes were simple-only before; light martial (short sword, kukri) not confirmed. In PF1e sizes, club and shortspear (both in the user's original Archer list) are one-handed, not light, so they are now excluded unless the user re-sizes them.
+
+**Warrior look (user, 2026-11-18): a barbarian, but armored** — can wear up to medium armor, so leather and chain or scale over a barbarian build (furs, leather harness), not the old Brawler's sleeveless tunic. Exact outfit to be drawn with the new art. Legacy battle-sprite and portrait files keep the name `brawler` (they are the old look and reference only).
 
 General rules decided:
 - **Simple weapons can be used by every class** (Archer and Mage: light ones only).
@@ -38,18 +40,18 @@ Class features:
 - **Archer — ammunition.** The player prepares ammunition and stores it in the **wagon**. An Archer carries **one normal bundle (50)** into combat and refills it from the wagon after the fight. **Bolts and sling bullets use the same bundle rules as arrows.** Magic-tier ammunition (beast-bane, fire, etc.) comes in bundles of **10** (changed from 10–20 on 2026-11-16) and the Archer can carry **one** such bundle. If the wagon has no refill, the count carries over (5/10 beast-bane left means the next fight starts with 5). With no ammunition left, the Archer switches to the **secondary weapon** and holds ground.
 - **Mage:** normal attack is a cantrip (e.g. acid splash).
 - **Acolyte:** has an attack cantrip, and a **healing cantrip of about 1d3 HP**.
-- **Brawler:** unarmed strike damage scales (table not set). Unarmed has its **own exclusive weapon type** (hand wraps, knuckles, cestus, gauntlet) so it can benefit from weapon bonuses. Unarmed weapons are a **pair that attacks like dual wield** (same −4 / half damage on the secondary hit), so **each is on par with a one-handed martial weapon** (decided 2026-11-16). This is what separates Brawler from Soldier.
+- **Warrior** (formerly Brawler)**:** unarmed strike damage scales (table not set). Unarmed has its **own exclusive weapon type** (hand wraps, knuckles, cestus, gauntlet) so it can benefit from weapon bonuses. Unarmed weapons are a **pair that attacks like dual wield** (same −4 / half damage on the secondary hit), so **each is on par with a one-handed martial weapon** (decided 2026-11-16). This is what separates Warrior from Soldier.
 - **Rogue:** unlocks chests and doors, disarms traps, scouts. **Stealth:** enemies cannot target the Rogue unless the Rogue is the only target in the row. Starts **automatically at the start of the fight and lasts 2 turns**; after that it needs a **Stealth action** and lasts **3 turns**. Attacking does **not** break it. **Area attacks still hit** a stealthed Rogue. Benefit is safety, plus combos with some feats (feats not designed). **The Stealth action is Rogue-exclusive**: Attack and Cast Spell stay the basic actions for everyone.
 - **Wands and staves:** to be designed later. Rough idea: they improve spell damage or effect; some have an inherent skill.
 
 Still open:
-- Brawler unarmed scaling table; advanced class list; dual-wield numbers need testing.
-- Whether Brawlers' bare fists (1d3) should start higher so they are not forced to buy unarmed gear.
+- Warrior unarmed scaling table; advanced class list; dual-wield numbers need testing.
+- Whether Warriors' bare fists (1d3) should start higher so they are not forced to buy unarmed gear.
 
 Knock-on effects:
 - The stats doc still says there are two actions; it needs a line for the Rogue-only Stealth action, plus dual wield and the secondary weapon slot, when classes are written into it.
 - "Cleric" still appears in the prototype code, `character_gen_pathfinder.py` and portrait part names (`body_cleric`). Rename when those are next touched. (Kept as `cleric` on 2026-11-17 when the new outfits were added, to avoid breaking the prototype.)
-- The prototype has no Brawler or Rogue class yet, although their portraits and sprite bodies now exist.
+- The prototype has no Warrior or Rogue class yet, although their portraits and sprite bodies now exist.
 
 ## Weapon sheet (2026-11-16)
 Google Sheet **"Brave unknown Weapon sheet"**: https://docs.google.com/spreadsheets/d/1cMPrVnVlqgxuxLEweszsmELcD8rQGhkrTE9TT8A-h6E — the user's working list of weapons, based on Pathfinder 1e. **The user will define the final weapons there later; treat current rows as a PF1e baseline, not final.** Read it before any weapon work.
@@ -58,7 +60,7 @@ Google Sheet **"Brave unknown Weapon sheet"**: https://docs.google.com/spreadshe
 - Contents: PF1e Core Rulebook simple and martial weapons at Medium size. **No exotic weapons.** Left out: shield bash, armor spikes, net, blowgun.
 - Columns: Weapon, Category (Simple / Martial / Unarmed), Size (Light / One-handed / Two-handed / Pair), Hands, Damage, Crit, Damage type (Slash / Pierce / Blunt), Weight, Cost, Property (rules that exist in the stats doc: Reach, Brace, Thrown, Finesse, Ranged; plus Paired), "PF1e special (no rule yet)" (trip, disarm, double, monk, nonlethal — the game has no CMB), Source, Notes.
 - Light simple weapons (the Archer and Mage list): dagger, punching dagger, spiked gauntlet, light mace, sickle.
-- `Unarmed` tab (Brawler's exclusive type), raised to one-handed martial level on 2026-11-16, placeholders: bare unarmed strike 1d3 (unchanged); hand wraps 1d8 20/×2 (like flail); brass knuckles 1d8 19–20/×2 (like longsword); cestus 1d6 18–20/×2 (like scimitar); gauntlet 1d8 20/×3 (like warhammer). Brass knuckles and cestus profiles were swapped at the user's request (2026-11-16). All Size "Pair", Property "Paired (attacks as dual wield)".
+- `Unarmed` tab (Warrior's exclusive type), raised to one-handed martial level on 2026-11-16, placeholders: bare unarmed strike 1d3 (unchanged); hand wraps 1d8 20/×2 (like flail); brass knuckles 1d8 19–20/×2 (like longsword); cestus 1d6 18–20/×2 (like scimitar); gauntlet 1d8 20/×3 (like warhammer). Brass knuckles and cestus profiles were swapped at the user's request (2026-11-16). All Size "Pair", Property "Paired (attacks as dual wield)".
 - `Ammunition` tab: arrows, bolts and sling bullets all 50 per bundle (cost and weight derived from PF1e packs; a sling-bullet bundle weighs 25 lb). Beast-bane and fire arrows 10 per bundle, effect not set.
 - Values were entered from memory of PF1e and **not checked against the book**.
 - **Halberd** has Reach in the sheet because the stats doc says so; the PF1e halberd has no reach.
@@ -74,7 +76,7 @@ Google Sheet **"Brave unknown Weapon sheet"**: https://docs.google.com/spreadshe
 Godot 4 project `expedition-brave-unknown` (GDScript, UI built in code, tested on 4.5 and 4.7.1). GitHub: `yeengenez/BraveUnknown` (public). Three screens: **Guild** (six pre-rolled recruits, hire for gold, paid refresh), **Party** (3×3 formation, tactics per member, retreat order, make camp), **Battle** (auto-battle vs random monster group, step / auto-play / skip, full roll log). All tuning tables live in `scripts/data/game_data.gd`, tagged `[DOC]` or `[PLACEHOLDER]`. `tests/run_tests.gd` checks the math against the doc's worked example and runs a balance simulation.
 
 Placeholders the prototype invented (not design decisions; replace when the real systems exist):
-- Classes: Soldier d10 full BAB, Archer d8 full BAB, Cleric d8 ¾ BAB divine/WIS, Mage d6 ½ BAB arcane/INT. (These Hit Die and BAB values were confirmed by the user on 2026-11-16.) No Brawler or Rogue. Gear rules predate the 2026-11-16 class design.
+- Classes: Soldier d10 full BAB, Archer d8 full BAB, Cleric d8 ¾ BAB divine/WIS, Mage d6 ½ BAB arcane/INT. (These Hit Die and BAB values were confirmed by the user on 2026-11-16.) No Warrior or Rogue. Gear rules predate the 2026-11-16 class design.
 - Nine stand-in spells (ray, auto-hit, row/lane area, heal, buff). No spell preparation step.
 - All monsters except Orc Raider; encounter budgets; max two casters per encounter. Goblin Brute (club) and Cave Ghoul (claws) were added 2026-11-16 to show blunt and claw strikes.
 - Weapon damage types (slash / pierce / blunt / claw / bite) only choose the strike animation; no rules effect.
@@ -121,9 +123,9 @@ Art style chosen: **pixel-art anime bust portraits** ("style A"), 200×200. Port
 
 - Layers, back to front: body (class outfit) fixed + skin, face skin + fixed + iris, optional scar, hair. Skin, iris and hair are grayscale value maps tinted by color ramps (`palettes.json`: 5 skin, 10 hair, 6 eye ramps).
 - **Male and female sets are fully separate**: own base head, bodies, five expressions, scar and hairstyles. Male hair (8): messy, side part, spiky, crew cut, slicked, shaggy, ponytail, long. Female hair (7): long, ponytail, bob, braids, wavy, pixie, bun.
-- **Outfits exist for all six classes** (Mage, Brawler and Rogue added 2026-11-17, awaiting user review). Part ids: `soldier`, `archer`, `cleric` (= Acolyte), `mage`, `brawler`, `rogue`.
+- **Outfits exist for all six classes** (Mage, Brawler and Rogue added 2026-11-17, awaiting user review). Part ids: `soldier`, `archer`, `cleric` (= Acolyte), `mage`, `warrior` (renamed from `brawler` 2026-11-18; the legacy part still shows the old Brawler outfit), `rogue`.
   - Mage: deep violet robe, silver trim, high collar, crescent clasp.
-  - Brawler: crimson sleeveless tunic, studded leather vest, black sash, bare arms. Its arms and chest are on the skin layer (`BARE_SKIN` in `build_library.py`), so they follow the skin colour.
+  - Warrior (legacy art = old Brawler outfit): crimson sleeveless tunic, studded leather vest, black sash, bare arms. Its arms and chest are on the skin layer (`BARE_SKIN` in `build_library.py`), so they follow the skin colour.
   - Rogue: charcoal leather armor, plum short cape (hood down) and scarf, chest strap with a dagger. The female Rogue's low neckline is also on the skin layer (fixed 2026-11-18 after the user spotted it staying one colour).
 - Art direction set by the user: male Soldier has a bulkier frame than the female; female Cleric keeps the original wide hooded mantle with a **single centered cross** (never two crosses on the chest); female Archer has a slightly fuller chest.
 - Appearance is separate from stats. `hero_class` in the appearance record only selects the outfit.
@@ -156,10 +158,10 @@ Bodies for the other classes (2026-11-17, **awaiting user review**), made as out
 | Archer | 1h, bow | Light secondary weapon; bow/crossbow pose |
 | Acolyte | 1h, 2h, reach | Quarterstaff (2h) and spears (reach) are simple weapons; shield on 1h |
 | Mage | 1h | Light weapons only; staff or wand in the front hand |
-| Brawler | 1h, 2h, reach | Simple and martial; unarmed pair uses 1h |
+| Warrior (was Brawler) | 1h, 2h, reach | Simple and martial; unarmed pair uses 1h |
 | Rogue | 1h | One-handed only; dual wield uses 1h |
 
-**Acolyte can use the longspear** (simple, reach), confirmed by the user 2026-11-17, so the Acolyte keeps its reach bodies. Long-shafted weapons: Soldier and Brawler (all), Acolyte (longspear, spear). Archer, Mage and Rogue have none.
+**Acolyte can use the longspear** (simple, reach), confirmed by the user 2026-11-17, so the Acolyte keeps its reach bodies. Long-shafted weapons: Soldier and Warrior (all), Acolyte (longspear, spear). Archer, Mage and Rogue have none.
 
 Assumptions to confirm with the user: no Acolyte crossbow pose; the Mage holds a staff in the 1h pose; dual wield and unarmed reuse the 1h pose. Canva ids are listed in `art_source/battle_sprites/README.md`. Known flaws: the male Acolyte reach body has a warmer head colour; the female Acolyte reach body seems to have lost the cross.
 

@@ -11,7 +11,7 @@ How `res://portraits/parts/` was made. You only need this to add or redo portrai
 2. `build_library.py` registers each image to its base, cuts out the changed part and writes the
    layers: fixed colour parts, plus grayscale value maps for skin, iris and hair. Output goes to
    `library/` (the game copy is `res://portraits/parts/`).
-   Outfits that show bare skin (`BARE_SKIN`: Brawler arms and chest, female Rogue neckline) also put their arms and chest on
+   Outfits that show bare skin (`BARE_SKIN`: Warrior (formerly Brawler) arms and chest, female Rogue neckline) also put their arms and chest on
    the skin layer, so they follow the hero's skin colour.
 3. `palettes.json` holds the skin, hair and eye colour ramps (also copied to `res://portraits/`).
 4. `compose.py` is the reference compositor and random roller; it writes `contact_sheet.png`.

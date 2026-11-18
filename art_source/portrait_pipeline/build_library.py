@@ -71,7 +71,7 @@ def skin_mask(im, fg, seed=(92, 118)):
     # grow into the soft shading and line pixels around the skin, so no original-coloured fringe is left behind
     return ndi.binary_dilation(core, iterations=6, mask=huefam(h) & fg & zone) | core
 
-BARE_SKIN = {'brawler', 'rogue'}          # outfits that show arms or chest: their skin must follow the skin ramp too
+BARE_SKIN = {'warrior', 'rogue'}          # outfits that show arms or chest: their skin must follow the skin ramp too
 def body_skin(im, fg):
     """Bare arms, shoulders and chest: big, lit skin-tone areas below the chin, grown a little into their shading."""
     h = hsv(im)
@@ -84,7 +84,7 @@ def body_skin(im, fg):
 SKIN_LO, SKIN_HI = 30.0, 235.0
 def skin_value(im): return (lum(im) - SKIN_LO) / (SKIN_HI - SKIN_LO) * 255
 
-meta = {'canvas': [S, S], 'body_types': ['m', 'f'], 'bodies': ['soldier', 'archer', 'cleric', 'mage', 'brawler', 'rogue'],
+meta = {'canvas': [S, S], 'body_types': ['m', 'f'], 'bodies': ['soldier', 'archer', 'cleric', 'mage', 'warrior', 'rogue'],
         'faces': ['neutral', 'smile', 'stern', 'grin', 'sleepy'], 'details': ['scar']}
 FACE_BOX = np.zeros((S, S), bool); FACE_BOX[56:112, 76:140] = True
 
@@ -122,7 +122,8 @@ def build_set(sex):
     tpl = base_im[TPL_BOX[0]:TPL_BOX[1], TPL_BOX[2]:TPL_BOX[3]]
     base_sk = skin_mask(base_im, foreground(base_im))
     for cls in meta['bodies']:
-        im = fit_head(load(f'{sex}/body_{cls}'), base_im, base_sk, tpl)
+        src = {'warrior': 'brawler'}.get(cls, cls)      # Warrior was called Brawler; legacy source images keep that name
+        im = fit_head(load(f'{sex}/body_{src}'), base_im, base_sk, tpl)
         fg = foreground(im); sk = skin_mask(im, fg)
         if cls in BARE_SKIN: sk |= body_skin(im, fg)
         save_rgba(f'{sex}_body_{cls}_fixed', im, fg & ~sk)

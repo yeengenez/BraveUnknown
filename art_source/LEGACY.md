@@ -40,3 +40,6 @@ The Canva battle sprites were **not** put into the game.
 - **The user's own reference art** in `old_battle_sprites/` (already reference only).
 - **Archer handoff docs** in `battle_sprites/archer/` (README, manifest, equipment-state rules).
 - `outdated_fe_style/` is outdated for a different reason (old rules), not because of Canva.
+
+## Name note
+The class **Brawler was renamed Warrior** (2026-11-18). Legacy battle-sprite files and scripts keep the old name `brawler`; that art is the old Brawler look. The game's portrait parts were renamed to `warrior` so the game keeps working, but still show the old outfit until new art replaces it.
