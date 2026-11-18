@@ -12,7 +12,10 @@
 - `source/hair_m_sheet.png` + `process_hair.py m` - 12 male hairstyles (ChatGPT sheet: grayscale hair on a green
   mannequin). Each style is cut out, the mannequin and its outline removed, scaled and placed on `m_head_skin.png`
   by matching the mannequin's ear, face front and chin, then refined per style with a small affine fit (scale x/y,
-  rotation, shift; `hair_fit_m.json`) so the mannequin lies on the base head and no bald skull shows past the hair. Output `m_hair_<style>.png`: 200x200 **hair value maps**
+  rotation, shift; `hair_fit_m.json`) so the mannequin lies on the base head and no bald skull shows past the hair.
+  Then each style is re-cut around the base head's own ear (polygon `EAR` in the script, traced on the head): the ear
+  sits in front of the hair unless the style covers it, small skull gaps are filled with the nearest hair, and a
+  1-px dark line is drawn where hair meets skin. Output `m_hair_<style>.png`: 200x200 **hair value maps**
   (tinted with the 10 hair ramps). Styles: messy, sidepart, spiky, crewcut, slicked, shaggy, ponytail, long
   (the game's existing 8) + topknot, braided_mohawk, wild_mane, knight_cut (new).
   `preview_hair_m.png`: each style tinted on the base head, then the raw value maps.

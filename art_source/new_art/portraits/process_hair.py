@@ -42,6 +42,56 @@ def landmarks(head):
     return float(ear), float(x1), float(chin)
 
 
+# The base head's ear (polygon traced on <sex>_head_skin.png, canvas pixels). The mannequin's ear is in a
+# slightly different place, so each style's hair is re-cut around this ear.
+EAR = {
+    'm': [(71, 81.5), (76.5, 81), (80.5, 82.5), (82.5, 86), (83, 91), (83.5, 96), (84.5, 103), (80, 105.5),
+          (75.5, 105), (71.5, 102), (68, 98), (66, 93), (66, 88), (68, 83.5)],
+    'f': [(75.5, 82.5), (80, 82), (84, 84.5), (85.5, 89), (85.5, 94), (86.5, 100), (83, 104.5), (79, 104.5),
+          (75, 102), (71.5, 97), (70.5, 92), (71, 87), (73, 84)],
+}
+
+
+def ear_mask(poly):
+    from PIL import ImageDraw
+    im = Image.new('L', (200, 200), 0)
+    ImageDraw.Draw(im).polygon(poly, fill=1)
+    return np.asarray(im).astype(bool)
+
+
+def attach(img, B, mann, ear_poly, style):
+    """Make the hair sit cleanly on the base head:
+    1. ear: if the style left the mannequin's ear visible, the base ear is cut out of the hair (ear in front);
+       if the style covered the ear, the hair stays over it.
+    2. gaps: bald skull that shows between hair and face (because the mannequin is shaped a little differently)
+       is filled with the nearest hair.
+    3. outline: a 1-px dark line where the hair meets visible skin, like the drawn outline on the outer edge."""
+    E = ear_mask(ear_poly)
+    hair = img[..., 3] > 0
+    val = img[..., 0].astype(float)
+    ear_hidden = (hair & E).sum() / E.sum()
+    if ear_hidden < 0.5:
+        hair = hair & ~E
+    # gaps: skull above the ear/face line not covered by hair or the mannequin's visible skin
+    top_of_face = ear_poly and min(y for _, y in ear_poly)
+    gap = B & ~hair & ~mann & ~E
+    gap &= ndi.binary_dilation(hair, iterations=3)
+    if gap.any():
+        idx = ndi.distance_transform_edt(~hair, return_distances=False, return_indices=True)
+        val[gap] = val[idx[0][gap], idx[1][gap]]
+        hair = hair | gap
+    # outline against visible skin
+    skin = B & ~hair
+    edge = hair & ndi.binary_dilation(skin, structure=[[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+    val[edge] = np.minimum(val[edge], 22)
+    out = img.copy()
+    for c in range(3): out[..., c] = np.where(hair, val, 0).astype(np.uint8)
+    out[..., 3] = np.where(hair, 255, 0)
+    print(f'  {style}: ear {"covered" if ear_hidden >= 0.5 else "in front"} ({ear_hidden:.0%} under hair), '
+          f'{int(gap.sum())} gap px filled')
+    return out
+
+
 def main(sex):
     a = np.asarray(Image.open(os.path.join(HERE, 'source', f'hair_{sex}_sheet.png')).convert('RGB')).astype(int)
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
@@ -139,6 +189,7 @@ def main(sex):
         img = np.zeros((200, 200, 4), np.uint8)
         for c in range(3): img[..., c] = gray
         img[..., 3] = np.where(wm > 0.45, 255, 0)
+        img = attach(img, B, warp(Cmm, best) > 0.5, EAR[sex], style)
         fits[style] = dict(fit, cost_before=int(cost(p0)), cost_after=int(cost(best)))
         Image.fromarray(img).save(os.path.join(HERE, f'{sex}_hair_{style}.png'))
         out[style] = img
