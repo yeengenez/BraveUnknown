@@ -1,0 +1,44 @@
+{
+ "soldier": {
+  "scale": 2.3993,
+  "x": 18.2,
+  "y": -65.8,
+  "head_mismatch_px": 5688,
+  "shoulder_row": 288
+ },
+ "archer": {
+  "scale": 2.4491,
+  "x": 13.2,
+  "y": -70.3,
+  "head_mismatch_px": 9030,
+  "shoulder_row": 295
+ },
+ "cleric": {
+  "scale": 2.4991,
+  "x": 5.8,
+  "y": -69.9,
+  "head_mismatch_px": 6895,
+  "shoulder_row": 313
+ },
+ "mage": {
+  "scale": 2.4828,
+  "x": 8.5,
+  "y": -69.1,
+  "head_mismatch_px": 10444,
+  "shoulder_row": 313
+ },
+ "warrior": {
+  "scale": 2.4123,
+  "x": 17.1,
+  "y": -66.4,
+  "head_mismatch_px": 4434,
+  "shoulder_row": 260
+ },
+ "rogue": {
+  "scale": 2.4994,
+  "x": 7.7,
+  "y": -68.9,
+  "head_mismatch_px": 9083,
+  "shoulder_row": 312
+ }
+}

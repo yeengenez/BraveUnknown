@@ -40,5 +40,12 @@
   Female: neutral_almond, large_round, cat_eye, doe, sleepy, sharp_narrow, long_lashed_soft, hooded, wide_bright,
   gentle_smiling, fierce, half_lidded_mysterious.
 
+- `source/body_<m|f>_sheet.png` + `process_bodies.py m|f` - class outfits as portrait busts (ChatGPT drew them under the
+  base head on the body templates; bare skin in cyan). Output `<sex>_body_<id>_fixed.png` (full colour) and, where skin
+  shows, `<sex>_body_<id>_skin.png` (grayscale, tinted with the skin ramp). Ids: soldier, archer, cleric (= Acolyte),
+  mage, warrior, rogue. The drawn head is removed by its grey colour, so collars and scarves over the neck stay whole.
+  Layer order for the new art: head skin -> body skin -> body fixed -> eyes -> hair. `preview_portraits.png` shows
+  full assembled portraits (head, body, eyes, hair, varied skin/hair/eye colours).
+
 Not yet in the game: eyebrows, nose and mouth (expressions) still have to be drawn; the game's `library.json` and
 `HeroPortrait` need the new layer names (eyes as their own layer, extra hairstyles) when this art goes in.
