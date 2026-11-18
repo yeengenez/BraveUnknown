@@ -1,6 +1,7 @@
 # Expedition: Brave Unknown — Design Decisions
 
-> Copy of the Claude Project doc `claude/design-decisions.md` (source of truth), saved 2026-11-17.
+> Copy of the Claude Project doc `claude/design-decisions.md` (source of truth), saved 2026-11-18.
+
 
 ## Source of truth for stats and combat
 The Claude doc **"Expedition: Brave Unknown — Stats & Combat System (PF1e-style)"** (https://claude.ai/artifact/7YZqGvkNTh9J2xbVdvaPJU) is the authority. Read it before any stat, combat or character work. Do not fill gaps from standard Pathfinder rules: where the doc says TBD, keep it TBD or mark the assumption as a placeholder.
@@ -110,7 +111,7 @@ Art style chosen: **pixel-art anime bust portraits** ("style A"), 200×200. Port
 - **Outfits exist for all six classes** (Mage, Brawler and Rogue added 2026-11-17, awaiting user review). Part ids: `soldier`, `archer`, `cleric` (= Acolyte), `mage`, `brawler`, `rogue`.
   - Mage: deep violet robe, silver trim, high collar, crescent clasp.
   - Brawler: crimson sleeveless tunic, studded leather vest, black sash, bare arms. Its arms and chest are on the skin layer (`BARE_SKIN` in `build_library.py`), so they follow the skin colour.
-  - Rogue: charcoal leather armor, plum short cape (hood down) and scarf, chest strap with a dagger.
+  - Rogue: charcoal leather armor, plum short cape (hood down) and scarf, chest strap with a dagger. The female Rogue's low neckline is also on the skin layer (fixed 2026-11-18 after the user spotted it staying one colour).
 - Art direction set by the user: male Soldier has a bulkier frame than the female; female Cleric keeps the original wide hooded mantle with a **single centered cross** (never two crosses on the chest); female Archer has a slightly fuller chest.
 - Appearance is separate from stats. `hero_class` in the appearance record only selects the outfit.
 - Godot 4 module `expedition-portraits` (tested on 4.5): `portraits/` folder with `PortraitLibrary`, `HeroAppearance` (random roll, `to_dict`/`from_dict`) and `HeroPortrait` (Control using a ramp shader; `bake()` returns an Image).
@@ -121,7 +122,7 @@ Art style chosen: **pixel-art anime bust portraits** ("style A"), 200×200. Port
 - Source images and the build scripts are saved on GitHub in `art_source/portrait_pipeline/` (branch `art-source`, see below).
 
 ## Battle sprites (2026-11-16, in progress)
-Full-body battle sprites that match the portraits (same `HeroAppearance`), assembled from layers like the portraits. On 2026-11-17 the user asked for sprites and portraits of all classes; bodies now exist for every class. **Weapons are not drawn yet.**
+Full-body battle sprites that match the portraits (same `HeroAppearance`), assembled from layers like the portraits. **Current bodies: the grip bodies (see "Grip bodies, skin layer and animations").**
 
 Confirmed by the user (Soldier test):
 - **Art style:** the first full-body design (taller, natural anime proportions, ~6–7 heads), not the chunkier big-head version. Facing right (party is on the left). Canva source of the style: MAHbDbX73BU.
@@ -149,14 +150,15 @@ Bodies for the other classes (2026-11-17, **awaiting user review**), made as out
 
 Assumptions to confirm with the user: no Acolyte crossbow pose; the Mage holds a staff in the 1h pose; dual wield and unarmed reuse the 1h pose. Canva ids are listed in `art_source/battle_sprites/README.md`. Known flaws: the male Acolyte reach body has a warmer head colour; the female Acolyte reach body seems to have lost the cross.
 
-## Grip bodies (2026-11-18)
-User: "make sure their hand can grip weapon properly". The first bodies had plain punching fists, so a handle could not pass through them naturally. New method (Soldier done, **awaiting user review** before other classes):
-- Each confirmed body is edited in Canva so the fists grip a flat **magenta guide rod** at the stance angle (1h: front rod up-forward, raised back rod straight up; 2h: one rod through both stacked fists; reach: one long pole at hip height).
-- Code fits a line through the rod pieces on both sides of each fist: that gives each hand's **grip point and angle** (no more guessed fist anchors). The magenta is removed and refilled from the original body.
-- Weapons are placed by their grip point on those grip points, drawn **in front of the body**, fists redrawn on top.
-- Files: `art_source/battle_sprites/grip_bodies/` (raw with rods, clean bodies, grip JSON, scripts, `previews/soldier_grip_sheet.png`).
-- Canva: the connector now uses the team **Benchamarachuthit Chanthaburi** (2026-11-18). Media from the old team is not visible there; the confirmed bodies were re-imported from the public GitHub repo (ids in the README).
-- Known flaw: the male 2h grip body lost its brown gloves.
+## Grip bodies, skin layer and animations (2026-11-18)
+User: "make sure their hand can grip weapon properly"; then "create sprite for all class including attack and get hit animation with all grip correction". Soldier grips approved ("grip look perfect"); the weapons themselves still look a bit weird and will be fixed later (user).
+- **Grip bodies (all classes, 26):** each confirmed body edited in Canva so the fists grip a flat **magenta guide rod** (1h: front rod up-forward, raised back rod straight up; 2h: one rod through both stacked fists; reach: one pole at hip height; Archer bow pose: vertical bow rod in the front fist + horizontal arrow line to the drawing hand). Code fits the rod on both sides of each fist → each hand's **grip point, angle, fist size** (no guessed anchors). Magenta removed, refilled from the original body. These replace the earlier `<class>/bodies/`.
+- **Skin layer:** sprites split into fixed colours + a skin brightness map, coloured at runtime by the hero's **portrait skin ramp** (same 5 tones), so head and body match each other and the portrait. Skin = head, bare hands at the grips (Acolyte, Mage, Rogue, Brawler), Brawler arms and chest, female Rogue neckline. Fixes the user-reported Brawler head/body mismatch. The portraits' female Rogue neckline was also put on the skin layer (same day).
+- **Class weapons drawn in code** (never Canva): dagger, mace, quarterstaff, mage staff (violet orb), bow, arrow; plus the earlier longsword + kite shield (cut from the first test image), great axe, longspear.
+- **Animations (layer-built):** attack 8 frames, get hit 6 frames, 399×270 per frame (three squares, body in the middle). Loadouts: Soldier longsword / sword+shield / great axe / longspear; Archer bow / dagger; Acolyte mace+shield / quarterstaff / longspear; Mage staff (cast + orb); Brawler unarmed punch / great axe / longspear; Rogue dual daggers. Hit = red flash, knockback, white flash and shake, recover. One-handed weapons rotate about the hand; two-handed turn little (both hands) and lunge more; spears slide through the fists.
+- Files: `art_source/battle_sprites/grip_bodies/` (raw, bodies, grips, layers, scripts) and `art_source/battle_sprites/animation/` (`anim.py`, `class_weapons.py`, `sheets/`, `gif/`).
+- Canva: the connector uses the team **Benchamarachuthit Chanthaburi** (2026-11-18). Old-team media is not visible there; bodies were re-imported from the public GitHub repo. Ids in `grip_bodies/grip_canva_ids.json`.
+- Known flaws: male Acolyte reach body warm head tint (colour now fixed by the skin layer); female Acolyte reach body has no cross; Brawler unarmed punch is only a lunge (the arm does not extend).
 
 ## Weapon layers (2026-11-17, test)
 **Rule (user, 2026-11-17): NEVER use Canva to generate weapons.** Existing images may be reused.
