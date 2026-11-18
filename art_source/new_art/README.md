@@ -26,9 +26,9 @@
   curly_mane, warrior_halfup (new). `preview_hair_f.png`, `hair_fit_f.json`.
 - White shine streaks inside the hair stay hair; only the white background (large, or touching the mannequin) is cut.
 
-- `aseprite/` - for hand touch-ups on your PC: `build_head_hair.lua` makes `m_head_hair.aseprite` (one frame per
-  hairstyle, tagged; layers `head` + `hair`), `export_head_hair.lua` writes the edited layers back to the PNGs.
-
+- `aseprite/` - hand editing on your PC. `build_portrait_parts.lua` makes, per sex, `<sex>_hair.aseprite`,
+  `<sex>_eyes.aseprite` and `<sex>_bodies.aseprite` (one tagged frame per style, the base head underneath as a locked
+  reference). `export_portrait_parts.lua` writes every edited layer back to its PNG. See `aseprite/README.md`.
 - `source/eyes_<m|f>_sheet.png` + `process_eyes.py m|f` - 12 eye pairs per sex (ChatGPT drew them on the eye
   templates). Each head is aligned to the base head by silhouette, every pixel is classified (white / blue iris /
   dark line), and each canvas pixel takes the class covering most of it, so the eyes come out as clean pixel art.
