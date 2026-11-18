@@ -1,10 +1,9 @@
 """Split each grip body into a fixed colour layer and a skin brightness map (like the portraits), so skin is
 coloured at runtime by the hero's portrait skin ramp. Head and body skin get the same brightness level."""
 import glob, os, json, numpy as np, cv2
-HERE = os.path.dirname(os.path.abspath(__file__))
 from PIL import Image
 from scipy import ndimage as ndi
-PAL = json.load(open(os.path.join(HERE, '..', '..', '..', 'portraits', 'palettes.json')))['skin']
+PAL = json.load(open('/home/claude/braveunknown/portraits/palettes.json'))['skin']
 LO, HI = 40.0, 240.0
 
 def rgba_body(path):
@@ -14,6 +13,9 @@ def rgba_body(path):
     return a, ~np.isin(lab, list(edge))
 
 BARE_HANDS = {'acolyte', 'mage', 'rogue', 'brawler'}
+
+HEAD_REL = 0.2
+BRAWLER_REL = 0.48
 
 def skin_mask(a, fg, cls, name, grips):
     """Skin = the head, plus bare hands at the grip points, plus class-specific bare skin
@@ -28,10 +30,10 @@ def skin_mask(a, fg, cls, name, grips):
         cy, cx = np.argwhere(lab == i).mean(0); sz = (lab == i).sum()
         if sz < 6: continue
         rel = (cy - top) / H
-        ok = rel < 0.2 and sz >= 20                                          # head
+        ok = rel < HEAD_REL and sz >= 20                                          # head
         if cls in BARE_HANDS:
             ok |= any(np.hypot(cx - p[0], cy - p[1]) < 11 for p in grips)   # hands on the weapon
-        if cls == 'brawler': ok |= rel < 0.48 and sz >= 10                  # arms and chest above the belt
+        if cls == 'brawler': ok |= rel < BRAWLER_REL and sz >= 10                  # arms and chest above the belt
         if cls == 'rogue' and name.startswith('f'): ok |= 0.12 < rel < 0.32 and abs(cx - 66) < 25
         if ok: keep.append(i)
     core = np.isin(lab, keep)
@@ -40,7 +42,7 @@ def skin_mask(a, fg, cls, name, grips):
 
 def split(path):
     n = os.path.basename(path)[:-4]; cls, name = n.split('_', 1)
-    g = json.load(open(os.path.join(HERE, 'grips', f'grips_{n}.json')))['grips']
+    g = json.load(open(f'grips_{n}.json'))['grips']
     grips = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
     a, fg = rgba_body(path); m, top = skin_mask(a, fg, cls, name, grips)
     lum = a[..., 0] * 0.35 + a[..., 1] * 0.45 + a[..., 2] * 0.2
@@ -64,7 +66,7 @@ def tint(fixed, skin, ramp):
     return out
 
 if __name__ == '__main__':
-    os.chdir(HERE); os.makedirs('layers', exist_ok=True)
+    os.makedirs('layers', exist_ok=True)
     for p in sorted(glob.glob('bodies/*.png')):
         n = os.path.basename(p)[:-4]; fixed, skin = split(p)
         Image.fromarray(fixed).save(f'layers/{n}_fixed.png'); Image.fromarray(skin, 'LA').save(f'layers/{n}_skin.png')
@@ -78,4 +80,4 @@ if __name__ == '__main__':
     cols = 4; rows = (len(tiles) + cols - 1) // cols; th, tw = tiles[0].shape[:2]
     sheet = np.full((rows * th, cols * tw, 4), 255, np.uint8)
     for i, t in enumerate(tiles): sheet[(i // cols) * th:(i // cols + 1) * th, (i % cols) * tw:(i % cols + 1) * tw][t[..., 3] > 0] = t[t[..., 3] > 0]
-    Image.fromarray(sheet).save('previews/skin_review.png'); print(sheet.shape, names)
+    Image.fromarray(sheet).save('skin_review.png'); print(sheet.shape, names)
