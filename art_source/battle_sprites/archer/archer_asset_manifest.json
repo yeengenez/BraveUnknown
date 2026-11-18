@@ -1,0 +1,106 @@
+{
+  "project": "Expedition: Brave Unknown",
+  "class_id": "archer",
+  "status": "existing modular legacy outputs retained; compact-style conversion in progress",
+  "shared_appearance": {
+    "source": "HeroAppearance",
+    "shared_across_classes": true,
+    "attributes": [
+      "body_type",
+      "skin",
+      "face_expression",
+      "iris",
+      "scar",
+      "hairstyle",
+      "hair_color"
+    ],
+    "skin_ramps": 5,
+    "hair_ramps": 10,
+    "eye_ramps": 6
+  },
+  "outfit": {
+    "male_and_female": true,
+    "hood": "down",
+    "elements": [
+      "green hooded cloak with hood down",
+      "brown leather jerkin and straps",
+      "light armor accents"
+    ]
+  },
+  "weapon_rules": {
+    "light_simple_melee": [
+      "dagger",
+      "punching dagger",
+      "spiked gauntlet",
+      "light mace",
+      "sickle"
+    ],
+    "ranged": [
+      "bow",
+      "crossbow"
+    ],
+    "forbidden": [
+      "spear",
+      "shortspear",
+      "reach weapons",
+      "two-handed melee"
+    ]
+  },
+  "poses": {
+    "one_handed": [
+      "stand",
+      "attack",
+      "hit"
+    ],
+    "bow": [
+      "stand",
+      "nock",
+      "release",
+      "hit"
+    ],
+    "crossbow": [
+      "stand",
+      "ready",
+      "aim",
+      "release",
+      "hit"
+    ],
+    "bow_release_arrow": "no arrow attached to bow; projectile is separate"
+  },
+  "back_equipment": {
+    "visibility_driver": "equipped ammunition item, not currently held weapon",
+    "quiver": {
+      "when": "arrows equipped",
+      "states": [
+        "full",
+        "partial",
+        "empty"
+      ],
+      "normal_bundle": 50,
+      "special_bundle": 10
+    },
+    "bolt_case": {
+      "when": "bolts equipped",
+      "states": [
+        "full",
+        "partial",
+        "empty"
+      ],
+      "normal_bundle": 50,
+      "special_bundle": 10
+    },
+    "weapon_swap": "does not change back-equipment visibility",
+    "ammo_item_removed": "hide corresponding container"
+  },
+  "source_paths": {
+    "portrait_layers": "portraits/parts/*body_archer*",
+    "grip_bodies": "art_source/battle_sprites/grip_bodies/bodies/archer_{m|f}_{1h|bow}.png",
+    "pose_sprites": "art_source/battle_sprites/poses/sprites/archer_{m|f}_{dagger|bow}_*.png"
+  },
+  "outstanding": [
+    "dedicated crossbow grip pose and animation set",
+    "separate quiver and bolt-case layers for compact art",
+    "compact-style 4.0–4.5-head body and pose layers",
+    "measured grip pivots for each crossbow pose"
+  ]
+}
