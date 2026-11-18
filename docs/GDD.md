@@ -24,7 +24,7 @@ The hook is that you are the expedition's backer, not its hero: you win by prepa
 
 1. **Design your expedition.** Place carts, station parties and assign equipment to protect the caravan.
 2. **Recruit a living roster.** Adventurers have distinct faces, classes and traits; you form them into parties and send them to fight for your cause.
-3. **Grow veterans.** Adventurers gain experience and advance from 6 base classes: Soldier, Archer, Cleric, Mage, Brawler, Rogue.
+3. **Grow veterans.** Adventurers gain experience and advance from 6 base classes: Soldier, Archer, Cleric, Mage, Warrior, Rogue.
 4. **Two views, one role.** Swap between the Overseer view (logistics, map, scouting) and the Combat view (zoom in on one fight or watch all fights at once).
 5. **Explore the unknown gradually.** Send scouts and pick expedition targets to slowly reveal a randomly generated world.
 
@@ -75,7 +75,7 @@ Each recruit has a face, a class, one or more traits, stats and a level. Survivo
 | Archer | Back-line ranged damage | Skl, Str, Spd | Physical |
 | Cleric | Healing and support | Mag, Res, Lck | Magic |
 | Mage | Back-line magic damage | Mag, Skl, Res | Magic |
-| Brawler | Front-line burst damage | Str, HP, Spd | Physical |
+| Warrior | Front-line burst damage | Str, HP, Spd | Physical |
 | Rogue | Fast flanker, crits, ambush counter | Spd, Skl, Lck | Physical |
 
 ### Stats
