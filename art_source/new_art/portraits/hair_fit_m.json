@@ -1,0 +1,110 @@
+{
+ "messy": {
+  "sx": 0.945,
+  "sy": 0.939,
+  "rot_deg": -0.86,
+  "dx": 1.3,
+  "dy": 3.5,
+  "cost_before": 1672,
+  "cost_after": 1063
+ },
+ "sidepart": {
+  "sx": 0.959,
+  "sy": 0.971,
+  "rot_deg": -0.48,
+  "dx": 2.7,
+  "dy": 1.0,
+  "cost_before": 1799,
+  "cost_after": 1048
+ },
+ "spiky": {
+  "sx": 0.95,
+  "sy": 0.959,
+  "rot_deg": -0.89,
+  "dx": 1.1,
+  "dy": 2.8,
+  "cost_before": 1665,
+  "cost_after": 1070
+ },
+ "crewcut": {
+  "sx": 0.943,
+  "sy": 0.958,
+  "rot_deg": -0.35,
+  "dx": 2.2,
+  "dy": 1.0,
+  "cost_before": 1744,
+  "cost_after": 1077
+ },
+ "slicked": {
+  "sx": 0.956,
+  "sy": 0.963,
+  "rot_deg": -0.64,
+  "dx": 2.3,
+  "dy": 2.7,
+  "cost_before": 1906,
+  "cost_after": 1040
+ },
+ "shaggy": {
+  "sx": 0.962,
+  "sy": 0.98,
+  "rot_deg": -0.52,
+  "dx": 2.6,
+  "dy": 1.3,
+  "cost_before": 1679,
+  "cost_after": 1027
+ },
+ "ponytail": {
+  "sx": 0.959,
+  "sy": 0.95,
+  "rot_deg": -1.0,
+  "dx": 2.1,
+  "dy": 2.6,
+  "cost_before": 1935,
+  "cost_after": 1075
+ },
+ "long": {
+  "sx": 0.857,
+  "sy": 0.995,
+  "rot_deg": 1.68,
+  "dx": 2.5,
+  "dy": 2.5,
+  "cost_before": 886,
+  "cost_after": 366
+ },
+ "topknot": {
+  "sx": 0.958,
+  "sy": 0.943,
+  "rot_deg": -2.15,
+  "dx": 2.0,
+  "dy": 3.0,
+  "cost_before": 2210,
+  "cost_after": 1155
+ },
+ "braided_mohawk": {
+  "sx": 0.912,
+  "sy": 0.92,
+  "rot_deg": -3.54,
+  "dx": 2.8,
+  "dy": 3.9,
+  "cost_before": 1858,
+  "cost_after": 786
+ },
+ "wild_mane": {
+  "sx": 0.858,
+  "sy": 0.931,
+  "rot_deg": -5.25,
+  "dx": 2.2,
+  "dy": 4.5,
+  "cost_before": 1723,
+  "cost_after": 710
+ },
+ "knight_cut": {
+  "sx": 0.962,
+  "sy": 0.942,
+  "rot_deg": -1.1,
+  "dx": 2.4,
+  "dy": 2.3,
+  "cost_before": 2009,
+  "cost_after": 1083
+ }
+}

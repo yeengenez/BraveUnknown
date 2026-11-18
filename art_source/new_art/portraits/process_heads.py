@@ -31,6 +31,14 @@ def cut(g, x0, x1):
     keep = [i + 1 for i in range(n) if sizes[i] > 0.01 * sizes[big - 1] and (near & (lab == i + 1)).any()]
     head = ndi.binary_fill_holes(ndi.binary_closing(np.isin(lab, keep), iterations=6))
     cut.skull = skull
+    # add the dark outline found as a thin dip (catches the female neck bottom, whose shading is as dark as the glow)
+    import cv2
+    bh = cv2.morphologyEx(sub.astype(np.uint8), cv2.MORPH_BLACKHAT,
+                          cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (31, 31))).astype(int)
+    dip = ndi.binary_closing((bh > 10) & (sub < 150), iterations=2)
+    lab2, n2 = ndi.label(dip)
+    touch = np.unique(lab2[ndi.binary_dilation(head, iterations=3) & dip]); touch = touch[touch > 0]
+    head = ndi.binary_fill_holes(ndi.binary_closing(head | np.isin(lab2, touch), iterations=4))
     ring = ndi.binary_dilation(head, iterations=11) & ~head & (sub < 125)   # the ~1 art-pixel outline
     outline = ring & ndi.binary_dilation(head, iterations=11)
     # keep only outline pixels that are darker than the glow just outside them

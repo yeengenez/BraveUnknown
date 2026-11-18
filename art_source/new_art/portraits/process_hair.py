@@ -11,7 +11,8 @@ How it works
 - Values are stretched to the legacy hair convention (full 0-255 range, ~median 150-170) with one stretch per sheet,
   so styles keep the same brightness relative to each other.
 """
-import os, sys, json, numpy as np
+import os, sys, json, numpy as np, cv2
+from scipy.optimize import minimize
 from PIL import Image
 from scipy import ndimage as ndi
 
@@ -66,7 +67,13 @@ def main(sex):
     cents = [ndi.center_of_mass(labm == h) for h in heads]
     order = sorted(range(12), key=lambda i: (round(cents[i][0] / 200), cents[i][1]))   # rows, then columns
     heads = [heads[i] for i in order]
-    mannall = [ndi.binary_fill_holes(labm == h) for h in heads]
+    # each mannequin = its face component + every other green piece (neck, ear) closest to it
+    big = [int(i) + 1 for i in range(nm) if szm[i] > 200]
+    cen = {i: ndi.center_of_mass(labm == i) for i in big}
+    mannall = []
+    for h in heads:
+        parts = [i for i in big if min(heads, key=lambda q: np.hypot(cen[q][0] - cen[i][0], cen[q][1] - cen[i][1])) == h]
+        mannall.append(ndi.binary_fill_holes(ndi.binary_closing(np.isin(labm, parts), iterations=6)))
     dist = np.stack([ndi.distance_transform_edt(~m) for m in mannall])
     owner = np.argmin(dist, 0)
     near_g_all = ndi.binary_dilation(green, iterations=6); near_w_all = ndi.binary_dilation(white, iterations=6)
@@ -76,7 +83,7 @@ def main(sex):
     lab, n = ndi.label(hair_glob); sz = ndi.sum(hair_glob, lab, range(1, n + 1))
     blob_owner = ndi.labeled_comprehension(owner, lab, range(1, n + 1), lambda x: np.bincount(x).argmax(), int, -1)
 
-    out = {}
+    out = {}; fits = {}
     for k, style in enumerate(STYLES[sex]):
         # drop the mannequin's inner jaw/neck lines: thin blobs that are almost entirely dark
         dark_frac = ndi.mean(v < 100, lab, range(1, n + 1))
@@ -94,22 +101,52 @@ def main(sex):
         val = np.clip((cv - lo) / (hi - lo) * 255, 0, 255)
         H, W = cv.shape
         Wn, Hn = round(W * s), round(H * s)
-        pv = np.asarray(Image.fromarray((val * hair).astype(np.float32)).resize((Wn, Hn), Image.BOX))
-        pm = np.asarray(Image.fromarray(hair.astype(np.float32)).resize((Wn, Hn), Image.BOX))
+        down = lambda arr: np.asarray(Image.fromarray(arr.astype(np.float32)).resize((Wn, Hn), Image.BOX))
+        pv, pm = down(val * hair), down(hair)
+        mann_full = mann | (ndi.binary_dilation(mann, iterations=3) & (cv < 120))
+        pmm = down(mann_full)
+        # place on a 200x200 canvas at the landmark position, then refine with a small affine fit:
+        # the mannequin should cover the base head, and no base-head skin may stick out from under hair + mannequin
+        def to_canvas(arr):
+            c = np.zeros((200, 200), np.float32); ox, oy = int(round(tx)), int(round(ty))
+            ys0, xs0, ys1, xs1 = max(0, oy), max(0, ox), min(200, oy + Hn), min(200, ox + Wn)
+            c[ys0:ys1, xs0:xs1] = arr[ys0 - oy:ys1 - oy, xs0 - ox:xs1 - ox]; return c
+        Cv, Cm, Cmm = to_canvas(pv), to_canvas(pm), to_canvas(pmm)
+        B = base[..., 3] > 0
+        cxp, cyp = b_front - 30, b_chin - 40                        # pivot near the middle of the face
+        def M(p):
+            sx, sy, rot, dx, dy = p
+            c, sn = np.cos(rot), np.sin(rot)
+            A = np.array([[sx * c, -sy * sn], [sx * sn, sy * c]])
+            t = np.array([cxp + dx, cyp + dy]) - A @ np.array([cxp, cyp])
+            return np.hstack([A, t[:, None]]).astype(np.float32)
+        warp = lambda img, p, interp=cv2.INTER_LINEAR: cv2.warpAffine(img, M(p), (200, 200), flags=interp)
+        def cost(p):
+            mm, hh = warp(Cmm, p) > 0.5, warp(Cm, p) > 0.5
+            poke = (B & ~mm & ~hh).sum()          # base skin not covered by mannequin or hair
+            spill = (mm & ~B).sum()               # mannequin where the base head has nothing
+            reg = 4000 * ((p[0] - 1) ** 2 + (p[1] - 1) ** 2) + 4000 * p[2] ** 2
+            return 3 * poke + 2 * spill + reg
+        p0 = np.array([1, 1, 0, 0, 0], float)
+        best = minimize(cost, p0, method='Nelder-Mead',
+                        options=dict(initial_simplex=[p0, p0 + [.06, 0, 0, 0, 0], p0 + [0, .06, 0, 0, 0],
+                                                      p0 + [0, 0, .05, 0, 0], p0 + [0, 0, 0, 3, 0], p0 + [0, 0, 0, 0, 3]],
+                                     xatol=1e-3, fatol=1, maxiter=400)).x
+        fit = dict(zip(['sx', 'sy', 'rot_deg', 'dx', 'dy'], [round(float(x), 3) for x in best[:2]] +
+                       [round(float(np.degrees(best[2])), 2), round(float(best[3]), 1), round(float(best[4]), 1)]))
+        wv, wm = warp(Cv, best), warp(Cm, best)
+        gray = np.where(wm > 0, wv / np.maximum(wm, 1e-6), 0).clip(0, 255).astype(np.uint8)
         img = np.zeros((200, 200, 4), np.uint8)
-        ox, oy = int(round(tx)), int(round(ty))
-        ys0, xs0 = max(0, oy), max(0, ox)
-        ys1, xs1 = min(200, oy + Hn), min(200, ox + Wn)
-        sv, sm = pv[ys0 - oy:ys1 - oy, xs0 - ox:xs1 - ox], pm[ys0 - oy:ys1 - oy, xs0 - ox:xs1 - ox]
-        gray = np.where(sm > 0, sv / np.maximum(sm, 1e-6), 0).astype(np.uint8)
-        for c in range(3): img[ys0:ys1, xs0:xs1, c] = gray
-        img[ys0:ys1, xs0:xs1, 3] = np.where(sm > 0.45, 255, 0)
+        for c in range(3): img[..., c] = gray
+        img[..., 3] = np.where(wm > 0.45, 255, 0)
+        fits[style] = dict(fit, cost_before=int(cost(p0)), cost_after=int(cost(best)))
         Image.fromarray(img).save(os.path.join(HERE, f'{sex}_hair_{style}.png'))
         out[style] = img
         a3 = img[..., 3]; yy, xx = np.where(a3 > 0)
         clip = 'CLIPPED' if (xx.min() == 0 or yy.min() == 0 or xx.max() == 199 or yy.max() == 199) else ''
-        print(f'{sex}_hair_{style}: scale {s:.3f} bbox {xx.min()},{yy.min()}-{xx.max()},{yy.max()} {clip}')
+        print(f'{sex}_hair_{style}: {fits[style]} bbox {xx.min()},{yy.min()}-{xx.max()},{yy.max()} {clip}')
 
+    json.dump(fits, open(os.path.join(HERE, f'hair_fit_{sex}.json'), 'w'), indent=1)
     # preview: each style on the base head, three hair colours
     pal = json.load(open(os.path.join(ROOT, 'portraits', 'palettes.json')))
     hx = lambda h: [int(h[i:i + 2], 16) for i in (1, 3, 5)]

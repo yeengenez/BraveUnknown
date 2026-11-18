@@ -11,10 +11,14 @@
 
 - `source/hair_m_sheet.png` + `process_hair.py m` - 12 male hairstyles (ChatGPT sheet: grayscale hair on a green
   mannequin). Each style is cut out, the mannequin and its outline removed, scaled and placed on `m_head_skin.png`
-  by matching the mannequin's ear, face front and chin. Output `m_hair_<style>.png`: 200x200 **hair value maps**
+  by matching the mannequin's ear, face front and chin, then refined per style with a small affine fit (scale x/y,
+  rotation, shift; `hair_fit_m.json`) so the mannequin lies on the base head and no bald skull shows past the hair. Output `m_hair_<style>.png`: 200x200 **hair value maps**
   (tinted with the 10 hair ramps). Styles: messy, sidepart, spiky, crewcut, slicked, shaggy, ponytail, long
   (the game's existing 8) + topknot, braided_mohawk, wild_mane, knight_cut (new).
   `preview_hair_m.png`: each style tinted on the base head, then the raw value maps.
 - Female hair: same script with `f` once `source/hair_f_sheet.png` exists.
+
+- `aseprite/` - for hand touch-ups on your PC: `build_head_hair.lua` makes `m_head_hair.aseprite` (one frame per
+  hairstyle, tagged; layers `head` + `hair`), `export_head_hair.lua` writes the edited layers back to the PNGs.
 
 Not yet in the game: the faces (eyes, brows, mouth per expression) and hair still have to be drawn for these heads.
