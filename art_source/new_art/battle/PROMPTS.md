@@ -47,21 +47,35 @@ sheet has a crossbow row (stand | aim | release | hit, user's choice 2026-11-19)
 
 ## Class blocks (paste after the common prompt)
 
-### Soldier
-> Character: **<SEX> Soldier** (heavy armour, from the portrait). Rows, top to bottom, cells left to right =
-> stand | attack | hit:
-> 1. **One-handed:** stand = right fist raised by the shoulder (magenta rod pointing up like a sword), left fist forward
->    at chest height (cyan rod upright like a shield grip). Attack = deep lunge forward, right arm fully extended at
->    shoulder height with the magenta rod level and pointing forward (not downward); the LEFT forearm is RAISED and
->    braced across the front of the chest, the left fist at chest height in front of the body with the cyan rod upright,
->    like holding a shield up - NOT down at the belt or hip. Hit = recoiling back, wincing, knees bent, both fists still on their rods.
-> 2. **Two-handed:** both fists together on ONE magenta rod (one fist above the other, like a great axe handle). Stand
->    = guard, rod angled up and forward. Attack = heavy forward chop, rod swung down and forward. Hit = recoil, rod pulled up.
-> 3. **Reach:** ONE long magenta pole (as long as the body is tall) held at hip height through both fists, front fist
->    forward, back fist at the rear hip. Stand = spear guard. Attack = full forward thrust, deep lunge. Hit = recoil,
->    pole still held.
-> Male: broad, bulky frame. Female: clearly feminine (smaller frame, narrower shoulders, curved waist and hips, visible
-> chest under the armour, slimmer limbs, smaller pauldrons), same armour style.
+### Soldier (v2, from the user's concept sheet - self-contained, do NOT paste the common prompt)
+Attach `templates/soldier_template.png` (4 rows x 3 cells) and the concept sheet
+`source/concepts/soldier_concept.png`, replace `<SEX>`, then paste:
+
+```
+Use the first attached image as the canvas: a grid of 4 rows x 3 cells on flat pure green (#00FF00), each cell with a dark-green ground line and a dashed head-top line. Keep the canvas size, the grid and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the head at the dashed line when standing upright, all 12 figures at the same scale and the same character.
+
+The second attached image is the concept sheet for this character. Use it for the OUTFIT (silver plate armour, blue scarf, blue tabard with a light trim, brown leather belts and pouches) and for the STANCES only. Ignore its helmet, shield, weapons, cape, slash effects, text and background.
+
+Character: <SEX> Soldier. Style: Fire Emblem-style anime pixel art matching the concept: clean dark outlines, cel shading, light from the upper left, natural anime proportions about 6-7 heads tall, 3/4 view FACING RIGHT in every cell.
+
+Rows, top to bottom; cells left to right = STAND | ATTACK | GET HIT:
+1. One-handed + shield (Roman stance from the concept): STAND = low guard, left fist forward at chest height (where the shield grip would be) with the cyan rod upright in front of the chest; right fist raised by the shoulder with the magenta rod pointing up like a short sword. ATTACK = deep lunge forward, left fist stays forward at chest height with the cyan rod upright (shield braced in front of the chest), right arm thrusting forward past it at waist-to-chest height, magenta rod level and pointing forward. GET HIT = pushed back, knees bent, shoulders hunched behind the left fist, wincing, both rods still held.
+2. Dual weapons: STAND = wide stance, both fists low and forward, magenta rod in the right fist and cyan rod in the left, both pointing forward and slightly down. ATTACK = lunging cross slash: right arm swept forward at shoulder height with the magenta rod level, left arm pulled back low with the cyan rod. GET HIT = recoiling back, wincing, arms pulled in, both rods still held.
+3. Two-handed: both fists together on ONE magenta rod (one fist above the other). STAND = rod held upright in front of the body, fists at the waist. ATTACK = heavy downward strike finishing low in front, rod angled down and forward, deep lunge. GET HIT = recoiling back, rod pulled up across the body.
+4. Spear: ONE long magenta pole, as long as the body is tall, held at hip height through both fists, front fist forward, back fist at the rear hip. STAND = spear guard, pole level and pointing forward. ATTACK = full forward thrust, deep lunge, pole level. GET HIT = recoiling back, pole still held, tip lifted.
+
+Hard rules:
+- No weapons, shields, helmets or capes. Each fist grips a flat, straight guide rod instead, 2-3% of the figure height thick, sticking out of both sides of the fist where the handle would be, fingers wrapped over it: pure magenta (#FF00FF) in the character's RIGHT hand, pure cyan (#00FFFF) in the LEFT hand. Flat single colours, no shading or outline. No other magenta or cyan anywhere.
+- Bald head: no hair, no helmet, no hood. Ears visible. Small anime face: dark eye lines, a tiny bit of white, short mouth line.
+- All bare skin (face, ears, neck, hands) in shades of pure yellow (red = green, blue near zero): dark yellow for shadows, bright yellow for highlights, shaded like normal skin. Nothing else may be yellow or gold: buckles, trims and studs must be silver or dark bronze/brown.
+- No text, labels, slash effects, motion lines, dust, shadows on the ground or background objects.
+- Output one PNG at the canvas's exact size.
+```
+Male: broad, bulky frame (as in the concept). Female: add to the prompt "Female: clearly feminine - smaller frame,
+narrower shoulders, curved waist and hips, visible chest under the armour, slimmer limbs, smaller pauldrons, same
+armour style."
+
+The first Soldier sheets (3 rows, before the concept) are kept in `source/soldier_v1/`.
 
 ### Archer
 > Character: **<SEX> Archer** (light armour and hooded cloak with the hood DOWN, from the portrait). Rows, top to bottom:

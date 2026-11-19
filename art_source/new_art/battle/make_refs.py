@@ -16,7 +16,7 @@ import finish
 
 # stance rows per class (design doc table) and the legacy loadout that shows each row's poses
 CLASSES = {
-    'soldier': [('1h', 'sword_shield'), ('2h', 'greataxe'), ('reach', 'longspear')],
+    'soldier': [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v2 (user concept)
     'archer':  [('1h', 'dagger'), ('bow', 'bow'), ('crossbow', None)],
     'acolyte': [('1h', 'mace_shield'), ('2h', 'quarterstaff'), ('reach', 'longspear')],
     'mage':    [('1h', 'staff')],
