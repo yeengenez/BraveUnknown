@@ -37,8 +37,8 @@ heads (hair is a separate layer matched to the portrait). New for the new art: b
 > - **Bald head**: no hair, no helmet, no hood up, no headband. Ears visible. Small anime face: dark eye lines, a tiny
 >   bit of white, short mouth line.
 > - **All bare skin (face, ears, neck, hands, any bare arms or chest) in shades of pure yellow** (red = green, blue near
->   zero): dark yellow for shadows, bright yellow for highlights, shaded like normal skin. Nothing else may be yellow:
->   gold or brass trims must be ochre/orange-brown.
+>   zero): dark yellow for shadows, bright yellow for highlights, shaded like normal skin. Nothing else may be yellow or gold:
+>   trims, buckles, embroidery and clasps must be **silver or dark bronze/brown**, never gold or yellow.
 > - No text, labels, numbers, shadows on the ground, effects, motion lines or background objects.
 > - Output one PNG at the canvas's exact size.
 
@@ -112,6 +112,11 @@ heads (hair is a separate layer matched to the portrait). New for the new art: b
 > Lean, agile build.
 
 ---
+
+## Notes from the first sheets (Soldier m/f, 2026-11-19)
+- Skin came out yellow-orange (about #F8B840), which is fine; the belt buckle and tabard trim came out the same gold,
+  so the common prompt now asks for silver / dark bronze trims.
+- The 1h attack's left (shield) fist ended low at the belt instead of braced in front of the chest.
 
 ## If ChatGPT struggles
 - Too many figures (Soldier, Acolyte, Warrior have 9): ask for **one row at a time** on the same template ("draw only
