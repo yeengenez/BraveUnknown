@@ -83,3 +83,11 @@ shading and tints with the skin ramp. Layer order: head skin -> nose -> body ski
 (one scale per sheet, near eye on the base iris). Male: straight, button, aquiline, broad, pointed, crooked. Female:
 straight, button, snub, rounded, long_thin, sharp. `preview_noses.png`. The base heads have no nose of their own
 (the earlier baked-in nose, `add_nose.py`, was removed). Game copies: `portraits/parts/` on `main`.
+
+## Battle sprites (started 2026-11-19)
+`battle/` - kit for ChatGPT battle-sprite sheets in the new style: `PROMPTS.md` (common prompt + one block per class),
+`templates/<class>_template.png` (green canvas, one row per stance, one cell per state, ground and head-top lines),
+`refs/<class>_<sex>_ref.png` (new portrait outfit, bald + the LEGACY sprite poses for every cell), built by
+`make_refs.py`. Keys: magenta rod = right hand, cyan rod = left hand, bare skin in shades of pure yellow, bald heads,
+no weapons.
+
