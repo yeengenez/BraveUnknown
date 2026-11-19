@@ -9,8 +9,8 @@ extends Control
 ## crop = "bust" shows the whole 200x200 portrait; "face" zooms in on the head
 ## and shoulders, for small slots like battle cards.
 
-## Head-and-shoulders region of the 200x200 portrait canvas.
-const FACE_REGION := Rect2(42, 6, 116, 116)
+## Head-and-shoulders region of the 200x200 portrait canvas (new art: skull top y=34, chin y~125).
+const FACE_REGION := Rect2(36, 20, 128, 128)
 
 var crop := "bust"
 var corner := 6
@@ -60,18 +60,7 @@ func _rebuild() -> void:
 		_hero.appearance = HeroAppearance.from_dict(_look)
 		_hero.modulate = Color(0.5, 0.5, 0.53) if _dimmed else Color.WHITE
 		add_child(_hero)
-		_apply_tint()
 	_layout()
-
-
-## Placeholder Mage outfit: the cleric robe recoloured (see robe_tint.gdshader).
-func _apply_tint() -> void:
-	if String(_look.get("tint", "")) != "mage" or _hero.get_child_count() == 0:
-		return
-	var body_layer := _hero.get_child(0) as TextureRect  # first layer = <body>_fixed outfit
-	var material := ShaderMaterial.new()
-	material.shader = preload("res://portraits/robe_tint.gdshader")
-	body_layer.material = material
 
 
 func _layout() -> void:

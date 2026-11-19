@@ -10,37 +10,78 @@
  "bodies": [
   "soldier",
   "archer",
-  "cleric"
+  "cleric",
+  "mage",
+  "warrior",
+  "rogue"
  ],
- "faces": [
+ "expressions": [
   "neutral",
   "smile",
   "stern",
   "grin",
-  "sleepy"
+  "sleepy",
+  "worried"
  ],
- "details": [
-  "scar"
- ],
- "hair": {
+ "eyes": {
   "m": [
-   "messy",
-   "sidepart",
-   "spiky",
-   "crewcut",
-   "slicked",
-   "shaggy",
-   "ponytail",
-   "long"
+   "deep_set_brooding",
+   "downturned_gentle",
+   "half_closed_calm",
+   "heavy_lidded",
+   "hooded_stern",
+   "narrowed_squint",
+   "neutral_almond",
+   "round_youthful",
+   "sharp_narrow",
+   "tired_droopy",
+   "upturned_fierce",
+   "wide_alert"
   ],
   "f": [
+   "cat_eye",
+   "doe",
+   "fierce",
+   "gentle_smiling",
+   "half_lidded_mysterious",
+   "hooded",
+   "large_round",
+   "long_lashed_soft",
+   "neutral_almond",
+   "sharp_narrow",
+   "sleepy",
+   "wide_bright"
+  ]
+ },
+ "hair": {
+  "m": [
+   "braided_mohawk",
+   "crewcut",
+   "knight_cut",
    "long",
+   "messy",
    "ponytail",
+   "shaggy",
+   "sidepart",
+   "slicked",
+   "spiky",
+   "topknot",
+   "wild_mane"
+  ],
+  "f": [
    "bob",
    "braids",
-   "wavy",
+   "bun",
+   "crown_braid",
+   "curly_mane",
+   "long",
    "pixie",
-   "bun"
+   "ponytail",
+   "side_braid",
+   "twin_buns",
+   "warrior_halfup",
+   "wavy"
   ]
- }
+ },
+ "_note": "New art (2026-11-19). Layer order, back to front: head skin, body skin, body fixed, eyes fixed, iris, brows, mouth, hair. Value maps (gray) are tinted by palettes.json: skin -> skin ramp, iris -> eyes ramp, brows and hair -> hair ramp. Portraits are finished by portrait_finish.gd (port of art_source/new_art/portraits/finish.py)."
 }

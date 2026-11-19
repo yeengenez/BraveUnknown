@@ -146,5 +146,6 @@ func _frames(count: int) -> void:
 func _shot(shot_name: String) -> void:
 	if shots_dir == "":
 		return
+	await get_tree().create_timer(1.0).timeout  # portraits build on worker threads
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png("%s/%s.png" % [shots_dir, shot_name])

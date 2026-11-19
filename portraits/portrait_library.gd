@@ -10,6 +10,7 @@ const CANVAS := Vector2i(200, 200)
 static var _lib: Dictionary = {}
 static var _palettes: Dictionary = {}
 static var _ramp_textures: Dictionary = {}
+static var _images: Dictionary = {}
 
 
 static func _ensure_loaded() -> void:
@@ -35,15 +36,27 @@ static func body_types() -> Array:
 	return _lib["body_types"]
 
 
-## Class outfits: soldier, archer, cleric.
+## Class outfits: soldier, archer, cleric (Acolyte), mage, warrior, rogue.
 static func classes() -> Array:
 	_ensure_loaded()
 	return _lib["bodies"]
 
 
-static func faces() -> Array:
+## Expressions (each one is a brows layer + a mouth layer).
+static func expressions() -> Array:
 	_ensure_loaded()
-	return _lib["faces"]
+	return _lib["expressions"]
+
+
+## Older name for expressions().
+static func faces() -> Array:
+	return expressions()
+
+
+## Eye shapes available for one body type.
+static func eye_styles(body: String) -> Array:
+	_ensure_loaded()
+	return _lib["eyes"][body]
 
 
 ## Hairstyles available for one body type.
@@ -52,9 +65,28 @@ static func hairstyles(body: String) -> Array:
 	return _lib["hair"][body]
 
 
+## No detail layers (scars) in the current art.
 static func details() -> Array:
 	_ensure_loaded()
-	return _lib["details"]
+	return _lib.get("details", [])
+
+
+## A ramp as a 256-entry colour table (index = value-map value), for CPU tinting. Cached.
+static var _ramp_tables: Dictionary = {}
+static func ramp_table(group: String, ramp_name: String) -> PackedColorArray:
+	var key := group + "/" + ramp_name
+	if _ramp_tables.has(key):
+		return _ramp_tables[key]
+	var colors := ramp_colors(group, ramp_name)
+	var last := colors.size() - 1
+	var table := PackedColorArray()
+	table.resize(256)
+	for v in 256:
+		var t := v / 255.0 * last
+		var i := mini(int(t), last - 1)
+		table[v] = colors[i].lerp(colors[i + 1], t - i)
+	_ramp_tables[key] = table
+	return table
 
 
 ## Ramp names for a group: "skin", "hair" or "eyes".
@@ -98,3 +130,17 @@ static func has_part(part_name: String) -> bool:
 ## The texture for one part, e.g. "f_body_cleric_fixed".
 static func part(part_name: String) -> Texture2D:
 	return load(PARTS_DIR + part_name + ".png") as Texture2D
+
+
+## One part as an RGBA8 Image (decoded once, then cached), or null if the part does not exist.
+static func part_image(part_name: String) -> Image:
+	if _images.has(part_name):
+		return _images[part_name]
+	var img: Image = null
+	if has_part(part_name):
+		img = part(part_name).get_image()
+		if img.is_compressed():
+			img.decompress()
+		img.convert(Image.FORMAT_RGBA8)
+	_images[part_name] = img
+	return img

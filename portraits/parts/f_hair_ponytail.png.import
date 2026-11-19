@@ -2,7 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c14joam66hq77"
+uid="uid://gxg3nq8wxjrv"
 path="res://.godot/imported/f_hair_ponytail.png-4dee7630a128f6e99a499d45966083fa.ctex"
 metadata={
 "vram_texture": false
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

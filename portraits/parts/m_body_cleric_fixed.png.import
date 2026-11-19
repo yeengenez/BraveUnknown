@@ -2,7 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bp3d2pwygfxmr"
+uid="uid://dcrty17c485l8"
 path="res://.godot/imported/m_body_cleric_fixed.png-e6e71b1f7c2aeb4be25ac25c1ff17764.ctex"
 metadata={
 "vram_texture": false
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

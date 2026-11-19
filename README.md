@@ -34,32 +34,18 @@ fights until you make camp. Dead expeditioners leave the roster for good.
 
 ## Portraits
 
-> **Legacy art (2026-11-18):** the portrait images were made from Canva art and are Legacy,
-> reference only. They stay in the game until replacement art exists. See `portraits/LEGACY.md`.
+Expeditioners use the **new portrait art** (2026-11-19), in `res://portraits/` (see
+`portraits/README.md`). Each recruit rolls a look for their class outfit (sex, skin, expression,
+eye style, hairstyle, hair and eye colour), stored on the unit as `look`; the name follows the
+sex, and **New look** on the Party screen re-rolls it. The layers are blended by
+`PortraitFinish`, a GDScript port of the art pipeline's `finish.py`, once per look and cached,
+on a worker thread so screens never stall (a portrait appears a moment after its card).
 
-Expeditioners use the **expedition-portraits** module (pixel-art anime bust
-portraits assembled from layered parts and colour ramps), copied in as
-`res://portraits/`. Each recruit rolls a `HeroAppearance` for its class
-outfit when created; it is stored on the unit as `look`
-(`HeroAppearance.to_dict()`), so it never changes unless you press
-**New look** on the Party screen. A recruit's name matches the portrait's
-body type.
+`scripts/ui/unit_portrait.gd` shows the full bust (Guild cards, character sheet) or a
+head-and-shoulders crop (battle cards, roster rows).
 
-`scripts/ui/unit_portrait.gd` shows a unit's portrait anywhere in the UI:
-the full bust on Guild cards and the character sheet, a head-and-shoulders
-crop on battle cards and roster rows (small sizes use smooth mipmapped
-scaling; 180 px and up stay pixel-crisp).
-
-Changes made to the module copy here: mipmaps turned on for the part
-textures (for clean downscaling), and `portraits/robe_tint.gdshader` added.
-
-Placeholders:
-- **Mage** has no outfit in the module yet. Mages wear the cleric robe
-  recoloured violet (`robe_tint.gdshader`); the gold cross still shows. Add
-  `m_body_mage_*` / `f_body_mage_*` parts and list `mage` in
-  `portraits/library.json`, and mages use them automatically.
-- **Monsters** have no art in the module. They still use simple shapes drawn
-  in code (`scripts/core/portrait_gen.gd` + `scripts/ui/monster_portrait.gd`).
+Monsters have no portrait art yet; they still use simple shapes drawn in code
+(`scripts/core/portrait_gen.gd` + `scripts/ui/monster_portrait.gd`).
 
 ## Where things are
 
@@ -69,7 +55,7 @@ scripts/core/unit.gd             one combatant and all derived stats
 scripts/core/recruit_generator.gd  25-point-buy recruits
 scripts/core/encounter_generator.gd  monster groups
 scripts/core/portrait_gen.gd     placeholder monster portrait looks
-portraits/                       expedition-portraits module (hero portraits)
+portraits/                       hero portrait module (new art + finish step)
 scripts/core/combat.gd           the battle engine (no UI code)
 scripts/core/tactics_ai.gd       the five tactics profiles
 scripts/game_state.gd            autoload "Game": gold, guild offers, roster, formation

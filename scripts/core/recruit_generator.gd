@@ -68,17 +68,13 @@ static func random_name(taken: Array, fem: bool = false) -> String:
 
 
 ## A random portrait from the portrait module (res://portraits/), stored as
-## HeroAppearance.to_dict(). body: "m", "f" or "" for random.
-## Classes without an outfit in the module (Mage) borrow the cleric robe,
-## recoloured; see UnitPortrait._apply_tint().
+## HeroAppearance.to_dict(). body: "m", "f" or "" for random. Every game class has its
+## own outfit; an unknown class falls back to the Soldier outfit.
 static func roll_look(class_id: String, body: String = "") -> Dictionary:
-	var outfit := class_id if PortraitLibrary.classes().has(class_id) else "cleric"
+	var outfit := class_id if PortraitLibrary.classes().has(class_id) else "soldier"
 	# Roll straight from the shared generator: re-seeding a fresh generator per
 	# recruit gave correlated looks (most recruits got the same hairstyle).
-	var look := HeroAppearance.roll(Dice.rng, body, outfit).to_dict()
-	if outfit != class_id:
-		look["tint"] = class_id
-	return look
+	return HeroAppearance.roll(Dice.rng, body, outfit).to_dict()
 
 
 static func make(taken_names: Array = [], forced_class: String = "", forced_level: int = 0) -> Unit:

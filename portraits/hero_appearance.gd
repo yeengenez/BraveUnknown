@@ -3,23 +3,24 @@ extends RefCounted
 ## What a hero looks like. Plain data: store to_dict() in your hero or save file.
 ## Only appearance lives here. Stats and class rules belong to the game's own hero data;
 ## hero_class just picks which outfit is drawn.
+##
+## New art (2026-11-19): every part is its own layer, so eyes, expression (brows + mouth)
+## and hair combine freely. See library.json for the lists.
 
-var body: String = "m"            ## "m" or "f"
-var hero_class: String = "soldier" ## soldier, archer or cleric (the outfit)
-var skin: String = "fair"
-var face: String = "neutral"
-var hair: String = "messy"         ## "" means bald
-var hair_color: String = "brown"
-var eyes: String = "brown"
-var details: Array = []            ## e.g. ["scar"]
+var body: String = "m"              ## "m" or "f"
+var hero_class: String = "soldier"  ## outfit: soldier, archer, cleric (Acolyte), mage, warrior, rogue
+var skin: String = "fair"           ## skin ramp
+var expression: String = "neutral"  ## brows + mouth: neutral, smile, stern, grin, sleepy, worried
+var eye_style: String = ""          ## eye shape, per body type (library.json "eyes")
+var hair: String = ""               ## hairstyle, per body type (library.json "hair")
+var hair_color: String = "brown"    ## hair ramp (also tints the brows)
+var eyes: String = "brown"          ## eye colour ramp (tints the iris)
 
-## Chance that a rolled hero has a scar.
-const SCAR_CHANCE := 0.15
 ## Hair colors that turn up less often. Weight 1.0 is normal.
 const HAIR_COLOR_WEIGHTS := {"teal": 0.3, "navy": 0.4, "rose": 0.3, "violet": 0.3, "platinum": 0.5}
 
 
-## Rolls a random appearance. Pass a seeded RandomNumberGenerator to get repeatable heroes.
+## Rolls a random appearance. Pass a RandomNumberGenerator to control the randomness.
 ## Leave body or hero_class empty to roll them too.
 static func roll(rng: RandomNumberGenerator = null, p_body: String = "", p_class: String = "") -> HeroAppearance:
 	if rng == null:
@@ -29,11 +30,11 @@ static func roll(rng: RandomNumberGenerator = null, p_body: String = "", p_class
 	a.body = p_body if p_body != "" else _pick(rng, PortraitLibrary.body_types())
 	a.hero_class = p_class if p_class != "" else _pick(rng, PortraitLibrary.classes())
 	a.skin = _pick(rng, PortraitLibrary.ramp_names("skin"))
-	a.face = _pick(rng, PortraitLibrary.faces())
+	a.expression = _pick(rng, PortraitLibrary.expressions())
+	a.eye_style = _pick(rng, PortraitLibrary.eye_styles(a.body))
 	a.hair = _pick(rng, PortraitLibrary.hairstyles(a.body))
 	a.hair_color = _pick_weighted(rng, PortraitLibrary.ramp_names("hair"), HAIR_COLOR_WEIGHTS)
 	a.eyes = _pick(rng, PortraitLibrary.ramp_names("eyes"))
-	a.details = ["scar"] if rng.randf() < SCAR_CHANCE else []
 	return a
 
 
@@ -55,38 +56,48 @@ static func _pick_weighted(rng: RandomNumberGenerator, options: Array, weights: 
 
 func to_dict() -> Dictionary:
 	return {
-		"body": body, "class": hero_class, "skin": skin, "face": face,
-		"hair": hair, "hair_color": hair_color, "eyes": eyes, "details": details.duplicate(),
+		"body": body, "class": hero_class, "skin": skin, "expression": expression,
+		"eye_style": eye_style, "hair": hair, "hair_color": hair_color, "eyes": eyes,
 	}
 
 
+## Reads to_dict() output. Values the current art does not have (for example a look saved
+## with the Legacy art) fall back to the first option, so old data still draws.
 static func from_dict(d: Dictionary) -> HeroAppearance:
 	var a := HeroAppearance.new()
-	a.body = d.get("body", a.body)
-	a.hero_class = d.get("class", a.hero_class)
-	a.skin = d.get("skin", a.skin)
-	a.face = d.get("face", a.face)
-	a.hair = d.get("hair", a.hair)
-	a.hair_color = d.get("hair_color", a.hair_color)
-	a.eyes = d.get("eyes", a.eyes)
-	a.details = Array(d.get("details", [])).duplicate()
+	a.body = _valid(d.get("body", a.body), PortraitLibrary.body_types())
+	a.hero_class = _valid(d.get("class", a.hero_class), PortraitLibrary.classes())
+	a.skin = _valid(d.get("skin", a.skin), PortraitLibrary.ramp_names("skin"))
+	a.expression = _valid(d.get("expression", d.get("face", a.expression)), PortraitLibrary.expressions())
+	a.eye_style = _valid(d.get("eye_style", ""), PortraitLibrary.eye_styles(a.body))
+	a.hair = _valid(d.get("hair", ""), PortraitLibrary.hairstyles(a.body))
+	a.hair_color = _valid(d.get("hair_color", a.hair_color), PortraitLibrary.ramp_names("hair"))
+	a.eyes = _valid(d.get("eyes", a.eyes), PortraitLibrary.ramp_names("eyes"))
 	return a
 
 
-## The layers to draw, back to front. Each entry is [part name, ramp group, ramp name];
-## an empty ramp group means the part is drawn as it is.
+static func _valid(value: Variant, options: Array) -> String:
+	return String(value) if options.has(String(value)) else String(options[0])
+
+
+## Cache key: same key, same finished portrait.
+func key() -> String:
+	return "%s|%s|%s|%s|%s|%s|%s|%s" % [body, hero_class, skin, expression, eye_style, hair, hair_color, eyes]
+
+
+## The layers to stack, back to front. Each entry is [part name, ramp group, ramp name, role];
+## an empty ramp group means the part keeps its own colours. role names the layer for the
+## finish passes (portrait_finish.gd).
 func layers() -> Array:
 	var b := "%s_body_%s" % [body, hero_class]
-	var f := "%s_face_%s" % [body, face]
-	var out: Array = [
-		[b + "_fixed", "", ""],
-		[b + "_skin", "skin", skin],
-		[f + "_skin", "skin", skin],
-		[f + "_fixed", "", ""],
-		[f + "_iris", "eyes", eyes],
+	var e := "%s_eyes_%s" % [body, eye_style]
+	return [
+		["%s_head_skin" % body, "skin", skin, "skin"],
+		[b + "_skin", "skin", skin, "skin"],
+		[b + "_fixed", "", "", "body"],
+		[e + "_fixed", "", "", "eyes"],
+		[e + "_iris", "eyes", eyes, "iris"],
+		["%s_brows_%s" % [body, expression], "hair", hair_color, "brow"],
+		["%s_mouth_%s" % [body, expression], "", "", "mouth"],
+		["%s_hair_%s" % [body, hair], "hair", hair_color, "hair"],
 	]
-	for d in details:
-		out.append(["%s_detail_%s" % [body, d], "skin", skin])
-	if hair != "":
-		out.append(["%s_hair_%s" % [body, hair], "hair", hair_color])
-	return out
