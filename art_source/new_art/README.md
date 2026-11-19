@@ -75,8 +75,11 @@ the same passes when it builds a hero portrait (port to GDScript with the layer 
 `clean_body_necks.py` removes leftover template outline strokes from the chin/throat of the outfit layers (idempotent;
 `process_bodies.py` runs it after cutting).
 
-## Nose
-`portraits/add_nose.py` writes a readable nose into `m_head_skin.png` / `f_head_skin.png` (tip highlight, a line down
-the shaded side of the bridge, dark under-tip accent; skin-ramp values). Run it after `process_heads.py`. The game's
-copies are `portraits/parts/<sex>_head_skin.png` on `main`.
-
+## Noses
+`source/nose_<m|f>_sheet.png` (ChatGPT, nose in shades of blue on `templates/face_template_<sex>.png`) +
+`portraits/process_noses.py m|f` -> `<sex>_nose_<style>.png`, 6 per sex. Each is a **skin value map**: the base head's
+own value plus a shade offset read from the blue (dark blue = shadow/nostril, light = highlight), so it keeps the head's
+shading and tints with the skin ramp. Layer order: head skin -> nose -> body skin -> ... Placement like brows/mouths
+(one scale per sheet, near eye on the base iris). Male: straight, button, aquiline, broad, pointed, crooked. Female:
+straight, button, snub, rounded, long_thin, sharp. `preview_noses.png`. The base heads have no nose of their own
+(the earlier baked-in nose, `add_nose.py`, was removed). Game copies: `portraits/parts/` on `main`.

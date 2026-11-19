@@ -13,6 +13,7 @@ for row, sex in enumerate('mf'):
     for col, cls in enumerate(['soldier', 'archer', 'cleric', 'mage', 'warrior', 'rogue']):
         im = compose(sex, cls, rng.choice(list(PAL['skin'])), rng.choice(list(PAL['hair'])), rng.choice(list(PAL['eyes'])),
                      rng.choice(styles(f'{sex}_eyes_', '_fixed.png')),
-                     rng.choice(['neutral', 'smile', 'stern', 'grin', 'sleepy', 'worried']), rng.choice(styles(f'{sex}_hair_')))
+                     rng.choice(['neutral', 'smile', 'stern', 'grin', 'sleepy', 'worried']), rng.choice(styles(f'{sex}_hair_')),
+                     nose=rng.choice(styles(f'{sex}_nose_')))
         sheet.alpha_composite(Image.fromarray(im), (col * 200, row * 200))
 sheet.save(os.path.join(HERE, 'preview_full.png'))

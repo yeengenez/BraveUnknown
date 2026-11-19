@@ -50,9 +50,11 @@ def shift(m, dy, dx):
     o[yd, xd] = m[ys, xs]; return o
 
 
-def compose(sex, cls, skin, hair_ramp, eye_ramp, eyes, expr, hair, finish=True):
-    """skin/hair_ramp/eye_ramp: palette names. eyes/expr/hair: style ids. Returns a 200x200 RGBA uint8 array."""
+def compose(sex, cls, skin, hair_ramp, eye_ramp, eyes, expr, hair, finish=True, nose=None):
+    """skin/hair_ramp/eye_ramp: palette names. eyes/expr/hair/nose: style ids. Returns a 200x200 RGBA uint8 array.
+    The nose is a skin value map drawn right over the head skin (it counts as skin for every pass)."""
     S, Hr, E = PAL['skin'][skin], PAL['hair'][hair_ramp], PAL['eyes'][eye_ramp]
+    nl = load(f'{sex}_nose_{nose}.png') if nose else None
     head, bskin, body = load(f'{sex}_head_skin.png'), load(f'{sex}_body_{cls}_skin.png'), load(f'{sex}_body_{cls}_fixed.png')
     efix, iris = load(f'{sex}_eyes_{eyes}_fixed.png'), load(f'{sex}_eyes_{eyes}_iris.png')
     brow, mouth, hl = load(f'{sex}_brows_{expr}.png'), load(f'{sex}_mouth_{expr}.png'), load(f'{sex}_hair_{hair}.png')
@@ -65,7 +67,7 @@ def compose(sex, cls, skin, hair_ramp, eye_ramp, eyes, expr, hair, finish=True):
         m = layer[..., 3] > 127
         rgb[m] = colour[m]; A[m] = True; top[m] = tag
         return m
-    for sk in (head, bskin):
+    for sk in (head, nl, bskin):
         if sk is not None:
             m = put(sk, ramp_rgb(S, sk[..., 0]), 'skin'); sv[m] = sk[..., 0][m]
     put(body, body[..., :3], 'body')
@@ -144,8 +146,9 @@ if __name__ == '__main__':
             args = (sex, cls, rng.choice(list(PAL['skin'])), rng.choice(list(PAL['hair'])), rng.choice(list(PAL['eyes'])),
                     rng.choice(styles(f'{sex}_eyes_', '_fixed.png')), rng.choice(['neutral', 'smile', 'stern', 'grin', 'sleepy', 'worried']),
                     rng.choice(styles(f'{sex}_hair_')))
+            nz = rng.choice(styles(f'{sex}_nose_'))
             for k, fin in enumerate((False, True)):
-                im = Image.fromarray(compose(*args, finish=fin))
+                im = Image.fromarray(compose(*args, finish=fin, nose=nz))
                 sheet.alpha_composite(im, (c * 200, (r * 2 + k) * 200))
     sheet.save(os.path.join(HERE, 'preview_finish.png'))
     print('preview_finish.png')
