@@ -6,7 +6,8 @@ user's Aseprite touch-ups, so this edits them in place instead of re-cutting the
 
 Rule, applied only inside the base head mask (face + neck): a dark pixel (outline colour) that touches bare skin and
 has no real outfit area (a lighter patch of 20+ px) in its 3x3 neighbourhood is a stroke, not the edge of a collar - it goes, repeatedly, so a stroke is eaten back
-to where it meets real outfit. Pure-green speckles (template background) inside the head go too. Idempotent.
+to where it meets real outfit. Outfit pixels over the face (above the jaw line, polygon FACE) go too, so a high
+collar tucks behind the chin instead of cutting it. Pure-green speckles (template background) inside the head go too. Idempotent.
 Usage: python3 clean_body_necks.py
 """
 import os, glob, numpy as np
@@ -14,6 +15,15 @@ from PIL import Image
 from scipy import ndimage as ndi
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# face = head above the jaw line (ear bottom -> chin corner) plus the chin; a collar always sits BEHIND it
+FACE = {'f': [(84, 105), (109, 129), (140, 129), (140, 20), (84, 20)],
+        'm': [(84, 106), (118, 132), (145, 132), (145, 20), (84, 20)]}
+
+
+def face_mask(sex, B):
+    from PIL import ImageDraw
+    im = Image.new('L', (200, 200)); ImageDraw.Draw(im).polygon(FACE[sex], fill=1)
+    return np.asarray(im).astype(bool) & B
 
 
 def clean(path, B):
@@ -21,7 +31,7 @@ def clean(path, B):
     c = a[..., :3].astype(int); on = a[..., 3] > 0
     dark = on & (c.max(2) < 62) & (c.max(2) - c.min(2) < 28)      # near-black neutral = the template's outline
     green = on & (c[..., 1] - c[..., 0] > 60) & (c[..., 1] - c[..., 2] > 60)
-    gone = green & B
+    gone = (green & B) | (on & face_mask(os.path.basename(path)[0], B))   # high collars must not cover the chin
     on = on & ~gone; dark &= ~gone
     K = np.ones((3, 3), bool)
     for _ in range(30):
