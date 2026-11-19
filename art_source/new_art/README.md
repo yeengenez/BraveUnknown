@@ -75,3 +75,8 @@ the same passes when it builds a hero portrait (port to GDScript with the layer 
 `clean_body_necks.py` removes leftover template outline strokes from the chin/throat of the outfit layers (idempotent;
 `process_bodies.py` runs it after cutting).
 
+## Nose
+`portraits/add_nose.py` writes a readable nose into `m_head_skin.png` / `f_head_skin.png` (tip highlight, a line down
+the shaded side of the bridge, dark under-tip accent; skin-ramp values). Run it after `process_heads.py`. The game's
+copies are `portraits/parts/<sex>_head_skin.png` on `main`.
+
