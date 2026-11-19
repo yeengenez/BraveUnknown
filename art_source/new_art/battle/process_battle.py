@@ -169,6 +169,64 @@ def hair_layer(sex, style, ramp, head):
 
 
 # ---------------------------------------------------------------- main
+def one_cell(cls, sex, stance, state, c, fg, s):
+    st = state.split('_')[0]
+    ground = figure_height(c, fg)[1]
+    body, on = to_body(c, fg, s, ground); body = body.astype(int)
+    m = PP.rod_mask(body); cy = PP.cyan_mask(body)
+    PP.ANIM = st if st != 'stand' else 'hit'
+    o = 'attack' if st == 'attack' else 'hit'
+    if stance == '1h' and cy.sum() > 8:
+        g = PP.orient({'back': PP.hand_of(m, body)}, o); g['front'] = PP.orient({'f': PP.hand_of(cy, body)}, 'hit')['f']
+        rods = m | cy
+    else:
+        g = PP.orient(PP.grips_for(m, stance, body), o); rods = m
+    clean, on = clean_rods(body, rods, on)
+    pts = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
+    if state.endswith('_shield') and 'front' in g:
+        on = strip_drawn_shield(clean, on, g['front']['point'])
+    fixed, skin, head = skin_split(clean, on, pts)
+    n = f'{cls}_{sex}_{stance}_{state}'
+    Image.fromarray(fixed).save(os.path.join(HERE, 'layers', f'{n}_fixed.png'))
+    Image.fromarray(skin, 'LA').save(os.path.join(HERE, 'layers', f'{n}_skin.png'))
+    json.dump({'grips': g, 'head': head, 'scale': round(s, 4)}, open(os.path.join(HERE, 'grips', f'{n}.json'), 'w'))
+    print(n, {k: (v.get('point'), v.get('angle')) for k, v in g.items() if isinstance(v, dict) and 'point' in v}, 'head', head)
+    return fixed, skin, g, head
+
+
+def strip_drawn_shield(a, on, p):
+    """ChatGPT sometimes draws a shield on the braced arm. The code shield (anim.SHIELD at the left fist) covers most
+    of it; the rim that sticks out past the code shield on the far side (dark or orange pixels right of the shield's
+    centre, within 10 px) is cleared."""
+    H, W = on.shape; S = np.zeros((H + 400, W + 400), bool)
+    x0 = int(round(p[0] - A.SHIELD_FIST[0])) + 200; y0 = int(round(p[1] - A.SHIELD_FIST[1])) + 200
+    sa = A.SHIELD[..., 3] > 0; S[y0:y0 + sa.shape[0], x0:x0 + sa.shape[1]] = sa; S = S[200:200 + H, 200:200 + W]
+    ys, xs = np.where(S)
+    if not len(xs): return on
+    r, g, b = a[..., 0].astype(int), a[..., 1].astype(int), a[..., 2].astype(int)
+    lum = 0.3 * r + 0.59 * g + 0.11 * b
+    rim = (lum < 90) | ((r > 140) & (b < 0.6 * r))            # dark body of the drawn shield, orange/gold rim
+    xx = np.arange(W)[None, :]
+    zone = ndi.binary_dilation(S, iterations=12) & ~S & (xx > xs.min() + 0.4 * (xs.max() - xs.min()))
+    on = on & ~(zone & rim & on)
+    # leftover rim crumbs: small pieces outside the code shield, on its far side
+    far = ndi.binary_dilation(S, iterations=20) & ~S & (xx > xs.min() + 0.4 * (xs.max() - xs.min()))
+    lab, n = ndi.label(on & ~S, np.ones((3, 3)))
+    for i in range(1, n + 1):
+        m = lab == i
+        if m.sum() < 80 and (m & far).sum() > 0.6 * m.sum(): on &= ~m
+    # nothing of the body reaches past the shield's far edge at chest height: what is there is the drawn rim
+    yy = np.arange(H)[:, None]
+    past = (xx >= xs.max() - 1) & (xx < xs.max() + 16) & (yy > ys.min() - 16) & (yy < ys.max() + 8)
+    past |= (xx > (xs.min() + xs.max()) / 2 + 2) & (xx < xs.max() + 16) & (yy < ys.min()) & (yy > ys.min() - 14)
+    return on & ~(past & ~S)
+
+
+# fix sheets: (sex, stance, state, tag, file) -> extra state '<state>_<tag>'. 'shield' = the 1h attack with the shield
+# arm braced at the chest; loadouts with a shield use it, the others keep the plain attack.
+EXTRA = {'soldier': [('f', '1h', 'attack', 'shield', 'soldier_f_sheet_fix1.png')]}
+
+
 def process(cls):
     for d in ('layers', 'grips', 'sprites', 'source'): os.makedirs(os.path.join(HERE, d), exist_ok=True)
     rows = CLASSES[cls]; data = {}
@@ -182,25 +240,15 @@ def process(cls):
         hs = [figure_height(*cut[k])[0] for k in cut if k[1] == 'stand']
         s = FIG_H / float(np.median(hs))
         for (stance, state), (c, fg) in cut.items():
-            ground = figure_height(c, fg)[1]
-            body, on = to_body(c, fg, s, ground); body = body.astype(int)
-            m = PP.rod_mask(body); cy = PP.cyan_mask(body)
-            PP.ANIM = state if state != 'stand' else 'hit'
-            o = 'attack' if state == 'attack' else 'hit'
-            if stance == '1h' and cy.sum() > 8:
-                g = PP.orient({'back': PP.hand_of(m, body)}, o); g['front'] = PP.orient({'f': PP.hand_of(cy, body)}, 'hit')['f']
-                rods = m | cy
-            else:
-                g = PP.orient(PP.grips_for(m, stance, body), o); rods = m
-            clean, on = clean_rods(body, rods, on)
-            pts = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
-            fixed, skin, head = skin_split(clean, on, pts)
-            n = f'{cls}_{sex}_{stance}_{state}'
-            Image.fromarray(fixed).save(os.path.join(HERE, 'layers', f'{n}_fixed.png'))
-            Image.fromarray(skin, 'LA').save(os.path.join(HERE, 'layers', f'{n}_skin.png'))
-            json.dump({'grips': g, 'head': head, 'scale': round(s, 4)}, open(os.path.join(HERE, 'grips', f'{n}.json'), 'w'))
-            data[(sex, stance, state)] = (fixed, skin, g, head)
-            print(n, {k: (v.get('point'), v.get('angle')) for k, v in g.items() if isinstance(v, dict) and 'point' in v}, 'head', head)
+            data[(sex, stance, state)] = one_cell(cls, sex, stance, state, c, fg, s)
+        # extra cells from fix sheets (same grid): e.g. the shield-braced 1h attack, used only with a shield
+        for (xs, stance, state, tag, fname) in EXTRA.get(cls, []):
+            if xs != sex or not os.path.exists(os.path.join(HERE, 'source', fname)): continue
+            b2 = np.asarray(Image.open(os.path.join(HERE, 'source', fname)).convert('RGB'))
+            box = [bx for _, _, st, sta, bx in cells(rows) if (st, sta) == (stance, state)][0]
+            k2 = (b2.shape[1] / 1536, b2.shape[0] / 1024)
+            c, fg = cut_cell(b2, (round(box[0] * k2[0]), round(box[1] * k2[1]), round(box[2] * k2[0]), round(box[3] * k2[1])))
+            data[(sex, stance, f'{state}_{tag}')] = one_cell(cls, sex, stance, f'{state}_{tag}', c, fg, s)
     return data
 
 
@@ -228,7 +276,8 @@ def render(cls, data):
             frames = {}
             ref = None
             for state in ('stand', 'attack', 'hit'):
-                fixed, skin, g, head = data[(sex, stance, state)]
+                shielded = any(w == 'shield' for _, w, _ in items[state])
+                fixed, skin, g, head = data.get((sex, stance, f'{state}_shield') if shielded else None) or data[(sex, stance, state)]
                 b = tint(fixed, skin, sramp)
                 fx_, fy = feet(b)
                 if ref is None: ref = (CANVAS_FEET[0] - fx_, CANVAS_FEET[1] - fy)
