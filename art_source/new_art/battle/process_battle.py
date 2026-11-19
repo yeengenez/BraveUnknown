@@ -324,10 +324,18 @@ def render(cls, data):
                 if ref is None: ref = (CANVAS_FEET[0] - fx_, CANVAS_FEET[1] - fy)
                 dx = round(ref[0]) - A.CELL; dy = round(ref[1]) - A.TOP
                 g2 = split2h(g)
-                im =A.frame(cls, f'{sex}_{stance}', sramp, items[state], (dx, dy, 0, 0, None), [], 'attack', g2, b)
+                its = items[state]
+                # shield attack (Roman stance): the sword arm thrusts from BEHIND the shield, so the shield goes on top
+                # of everything, including the redrawn sword fist
+                shield_top = state == 'attack' and shielded
+                if shield_top: its = [it for it in its if it[1] != 'shield']
+                im = A.frame(cls, f'{sex}_{stance}', sramp, its, (dx, dy, 0, 0, None), [], 'attack', g2, b)
                 if head and hair:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
+                if shield_top:
+                    im = im.copy(); p = g2['front']['point']
+                    A.paste(im, A.SHIELD, A.CELL + dx + p[0] - A.SHIELD_FIST[0], A.TOP + dy + p[1] - A.SHIELD_FIST[1])
                 frames[state] = im
                 Image.fromarray(im).save(os.path.join(HERE, 'sprites', f'{cls}_{sex}_{load}_{state}.png'))
             rows.append((f'{cls} {sex} {load}  (sample hair: {hair}, {hramp}; skin {sramp})', frames))
