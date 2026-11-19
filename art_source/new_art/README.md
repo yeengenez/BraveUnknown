@@ -90,4 +90,8 @@ straight, button, snub, rounded, long_thin, sharp. `preview_noses.png`. The base
 `refs/<class>_<sex>_ref.png` (new portrait outfit, bald + the LEGACY sprite poses for every cell), built by
 `make_refs.py`. Keys: magenta rod = right hand, cyan rod = left hand, bare skin in shades of pure yellow, bald heads,
 no weapons.
+`battle/process_battle.py <class>` cuts a filled sheet (`battle/source/<class>_<sex>_sheet.png`) into
+`layers/` (fixed + skin value map per stance/state), `grips/` (rod-measured grips + head box) and `sprites/`
+(399x270, weapons drawn by the existing `battle_sprites/animation/anim.py` code) + `review_<class>.png`. Hair in the
+sprites is a **sample**: the portrait hair scaled onto the sprite head (no tilt on hit poses yet).
 
