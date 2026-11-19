@@ -1,6 +1,6 @@
 # ChatGPT (GPT Go) prompts: battle sprites in the new art style
 
-One image per **class and sex** (12 images). For each: start a message, attach
+One image per **class and sex** (12 images), plus one Archer back-equipment sheet. For each: start a message, attach
 1. `templates/<class>_template.png` (the canvas to draw on), and
 2. `refs/<class>_<sex>_ref.png` (outfit from the new portrait + the poses to follow),
 
@@ -9,7 +9,10 @@ then paste the **common prompt** followed by the **class block** (replace `<SEX>
 Rules carried over from the design doc: facing right, ~6-7 heads tall, no weapons ever drawn by AI (weapons, shields,
 bows and arrows are drawn in code at the guide rods), **1h weapon always in the right hand**, magenta rod = right hand,
 cyan rod = left hand, one frame per state (stand / attack / hit; bow: stand / nock / attack = release / hit), bald
-heads (hair is a separate layer matched to the portrait). New for the new art: bare skin in **shades of pure yellow**
+heads (hair is a separate layer matched to the portrait). Archer (rules confirmed 2026-11-19): the quiver / bolt case
+is a separate layer shown by the **equipped ammunition** (full / partial / empty), so the Archer sheet marks its place
+with a flat pure-blue stick on the back in every pose, and the six containers are drawn on their own sheet. The Archer
+sheet has a crossbow row (stand | aim | release | hit, user's choice 2026-11-19). New for the new art: bare skin in **shades of pure yellow**
 (the cyan key used for portrait bodies is taken by the left-hand rod here).
 
 ---
@@ -49,8 +52,9 @@ heads (hair is a separate layer matched to the portrait). New for the new art: b
 > stand | attack | hit:
 > 1. **One-handed:** stand = right fist raised by the shoulder (magenta rod pointing up like a sword), left fist forward
 >    at chest height (cyan rod upright like a shield grip). Attack = deep lunge forward, right arm fully extended at
->    shoulder height with the magenta rod level and pointing forward, left forearm braced across the front of the chest
->    with the cyan rod upright. Hit = recoiling back, wincing, knees bent, both fists still on their rods.
+>    shoulder height with the magenta rod level and pointing forward (not downward); the LEFT forearm is RAISED and
+>    braced across the front of the chest, the left fist at chest height in front of the body with the cyan rod upright,
+>    like holding a shield up - NOT down at the belt or hip. Hit = recoiling back, wincing, knees bent, both fists still on their rods.
 > 2. **Two-handed:** both fists together on ONE magenta rod (one fist above the other, like a great axe handle). Stand
 >    = guard, rod angled up and forward. Attack = heavy forward chop, rod swung down and forward. Hit = recoil, rod pulled up.
 > 3. **Reach:** ONE long magenta pole (as long as the body is tall) held at hip height through both fists, front fist
@@ -69,14 +73,41 @@ heads (hair is a separate layer matched to the portrait). New for the new art: b
 >    left arm straight forward at shoulder height holding the cyan rod upright, right hand pulled back to the cheek, and
 >    a thin straight **magenta line** (the arrow) from the right hand to the cyan rod. Release = same stance, right hand
 >    open and flung back, no magenta line. Hit = recoiling back, wincing, still holding the cyan rod.
-> No quiver (it is a separate layer later). Female: clearly feminine, slightly fuller chest.
+> 3. **Crossbow** (new poses, nothing to copy in the reference - follow this text), cells = stand | aim | release | hit:
+>    the crossbow stock is ONE straight **magenta** rod, about as long as the forearm plus hand, held in BOTH fists:
+>    right fist at the rear end (trigger grip), left fist further forward under it. Stand = crossbow held low and
+>    level across the hips, pointing forward. Aim = crossbow raised to the shoulder, rear end against the right shoulder,
+>    rod level and pointing forward, head tilted to sight along it. Release = same as aim, rod kicked up a little from the
+>    recoil, shoulders pushed back. Hit = recoiling back, wincing, still holding the rod in both fists, pointing up.
+>
+> **Back equipment marker (this sheet only):** the quiver or bolt case is a separate layer, so don't draw a quiver. In
+> **every cell**, draw one flat **pure blue (#0000FF)** stick on the back where the quiver sits: a straight rounded bar,
+> as long as the torso and about as thick as the forearm, top end behind the right shoulder, slanting down toward the
+> left hip, partly hidden behind the body like a real quiver would be. Flat colour, no shading, no outline, no arrows.
+> A leather strap across the chest is fine. No other pure blue anywhere.
+> Female: clearly feminine, slightly fuller chest.
+
+### Archer back equipment (quiver and bolt case)
+Attach `templates/archer_ammo_template.png` (and `refs/archer_m_ref.png` for the style), then paste this alone
+(not the common prompt):
+> Use the attached green image as the canvas: 6 cells, each with a vertical dashed guide between two ticks. Keep the
+> canvas, grid and green exactly as they are. In each cell draw ONE item, standing upright, its length exactly from the
+> top tick to the bottom tick, centred on the cell, in Fire Emblem-style anime pixel art (clean dark outlines, cel
+> shading, light from the upper left) matching the archer in the second image. Order, left to right:
+> - Top row, a **back quiver** of brown leather with a strap ring at the top: **full** (a thick bunch of arrow shafts and
+>   fletchings sticking out of the top), **partial** (only 3-4 arrows), **empty** (no arrows, open mouth visible).
+> - Bottom row, a **bolt case** (a shorter, boxier leather-and-wood case with a flap; draw it at the same length guide):
+>   **full** (many short crossbow bolts with stubby fletchings), **partial** (3-4 bolts), **empty** (no bolts).
+> Same item design across its three states; only the amount of ammunition changes. No character, no strap across the
+> cell, no text, no shadows, no yellow, no pure blue, no magenta, no cyan. Output one PNG at the canvas's exact size.
 
 ### Acolyte
 > Character: **<SEX> Acolyte** (cleric robes with a single centred cross, never two crosses, from the portrait; hood
 > down). Rows, top to bottom, cells = stand | attack | hit:
 > 1. **One-handed (mace + shield):** same as a soldier's: stand = right fist raised (magenta rod up), left fist forward
->    (cyan rod upright). Attack = deep lunge, right arm extended forward with the magenta rod level, left forearm braced
->    across the chest with the cyan rod upright. Hit = recoil, wince, rods still held.
+>    (cyan rod upright). Attack = deep lunge, right arm extended forward with the magenta rod level (not downward); the LEFT
+>    forearm is RAISED and braced across the front of the chest, left fist at chest height with the cyan rod upright,
+>    like holding a shield up - NOT down at the belt or hip. Hit = recoil, wince, rods still held.
 > 2. **Two-handed (quarterstaff):** ONE magenta rod about as long as the body is tall, both fists on it a little apart.
 >    Stand = guard, staff angled across the body. Attack = forward strike with the staff end. Hit = recoil.
 > 3. **Reach (spear):** ONE long magenta pole held at hip height through both fists, front fist forward, back fist at
@@ -117,6 +148,16 @@ heads (hair is a separate layer matched to the portrait). New for the new art: b
 - Skin came out yellow-orange (about #F8B840), which is fine; the belt buckle and tabard trim came out the same gold,
   so the common prompt now asks for silver / dark bronze trims.
 - The 1h attack's left (shield) fist ended low at the belt instead of braced in front of the chest.
+
+## Fix: shield arm in the one-handed attack (Soldier, Acolyte)
+Only the classes that can use a shield need this (Soldier, Acolyte; Warrior, Archer, Mage and Rogue have no shield).
+Attach the sheet ChatGPT made and send:
+> Edit the attached sheet. Change ONLY the top-middle cell (one-handed attack); every other cell, the canvas, the
+> grid and the green must stay pixel-identical. In that cell keep the same character, outfit, deep lunge and legs, and
+> change the arms: the LEFT forearm is raised and braced across the front of the chest, left fist at chest height in
+> front of the body, holding the cyan rod upright (as if holding a shield up in front of the chest). The RIGHT arm stays
+> fully extended forward at shoulder height, the magenta rod level and pointing straight forward, not downward. Rods stay
+> flat pure #FF00FF (right) and #00FFFF (left), sticking out of both sides of the fists. Bare skin stays yellow.
 
 ## If ChatGPT struggles
 - Too many figures (Soldier, Acolyte, Warrior have 9): ask for **one row at a time** on the same template ("draw only
