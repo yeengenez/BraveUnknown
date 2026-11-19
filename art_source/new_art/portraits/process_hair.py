@@ -107,7 +107,11 @@ def attach(img, B, mann, ear_poly, style, sex):
     # jaw: the base head's lower face / chin / throat stays in front of the hair
     yy, xx = np.mgrid[:200, :200]
     jaw_box = (xx >= JAW['x0']) & (yy >= JAW['y0'])
-    jaw = hair & B & jaw_box
+    # ...including the notch under the chin (convex hull of the head there), so no strand reads as a goatee
+    import cv2
+    pts = np.argwhere(B & jaw_box)[:, ::-1].astype(np.int32)
+    hull = np.zeros((200, 200), np.uint8); cv2.fillConvexPoly(hull, cv2.convexHull(pts), 1)
+    jaw = hair & (B | hull.astype(bool)) & jaw_box
     if jaw.any():
         hair = hair & ~jaw
         lab, n = ndi.label(hair); sz = ndi.sum(hair, lab, range(1, n + 1))

@@ -157,4 +157,9 @@ def main(sex):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else 'm')
+    sex = sys.argv[1] if len(sys.argv) > 1 else 'm'
+    main(sex)
+    # strip the template head's leftover outline strokes from the chin / throat (see clean_body_necks.py)
+    import glob, clean_body_necks as cbn
+    B = np.asarray(Image.open(os.path.join(HERE, f'{sex}_head_skin.png')))[..., 3] > 0
+    for p in sorted(glob.glob(os.path.join(HERE, f'{sex}_body_*_fixed.png'))): cbn.clean(p, B)

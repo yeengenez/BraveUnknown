@@ -64,3 +64,14 @@
 Not yet in the game: all portrait layers exist now, but the game's `library.json` and `HeroPortrait` still use the
 legacy parts. Switching needs the new layer names and order (separate eyes, brows tinted by hair, mouths, 6
 expressions, 12 hairstyles per sex, new head placement).
+
+## Finish step (portrait blend pass)
+`portraits/finish.py` - `compose(sex, cls, skin, hair_ramp, eye_ramp, eyes, expr, hair, finish=True)` stacks the layers
+in game order and blends them into one portrait: skin-coloured eye/mouth lines, warm eye whites with a lid shadow,
+shaded brow underside, soft hair edge + hair shadow on skin, collar contact shadow, one outer outline with selective
+(dark own-colour) seams, and a shared colour grade. `python3 finish.py` writes `preview_finish.png` (rows: male
+plain, male finished, female plain, female finished). `preview_full.py` uses the finished version. The game must run
+the same passes when it builds a hero portrait (port to GDScript with the layer wiring).
+`clean_body_necks.py` removes leftover template outline strokes from the chin/throat of the outfit layers (idempotent;
+`process_bodies.py` runs it after cutting).
+
