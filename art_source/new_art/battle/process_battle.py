@@ -40,6 +40,7 @@ def one_hand(w, shield=False):      # same rule as poses/compose.py: weapon in t
     return {'stand': st, 'attack': at, 'hit': st}
 LOADOUTS = {
     'soldier': [('longsword', '1h', one_hand('longsword')), ('sword_shield', '1h', one_hand('longsword', True)),
+                ('dual_swords', 'dual', {s: [('front', 'longsword', 'over'), ('back', 'longsword', 'over')] for s in ('stand', 'attack', 'hit')}),
                 ('greataxe', '2h', {s: [('back', 'greataxe', 'over')] for s in ('stand', 'attack', 'hit')}),
                 ('longspear', 'reach', {s: [('back', 'longspear', 'over')] for s in ('stand', 'attack', 'hit')})],
 }
@@ -169,6 +170,42 @@ def hair_layer(sex, style, ramp, head):
 
 
 # ---------------------------------------------------------------- main
+def fist_grip(rod, a):
+    """Grip from the (yellow) fist that holds the rod: the fist's centre projected onto the rod axis. More reliable
+    than reading the gap in the rod when the two rod pieces do not line up exactly. None if no fist touches the rod."""
+    import math
+    r, g, b = a[..., 0].astype(int), a[..., 1].astype(int), a[..., 2].astype(int)
+    key = (a.min(2) < 245) & (r > 120) & (g > 0.5 * r) & (b < 0.55 * r) & (r - b > 70)
+    lab, n = ndi.label(key, np.ones((3, 3)))
+    near = ndi.binary_dilation(rod, iterations=2)
+    best, hits = 0, 0
+    for i in range(1, n + 1):
+        h = ((lab == i) & near).sum()
+        if h > hits and (lab == i).sum() >= 12: best, hits = i, h
+    if not best: return None
+    pts = np.argwhere(rod)[:, ::-1].astype(float); c0 = pts.mean(0)
+    _, _, vt = np.linalg.svd(pts - c0); d = vt[0]
+    f = np.argwhere(lab == best)[:, ::-1].astype(float)
+    p = c0 + d * ((f.mean(0) - c0) @ d)
+    t = (f - c0) @ d
+    return dict(point=[round(float(p[0]), 1), round(float(p[1]), 1)], angle=round(float(math.degrees(math.atan2(d[1], d[0]))), 1),
+                fist_gap=round(float(t.max() - t.min()), 1))
+
+
+def hand(rod, a):
+    return fist_grip(rod, a) or PP.hand_of(rod, a)
+
+
+def toward_longer(v, mask):
+    """Point the grip's angle at the longer stretch of rod beyond the fist."""
+    import math
+    th = math.radians(v['angle']); d = np.array([math.cos(th), math.sin(th)])
+    pts = np.argwhere(mask)[:, ::-1] - np.array(v['point'])
+    t = pts @ d
+    if (t > 0).sum() < (t < 0).sum(): v['angle'] = round(float((v['angle'] + 360) % 360 - 180), 1)
+    return v
+
+
 def one_cell(cls, sex, stance, state, c, fg, s):
     st = state.split('_')[0]
     ground = figure_height(c, fg)[1]
@@ -176,8 +213,12 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     m = PP.rod_mask(body); cy = PP.cyan_mask(body)
     PP.ANIM = st if st != 'stand' else 'hit'
     o = 'attack' if st == 'attack' else 'hit'
-    if stance == '1h' and cy.sum() > 8:
-        g = PP.orient({'back': PP.hand_of(m, body)}, o); g['front'] = PP.orient({'f': PP.hand_of(cy, body)}, 'hit')['f']
+    if stance == 'dual' and cy.sum() > 8:
+        # two blades: each points along its rod's longer side past the fist (rods are drawn mostly blade-side)
+        g = {'back': toward_longer(hand(m, body), m), 'front': toward_longer(hand(cy, body), cy)}
+        rods = m | cy
+    elif stance == '1h' and cy.sum() > 8:
+        g = PP.orient({'back': hand(m, body)}, o); g['front'] = PP.orient({'f': hand(cy, body)}, 'hit')['f']
         rods = m | cy
     else:
         g = PP.orient(PP.grips_for(m, stance, body), o); rods = m
