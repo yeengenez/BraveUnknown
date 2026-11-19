@@ -68,6 +68,11 @@
     "bow_release_arrow": "no arrow attached to bow; projectile is separate"
   },
   "back_equipment": {
+    "confirmed_by_user": "2026-11-19",
+    "open_questions": [
+      "Archer carrying a normal bundle (50) and a special bundle (10): one container state or one per bundle",
+      "Whether 'partial' starts after the first shot from a full 50 (current helper) or at a lower threshold"
+    ],
     "visibility_driver": "equipped ammunition item, not currently held weapon",
     "quiver": {
       "when": "arrows equipped",
