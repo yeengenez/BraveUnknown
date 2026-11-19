@@ -53,6 +53,24 @@
    "wide_bright"
   ]
  },
+ "noses": {
+  "m": [
+   "aquiline",
+   "broad",
+   "button",
+   "crooked",
+   "pointed",
+   "straight"
+  ],
+  "f": [
+   "button",
+   "long_thin",
+   "rounded",
+   "sharp",
+   "snub",
+   "straight"
+  ]
+ },
  "hair": {
   "m": [
    "braided_mohawk",
@@ -83,5 +101,5 @@
    "wavy"
   ]
  },
- "_note": "New art (2026-11-19). Layer order, back to front: head skin, body skin, body fixed, eyes fixed, iris, brows, mouth, hair. Value maps (gray) are tinted by palettes.json: skin -> skin ramp, iris -> eyes ramp, brows and hair -> hair ramp. Portraits are finished by portrait_finish.gd (port of art_source/new_art/portraits/finish.py)."
+ "_note": "New art (2026-11-19). Layer order, back to front: head skin, nose, body skin, body fixed, eyes fixed, iris, brows, mouth, hair. Value maps (gray) are tinted by palettes.json: skin and nose -> skin ramp, iris -> eyes ramp, brows and hair -> hair ramp. Portraits are finished by portrait_finish.gd (port of art_source/new_art/portraits/finish.py)."
 }

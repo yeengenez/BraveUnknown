@@ -59,6 +59,12 @@ static func eye_styles(body: String) -> Array:
 	return _lib["eyes"][body]
 
 
+## Nose styles available for one body type.
+static func noses(body: String) -> Array:
+	_ensure_loaded()
+	return _lib["noses"][body]
+
+
 ## Hairstyles available for one body type.
 static func hairstyles(body: String) -> Array:
 	_ensure_loaded()

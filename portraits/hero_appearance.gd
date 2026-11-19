@@ -4,7 +4,7 @@ extends RefCounted
 ## Only appearance lives here. Stats and class rules belong to the game's own hero data;
 ## hero_class just picks which outfit is drawn.
 ##
-## New art (2026-11-19): every part is its own layer, so eyes, expression (brows + mouth)
+## New art (2026-11-19): every part is its own layer, so eyes, nose, expression (brows + mouth)
 ## and hair combine freely. See library.json for the lists.
 
 var body: String = "m"              ## "m" or "f"
@@ -12,6 +12,7 @@ var hero_class: String = "soldier"  ## outfit: soldier, archer, cleric (Acolyte)
 var skin: String = "fair"           ## skin ramp
 var expression: String = "neutral"  ## brows + mouth: neutral, smile, stern, grin, sleepy, worried
 var eye_style: String = ""          ## eye shape, per body type (library.json "eyes")
+var nose: String = ""               ## nose shape, per body type (library.json "noses")
 var hair: String = ""               ## hairstyle, per body type (library.json "hair")
 var hair_color: String = "brown"    ## hair ramp (also tints the brows)
 var eyes: String = "brown"          ## eye colour ramp (tints the iris)
@@ -32,6 +33,7 @@ static func roll(rng: RandomNumberGenerator = null, p_body: String = "", p_class
 	a.skin = _pick(rng, PortraitLibrary.ramp_names("skin"))
 	a.expression = _pick(rng, PortraitLibrary.expressions())
 	a.eye_style = _pick(rng, PortraitLibrary.eye_styles(a.body))
+	a.nose = _pick(rng, PortraitLibrary.noses(a.body))
 	a.hair = _pick(rng, PortraitLibrary.hairstyles(a.body))
 	a.hair_color = _pick_weighted(rng, PortraitLibrary.ramp_names("hair"), HAIR_COLOR_WEIGHTS)
 	a.eyes = _pick(rng, PortraitLibrary.ramp_names("eyes"))
@@ -57,7 +59,7 @@ static func _pick_weighted(rng: RandomNumberGenerator, options: Array, weights: 
 func to_dict() -> Dictionary:
 	return {
 		"body": body, "class": hero_class, "skin": skin, "expression": expression,
-		"eye_style": eye_style, "hair": hair, "hair_color": hair_color, "eyes": eyes,
+		"eye_style": eye_style, "nose": nose, "hair": hair, "hair_color": hair_color, "eyes": eyes,
 	}
 
 
@@ -70,6 +72,7 @@ static func from_dict(d: Dictionary) -> HeroAppearance:
 	a.skin = _valid(d.get("skin", a.skin), PortraitLibrary.ramp_names("skin"))
 	a.expression = _valid(d.get("expression", d.get("face", a.expression)), PortraitLibrary.expressions())
 	a.eye_style = _valid(d.get("eye_style", ""), PortraitLibrary.eye_styles(a.body))
+	a.nose = _valid(d.get("nose", ""), PortraitLibrary.noses(a.body))
 	a.hair = _valid(d.get("hair", ""), PortraitLibrary.hairstyles(a.body))
 	a.hair_color = _valid(d.get("hair_color", a.hair_color), PortraitLibrary.ramp_names("hair"))
 	a.eyes = _valid(d.get("eyes", a.eyes), PortraitLibrary.ramp_names("eyes"))
@@ -82,7 +85,7 @@ static func _valid(value: Variant, options: Array) -> String:
 
 ## Cache key: same key, same finished portrait.
 func key() -> String:
-	return "%s|%s|%s|%s|%s|%s|%s|%s" % [body, hero_class, skin, expression, eye_style, hair, hair_color, eyes]
+	return "%s|%s|%s|%s|%s|%s|%s|%s|%s" % [body, hero_class, skin, expression, eye_style, nose, hair, hair_color, eyes]
 
 
 ## The layers to stack, back to front. Each entry is [part name, ramp group, ramp name, role];
@@ -93,6 +96,7 @@ func layers() -> Array:
 	var e := "%s_eyes_%s" % [body, eye_style]
 	return [
 		["%s_head_skin" % body, "skin", skin, "skin"],
+		["%s_nose_%s" % [body, nose], "skin", skin, "skin"],
 		[b + "_skin", "skin", skin, "skin"],
 		[b + "_fixed", "", "", "body"],
 		[e + "_fixed", "", "", "eyes"],
