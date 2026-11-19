@@ -58,6 +58,8 @@ FACE = {
     'm': [(85, 84), (91, 67), (110, 61), (132, 58), (160, 58), (160, 200), (40, 200), (40, 112), (68, 108), (86, 100)],
     'f': [(87, 85), (93, 68), (111, 62), (132, 59), (160, 59), (160, 200), (40, 200), (40, 112), (70, 108), (88, 101)],
 }
+# lower face, jaw, chin and throat (face side, below the eyes): far-side hair hangs BEHIND this, never over it
+JAW = dict(x0=95, y0=96)
 FILL_BALD = {'m': {'sidepart', 'spiky', 'crewcut', 'slicked', 'shaggy', 'ponytail', 'long', 'topknot', 'knight_cut'},
              'f': set(STYLES['f'])}
 
@@ -75,7 +77,8 @@ def attach(img, B, mann, ear_poly, style, sex):
        if the style covered the ear, the hair stays over it.
     2. gaps: bald skull that shows between hair and face (because the mannequin is shaped a little differently)
        is filled with the nearest hair.
-    3. outline: a 1-px dark line where the hair meets visible skin, like the drawn outline on the outer edge."""
+    3. jaw: far-side hair that fell over the lower face/chin/throat is cut away so the head's own jaw line shows.
+    4. outline: a 1-px dark line where the hair meets visible skin, like the drawn outline on the outer edge."""
     E = ear_mask(ear_poly)
     hair = img[..., 3] > 0
     val = img[..., 0].astype(float)
@@ -101,15 +104,24 @@ def attach(img, B, mann, ear_poly, style, sex):
             idx = ndi.distance_transform_edt(~hair, return_distances=False, return_indices=True)
             val[scalp] = val[idx[0][scalp], idx[1][scalp]]
             hair = hair | scalp
-    # outline against visible skin
+    # jaw: the base head's lower face / chin / throat stays in front of the hair
+    yy, xx = np.mgrid[:200, :200]
+    jaw_box = (xx >= JAW['x0']) & (yy >= JAW['y0'])
+    jaw = hair & B & jaw_box
+    if jaw.any():
+        hair = hair & ~jaw
+        lab, n = ndi.label(hair); sz = ndi.sum(hair, lab, range(1, n + 1))
+        hair = np.isin(lab, [i + 1 for i in range(n) if sz[i] >= 8])        # slivers left by the cut
+    # outline against visible skin (not beside the jaw, where the head's own outline already is)
     skin = B & ~hair
     edge = hair & ndi.binary_dilation(skin, structure=[[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+    edge &= ~(jaw_box & ~B)
     val[edge] = np.minimum(val[edge], 22)
     out = img.copy()
     for c in range(3): out[..., c] = np.where(hair, val, 0).astype(np.uint8)
     out[..., 3] = np.where(hair, 255, 0)
     print(f'  {style}: ear {"covered" if ear_hidden >= 0.5 else "in front"} ({ear_hidden:.0%} under hair), '
-          f'{int(gap.sum())} gap px, {bald} bald scalp px filled')
+          f'{int(gap.sum())} gap px, {bald} bald scalp px filled, {int(jaw.sum())} px cut off the jaw')
     return out
 
 

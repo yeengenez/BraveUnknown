@@ -17,7 +17,9 @@
   sits in front of the hair unless the style covers it, small skull gaps are filled with the nearest hair, and a
   1-px dark line is drawn where hair meets skin. For the styles in `FILL_BALD` (user's list: sidepart, spiky,
   crewcut, slicked, shaggy, ponytail, long, topknot, knight_cut) all bald scalp above the hairline `FACE` and
-  behind the ear is filled with the nearest hair. Output `m_hair_<style>.png`: 200x200 **hair value maps**
+  behind the ear is filled with the nearest hair. Far-side hair is cut off the lower face, jaw, chin and throat
+  (box `JAW`: x>=95, y>=96 inside the head) so the head's own jaw line always shows in front of long hair.
+  Output `m_hair_<style>.png`: 200x200 **hair value maps**
   (tinted with the 10 hair ramps). Styles: messy, sidepart, spiky, crewcut, slicked, shaggy, ponytail, long
   (the game's existing 8) + topknot, braided_mohawk, wild_mane, knight_cut (new).
   `preview_hair_m.png`: each style tinted on the base head, then the raw value maps.
