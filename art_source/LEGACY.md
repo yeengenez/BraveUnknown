@@ -23,11 +23,11 @@ Machine-readable list: [`legacy_assets.json`](legacy_assets.json).
 | Weapons cut from Canva art | `art_source/weapons/k_longsword.png`, `k_rapier.png`, `weapon_merge_test2.png`, `previews/` | Cut from the first layer test image |
 | Enemy sprites | `art_source/enemies/*.png` | Canva originals (wolf, boar, goblin) |
 
-## Still in the game until replaced
+## Portraits: replaced in the game
 
-The hero portraits (`res://portraits/parts/`) are Legacy but **stay in the game** so heroes still have
-faces. Replace them when new portrait art exists; keep the `HeroAppearance` contract (body type, skin,
-face, iris, scar, hairstyle, hair colour) and the ramp-tinting system.
+The Legacy hero portraits stayed in the game until the new art was ready. **They were replaced on
+2026-11-19** by `art_source/new_art/portraits/` (the game's `portraits/parts/` on `main`). The Legacy
+portrait parts on this branch remain for reference only.
 
 The Canva battle sprites were **not** put into the game.
 
