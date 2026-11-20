@@ -48,6 +48,8 @@ LOADOUTS = {
                 ('greataxe', '2h', {s: [('back', 'greataxe', 'over')] for s in ('stand', 'attack', 'hit')}),
                 ('longspear', 'reach', {s: [('back', 'longspear', 'over')] for s in ('stand', 'attack', 'hit')})],
 }
+# classes whose battle sprites wear headgear drawn into the body (user, 2026-11-20): no hair layer on the sprite
+HEADGEAR = {'soldier'}
 SAMPLE_HAIR = {'m': [('sidepart', 'brown', 'fair'), ('messy', 'black', 'tan'), ('slicked', 'auburn', 'deep')],
                'f': [('ponytail', 'auburn', 'fair'), ('bob', 'black', 'tan'), ('braids', 'blonde', 'bronze')]}
 
@@ -309,7 +311,7 @@ def render(cls, data):
                 g2 = split2h(g)
                 its = items[state]
                 im = A.frame(cls, f'{sex}_{stance}', sramp, its, (dx, dy, 0, 0, None), [], 'attack', g2, b)
-                if head and hair:
+                if head and hair and cls not in HEADGEAR:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
                 frames[state] = im

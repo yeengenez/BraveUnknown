@@ -47,35 +47,35 @@ sheet has a crossbow row (stand | aim | release | hit, user's choice 2026-11-19)
 
 ## Class blocks (paste after the common prompt)
 
-### Soldier (v2, from the user's concept sheet - self-contained, do NOT paste the common prompt)
-Attach `templates/soldier_template.png` (4 rows x 3 cells), the concept sheet `source/concepts/soldier_concept.png`
-and the shield key poses `refs/soldier_shield_ref.png`, replace `<SEX>`, then paste:
+### Soldier (v3, final design 2026-11-20 - self-contained, do NOT paste the common prompt)
+Attach, in this order: (1) `templates/soldier_template.png` (4 rows x 3 cells), (2) the final design sheet
+`source/concepts/soldier_final_design.png` (outfit + barbute helm), (3) the shield key poses `refs/soldier_shield_ref.png`.
+Replace `<SEX>`, then paste. One run per sex. The helmet is for battle sprites only; portraits stay bare-headed.
 
 ```
-Use the first attached image as the canvas: a grid of 4 rows x 3 cells on flat pure green (#00FF00), each cell with a dark-green ground line and a dashed head-top line. Keep the canvas size, the grid and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the head at the dashed line when standing upright, all 12 figures at the same scale and the same character.
+Use the first attached image as the canvas: a grid of 4 rows x 3 cells on flat pure green (#00FF00), each cell with a dark-green ground line and a dashed head-top line. Keep the canvas size, the grid and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the helmet at the dashed line when standing upright, all 12 figures at the same scale and the same character.
 
-The second attached image is the concept sheet for this character (the third image shows the shield-row poses). Use it for the OUTFIT (silver plate armour, blue scarf, blue tabard with a light trim, brown leather belts and pouches) and for the STANCES only. Ignore its helmet, shield, weapons, cape, slash effects, text and background.
-
-Character: <SEX> Soldier. Style: Fire Emblem-style anime pixel art matching the concept: clean dark outlines, cel shading, light from the upper left, natural anime proportions about 6-7 heads tall, 3/4 view FACING RIGHT in every cell.
+Character: <SEX> Soldier, exactly as in the second attached image (the final design): Standard plain BARBUTE helm (open face, no crest, no gold, no emblem), simple silver plate armour (rounded pauldrons, plain cuirass, segmented tassets), blue scarf, blue tabard with a light trim, brown leather belt and gloves, steel greaves. Ignore that sheet's text, helmet variations, faction colours and its own animation frames. Style: Fire Emblem-style anime pixel art matching that sheet: clean dark outlines, cel shading, light from the upper left, natural anime proportions about 6 heads tall including the helmet, 3/4 view FACING RIGHT in every cell.
 
 Rows, top to bottom; cells left to right = STAND | ATTACK | GET HIT:
-1. Sword + SQUARE shield (poses from the third image, the shield key-pose reference): the LEFT arm carries a large SQUARE shield (an upright rectangle with slightly rounded corners, from the shoulder to mid-thigh, as wide as the torso, a thick rim with rivets and a raised cross in relief on the face). Colour it like the shield in the third image: dark navy-blue face, a silver/white cross in relief, a silver steel rim with rivets - no gold or yellow on it. The left fist is hidden behind the shield (no cyan rod). STAND = guard: shield held upright in front of the torso, covering it; right fist raised beside the shoulder with the magenta rod pointing up (sword raised). ATTACK = controlled horizontal slash: deep lunge forward, the right arm sweeps across IN FRONT of the body at waist height, magenta rod pointing forward and slightly down; the shield opens slightly to the side (still on the left arm, turned a little outward) so the sword arm passes in front of it. GET HIT = grounded recoil: feet planted, knees bent, braced behind the shield, the shield tilted up and forward to absorb the blow, head knocked back and wincing, right fist low by the hip holding the magenta rod pointing down.
-2. Dual weapons: STAND = wide stance, both fists low and forward, magenta rod in the right fist and cyan rod in the left, both pointing forward and slightly down. ATTACK = lunging cross slash: right arm swept forward at shoulder height with the magenta rod level, left arm pulled back low with the cyan rod. GET HIT = recoiling back, wincing, arms pulled in, both rods still held.
-3. Two-handed: both fists together on ONE magenta rod (one fist above the other). STAND = rod held upright in front of the body, fists at the waist. ATTACK = heavy downward strike finishing low in front, rod angled down and forward, deep lunge. GET HIT = recoiling back, rod pulled up across the body.
-4. Spear: ONE long magenta pole, as long as the body is tall, held at hip height through both fists, front fist forward, back fist at the rear hip. STAND = spear guard, pole level and pointing forward. ATTACK = full forward thrust, deep lunge, pole level. GET HIT = recoiling back, pole still held, tip lifted.
+1. Sword + SQUARE shield (copy the three poses of the third attached image, in order - pose only): the LEFT arm carries the Soldier's own large SQUARE shield in every cell of this row: an upright rectangle with slightly rounded corners, from the shoulder to mid-thigh, as wide as the torso, dark navy-blue face with a silver/white cross in relief, a silver steel rim with rivets - no gold or yellow on it. The left fist is hidden behind the shield (no cyan rod in this row). STAND = guard: shield held upright in front of the torso, covering it; right fist raised beside the shoulder with the magenta rod pointing up (sword raised). ATTACK = controlled horizontal slash: deep lunge forward, the right arm sweeps across IN FRONT of the body at waist height, magenta rod pointing forward and slightly down; the shield opens slightly to the side (still on the left arm, turned a little outward) so the sword arm passes in front of it. GET HIT = grounded recoil: feet planted, knees bent, braced behind the shield, the shield tilted up and forward to absorb the blow, head knocked back and wincing, right fist low by the hip holding the magenta rod pointing down.
+2. Dual weapons (no shield): STAND = wide stance, both fists low and forward, magenta rod in the right fist and cyan rod in the left, both pointing forward and slightly down. ATTACK = lunging cross slash: right arm swept forward at shoulder height with the magenta rod level, left arm pulled back low with the cyan rod. GET HIT = recoiling back, wincing, arms pulled in, both rods still held.
+3. Two-handed (no shield): both fists together on ONE magenta rod (one fist above the other). STAND = rod held upright in front of the body, fists at the waist. ATTACK = heavy downward strike finishing low in front, rod angled down and forward, deep lunge. GET HIT = recoiling back, rod pulled up across the body.
+4. Spear (no shield): ONE long magenta pole, as long as the body is tall, held at hip height through both fists, front fist forward, back fist at the rear hip. STAND = spear guard, pole level and pointing forward. ATTACK = full forward thrust, deep lunge, pole level. GET HIT = recoiling back, pole still held, tip lifted.
 
 Hard rules:
-- No weapons, helmets or capes, and no shield except the square one in row 1. Each fist grips a flat, straight guide rod instead, 2-3% of the figure height thick, sticking out of both sides of the fist where the handle would be, fingers wrapped over it: pure magenta (#FF00FF) in the character's RIGHT hand, pure cyan (#00FFFF) in the LEFT hand. Flat single colours, no shading or outline. No other magenta or cyan anywhere.
-- Bald head: no hair, no helmet, no hood. Ears visible. Small anime face: dark eye lines, a tiny bit of white, short mouth line.
-- All bare skin (face, ears, neck, hands) in shades of pure yellow (red = green, blue near zero): dark yellow for shadows, bright yellow for highlights, shaded like normal skin. Nothing else may be yellow or gold: buckles, trims and studs must be silver or dark bronze/brown.
+- No weapons and no capes. The square shield appears ONLY in row 1. Each fist that holds a weapon grips a flat, straight guide rod instead, 2-3% of the figure height thick, sticking out of both sides of the fist where the handle would be, fingers wrapped over it: pure magenta (#FF00FF) in the character's RIGHT hand, pure cyan (#00FFFF) in the LEFT hand. Flat single colours, no shading or outline. No other magenta or cyan anywhere.
+- The barbute helm is worn in every cell, same design. No hair visible.
+- The face is the only bare skin: paint it in shades of pure yellow (red = green, blue near zero): dark yellow for shadows, bright yellow for highlights, shaded like normal skin. Small anime face: dark eye lines, a tiny bit of white, short mouth line. Nothing else may be yellow or gold.
 - No text, labels, slash effects, motion lines, dust, shadows on the ground or background objects.
 - Output one PNG at the canvas's exact size.
 ```
-Male: broad, bulky frame (as in the concept). Female: add to the prompt "Female: clearly feminine - smaller frame,
-narrower shoulders, curved waist and hips, visible chest under the armour, slimmer limbs, smaller pauldrons, same
-armour style."
+Male: add "Male: broad, sturdy frame." Female: add "Female: clearly feminine - smaller frame, narrower shoulders,
+curved waist and hips, visible chest under the armour, slimmer limbs, smaller pauldrons, a soft feminine face with
+larger eyes and a small chin, same armour and helmet."
 
-The first Soldier sheets (3 rows, before the concept) are kept in `source/soldier_v1/`.
+Earlier Soldier sheets: v1 in `source/soldier_v1/`; v2 (bald, before the helmet) are the current `source/soldier_<sex>_sheet.png`
+until the v3 sheets replace them.
 
 ### Archer
 > Character: **<SEX> Archer** (light armour and hooded cloak with the hood DOWN, from the portrait). Rows, top to bottom:
@@ -165,7 +165,8 @@ Attach `templates/archer_ammo_template.png` (and `refs/archer_m_ref.png` for the
 
 ## Shield rule (user, 2026-11-20)
 Each class with a shield has its OWN shield, drawn by ChatGPT **into the body** (on the left arm) **in its final colours**,
-so the overlaps are right. The look never changes with equipment: shield items are broad categories (light shield, heavy
+so the overlaps are right. Headgear (user, 2026-11-20) is likewise drawn into the battle sprite per class (Soldier =
+plain barbute helm) and never appears on portraits. The look never changes with equipment: shield items are broad categories (light shield, heavy
 shield, tower shield) that change the rules only, and the sprite always shows the class shield. Soldier = **square**
 shield (navy face, silver cross and rim, from the concept), Acolyte and Warrior = **round** shield, kite shield = reserved
 for a future Knight class. A one-handed weapon **without** a shield uses the **dual-weapon stance** (left hand empty).
