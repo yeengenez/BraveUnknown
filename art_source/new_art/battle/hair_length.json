@@ -1,0 +1,7 @@
+{
+ "_note": "Battle sprites with headgear (user, 2026-11-20): the hair piece under the helmet (drawn in a red key, tinted with the hero's hair colour) is shown only for LONG portrait hairstyles; short ones are hidden by the helmet. Buns, topknots and crown braids count as short (inside the helmet).",
+ "m": {"long": ["ponytail", "long", "wild_mane"],
+       "short": ["messy", "sidepart", "spiky", "crewcut", "slicked", "shaggy", "topknot", "braided_mohawk", "knight_cut"]},
+ "f": {"long": ["long", "ponytail", "braids", "wavy", "side_braid", "curly_mane", "warrior_halfup"],
+       "short": ["bob", "pixie", "bun", "crown_braid", "twin_buns"]}
+}

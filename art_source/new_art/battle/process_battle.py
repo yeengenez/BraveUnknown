@@ -50,7 +50,8 @@ LOADOUTS = {
 }
 # classes whose battle sprites wear headgear drawn into the body (user, 2026-11-20): no hair layer on the sprite
 HEADGEAR = {'soldier'}
-SAMPLE_HAIR = {'m': [('sidepart', 'brown', 'fair'), ('messy', 'black', 'tan'), ('slicked', 'auburn', 'deep')],
+HAIR_LEN = json.load(open(os.path.join(HERE, 'hair_length.json')))
+SAMPLE_HAIR = {'m': [('long', 'brown', 'fair'), ('messy', 'black', 'tan'), ('ponytail', 'auburn', 'deep')],
                'f': [('ponytail', 'auburn', 'fair'), ('bob', 'black', 'tan'), ('braids', 'blonde', 'bronze')]}
 
 
@@ -141,8 +142,20 @@ def skin_split(a, fgm, grips):
     lum = a[..., 0] * 0.35 + a[..., 1] * 0.45 + a[..., 2] * 0.2
     med = np.median(lum[m]) if m.any() else 180
     val = np.clip(204 + (lum - med) * 1.15, 40, 245)
-    shield = None    # the class shield is drawn in its own colours as part of the body (shield rule 2026-11-20)
-    fixed = np.dstack([a, (fgm & ~m) * 255]).astype(np.uint8)
+    # hair under the headgear, drawn in shades of pure red (user, 2026-11-20): its own value-map layer, tinted with the
+    # hero's hair colour and shown only for long portrait hairstyles (hair_length.json)
+    red = fgm & ~m & (r > 45) & (g < 0.3 * r) & (b < 0.3 * r)
+    lab_r, nr = ndi.label(red, np.ones((3, 3)))
+    bright = red & (r > 150) & (g < 0.25 * r) & (b < 0.25 * r)       # the key has bright pure red; maroon leather has none
+    red = np.isin(lab_r, [i + 1 for i in range(nr) if (lab_r == i + 1).sum() >= 15 and (bright & (lab_r == i + 1)).sum() >= 8])
+    hairp = None
+    if red.sum() > 40:
+        lo_, hi_ = np.percentile(r[red], [2, 98])
+        hv_ = np.clip(25 + (r - lo_) / max(1, hi_ - lo_) * 210, 10, 245)
+        hairp = np.zeros(a.shape[:2] + (2,), np.uint8); hairp[..., 0] = hv_.astype(np.uint8); hairp[..., 1] = red * 255
+    else:
+        red = np.zeros_like(red)
+    fixed = np.dstack([a, (fgm & ~m & ~red) * 255]).astype(np.uint8)
     skin = np.zeros(a.shape[:2] + (2,), np.uint8); skin[..., 0] = val.astype(np.uint8); skin[..., 1] = m * 255
     # head box for the hair: the skin blob at the top
     hl, hn = ndi.label(m & (np.arange(a.shape[0])[:, None] < top + 0.3 * Hh))
@@ -150,7 +163,7 @@ def skin_split(a, fgm, grips):
     if hn:
         big = np.argmax(ndi.sum(m, hl, range(1, hn + 1))) + 1; hy, hx = np.where(hl == big)
         head = dict(top=int(hy.min()), left=int(hx.min()), right=int(hx.max()), bottom=int(hy.max()))
-    return fixed, skin, head, shield
+    return fixed, skin, head, hairp
 
 
 # ---------------------------------------------------------------- sample hair (portrait hair scaled to the sprite head)
@@ -235,14 +248,14 @@ def one_cell(cls, sex, stance, state, c, fg, s):
         g = PP.orient(PP.grips_for(m, stance, body), o); rods = m
     clean, on = clean_rods(body, rods, on)
     pts = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
-    fixed, skin, head, shield = skin_split(clean, on, pts)
+    fixed, skin, head, hairp = skin_split(clean, on, pts)
     n = f'{cls}_{sex}_{stance}_{state}'
     Image.fromarray(fixed).save(os.path.join(HERE, 'layers', f'{n}_fixed.png'))
     Image.fromarray(skin, 'LA').save(os.path.join(HERE, 'layers', f'{n}_skin.png'))
     json.dump({'grips': g, 'head': head, 'scale': round(s, 4)}, open(os.path.join(HERE, 'grips', f'{n}.json'), 'w'))
     print(n, {k: (v.get('point'), v.get('angle')) for k, v in g.items() if isinstance(v, dict) and 'point' in v}, 'head', head)
-    if shield is not None: Image.fromarray(shield, 'LA').save(os.path.join(HERE, 'layers', f'{n}_shield.png'))
-    return fixed, skin, g, head, shield
+    if hairp is not None: Image.fromarray(hairp, 'LA').save(os.path.join(HERE, 'layers', f'{n}_hair.png'))
+    return fixed, skin, g, head, hairp
 
 
 # fix sheets: (sex, stance, state, tag, file) -> extra state '<state>_<tag>'. 'shield' = the 1h attack with the shield
@@ -308,8 +321,11 @@ def render(cls, data):
             ref = None
             for state in ('stand', 'attack', 'hit'):
                 shielded = any(w == 'shield' for _, w, _ in items[state])
-                fixed, skin, g, head, shield = data.get((sex, stance, f'{state}_shield') if shielded else None) or data[(sex, stance, state)]
+                fixed, skin, g, head, hairp = data.get((sex, stance, f'{state}_shield') if shielded else None) or data[(sex, stance, state)]
                 b = tint(fixed, skin, sramp)
+                if hairp is not None and hair in HAIR_LEN[sex]['long']:     # long hair shows under the helmet
+                    hm = hairp[..., 1] > 0
+                    b = b.copy(); b[hm, :3] = finish.ramp_rgb(finish.PAL['hair'][hramp], hairp[..., 0][hm].astype(float)).astype(np.uint8); b[hm, 3] = 255
                 fx_, fy = feet(b)
                 if ref is None: ref = (CANVAS_FEET[0] - fx_, CANVAS_FEET[1] - fy)
                 dx = round(ref[0]) - A.CELL; dy = round(ref[1]) - A.TOP
