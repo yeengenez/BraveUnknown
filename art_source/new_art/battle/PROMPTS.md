@@ -193,6 +193,15 @@ The first v3 sheets drew the dual STAND facing the viewer (magenta on the left o
 Edit the attached sheet. Redraw ONLY the left and right cells of the SECOND row (dual weapons STAND and GET HIT); every other cell, the canvas, the grid and the green must stay pixel-identical. Same character, helmet, armour, scale and ground line. Turn the body side-on to the right like in the middle cell of that row, and keep the RIGHT hand as the LEADING hand on the right-hand side of the figure, in front: STAND = right hand forward at waist height holding the magenta rod pointing forward and slightly down, left hand back and low holding the cyan rod. GET HIT = recoiling back, wincing, right hand still in front holding the magenta rod, left hand back with the cyan rod. Rods stay flat pure #FF00FF (right) and #00FFFF (left), sticking out of both sides of the fists. The face stays yellow. No weapons, no effects.
 ```
 
+### Dual weapons: two attack poses (main hand + off-hand), 2026-11-20
+Dual wield attacks twice (main hand, then off-hand), so the dual row gets two attacks. The Soldier v4 male sheet came back
+with the OFF-HAND attack (left arm forward with cyan) - keep that sheet as is; it gives ATTACK 2. Then make an edited copy
+for ATTACK 1 (main hand). Attach that sheet alone and send:
+```
+Edit the attached sheet. Redraw ONLY the middle cell of the SECOND row (dual weapons ATTACK); every other cell, the canvas, the grid and the green must stay pixel-identical. Same character, helmet, armour, hair, scale and ground line. Make it the MAIN-HAND attack: a lunging slash with the RIGHT arm swept fully forward at shoulder height holding the magenta rod level and pointing forward, and the LEFT arm pulled back low holding the cyan rod. The RIGHT arm is the one in front of the body. Rods stay flat pure #FF00FF (right) and #00FFFF (left), sticking out of both sides of the fists. The face stays yellow, the hair stays pure red. No weapons, no effects.
+```
+If a sheet comes back with the main-hand attack instead, ask for the OFF-HAND attack the same way: "the LEFT arm swept forward at shoulder height holding the cyan rod level, the RIGHT arm pulled back low holding the magenta rod; the body twisted so the left arm is in front."
+
 ## If ChatGPT struggles
 - Too many figures (Soldier, Acolyte, Warrior have 9): ask for **one row at a time** on the same template ("draw only
   row 1, leave the other cells empty green").

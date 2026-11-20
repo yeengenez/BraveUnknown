@@ -148,6 +148,10 @@ def skin_split(a, fgm, grips):
     lab_r, nr = ndi.label(red, np.ones((3, 3)))
     bright = red & (r > 150) & (g < 0.25 * r) & (b < 0.25 * r)       # the key has bright pure red; maroon leather has none
     red = np.isin(lab_r, [i + 1 for i in range(nr) if (lab_r == i + 1).sum() >= 15 and (bright & (lab_r == i + 1)).sum() >= 8])
+    # ...plus its soft edge: reddish pixels right next to it (outline / blend with the outline or background)
+    red |= fgm & ~m & ndi.binary_dilation(red, iterations=2) & (r - g > 25) & (r - b > 25)
+    near = ndi.binary_dilation(red, iterations=3) & fgm & ~m & ~red
+    red |= near & (g - b > 25) & (np.abs(r - g) < 70)            # red + green-screen blends (olive) on the hair edge
     hairp = None
     if red.sum() > 40:
         lo_, hi_ = np.percentile(r[red], [2, 98])
@@ -155,7 +159,10 @@ def skin_split(a, fgm, grips):
         hairp = np.zeros(a.shape[:2] + (2,), np.uint8); hairp[..., 0] = hv_.astype(np.uint8); hairp[..., 1] = red * 255
     else:
         red = np.zeros_like(red)
-    fixed = np.dstack([a, (fgm & ~m & ~red) * 255]).astype(np.uint8)
+    keep_f = fgm & ~m & ~red
+    lab_f, nf = ndi.label(keep_f, np.ones((3, 3)))            # specks left floating where the hair was
+    if nf: keep_f &= ~np.isin(lab_f, [i + 1 for i, z in enumerate(ndi.sum(keep_f, lab_f, range(1, nf + 1))) if z <= 4])
+    fixed = np.dstack([a, keep_f * 255]).astype(np.uint8)
     skin = np.zeros(a.shape[:2] + (2,), np.uint8); skin[..., 0] = val.astype(np.uint8); skin[..., 1] = m * 255
     # head box for the hair: the skin blob at the top
     hl, hn = ndi.label(m & (np.arange(a.shape[0])[:, None] < top + 0.3 * Hh))
