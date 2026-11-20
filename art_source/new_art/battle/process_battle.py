@@ -235,7 +235,8 @@ def toward_longer(v, mask):
 
 def one_cell(cls, sex, stance, state, c, fg, s):
     st = state.split('_')[0]
-    st = 'attack' if st.startswith('attack') else ('hit' if st == 'ready' else st)    # attack2 reads like attack, ready like hit
+    # attack2 reads like attack; a spear's ready keeps its tip forward (like attack), other wind-ups keep the weapon up
+    st = 'attack' if st.startswith('attack') or (st == 'ready' and stance == 'reach') else ('hit' if st == 'ready' else st)
     ground = figure_height(c, fg)[1]
     body, on = to_body(c, fg, s, ground); body = body.astype(int)
     m = PP.rod_mask(body); cy = PP.cyan_mask(body)
@@ -244,7 +245,7 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     if stance == 'dual' and cy.sum() > 8:
         # two blades: each points along its rod's longer side past the fist (rods are drawn mostly blade-side)
         g = {'back': toward_longer(hand(m, body), m), 'front': toward_longer(hand(cy, body), cy)}
-        if (cls, stance, st) in SWAP_HANDS:      # ChatGPT swapped the rod colours between the hands in this pose
+        if (cls, sex, stance, state) in SWAP_HANDS:      # ChatGPT swapped the rod colours between the hands in this pose
             g = {'back': g['front'], 'front': g['back']}
         rods = m | cy
     elif stance == '1h' and cy.sum() > 8:
@@ -271,7 +272,8 @@ def one_cell(cls, sex, stance, state, c, fg, s):
 EXTRA = {}
 # poses where the drawn rod colours are on the wrong hands (the arm that held magenta in STAND holds cyan here):
 # the grips are swapped back so each weapon stays in its own hand
-SWAP_HANDS = set()   # tried for the Soldier dual attack (2026-11-20): wrong - the colours were right, the body turns
+SWAP_HANDS = {('soldier', 'm', 'dual', 'stand'), ('soldier', 'm', 'dual', 'hit')}   # v5 male sheet: magenta in the
+# lead (left) hand in stand/hit; swapped back so the main weapon is in the right (rear) hand. Remove for corrected sheets.
 # rows waiting for a new ChatGPT drawing: not cut, and their loadouts are not built (Soldier shield row: old code-shield
 # poses removed 2026-11-20, waiting for the drawn-in square shield)
 PENDING = {}
@@ -301,7 +303,8 @@ def process(cls):
             box = [bx for _, _, st, sta, bx in cells(rows, cls) if (st, sta) == (stance, state)][0]
             k2 = (b2.shape[1] / 1536, b2.shape[0] / 1024)
             c, fg = cut_cell(b2, (round(box[0] * k2[0]), round(box[1] * k2[1]), round(box[2] * k2[0]), round(box[3] * k2[1])))
-            data[(sex, stance, f'{state}_{tag}')] = one_cell(cls, sex, stance, f'{state}_{tag}', c, fg, s)
+            name = f'{state}_{tag}' if tag else state          # empty tag = the fix sheet REPLACES that cell
+            data[(sex, stance, name)] = one_cell(cls, sex, stance, name, c, fg, s)
     return data
 
 
