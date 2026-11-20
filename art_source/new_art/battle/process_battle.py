@@ -310,6 +310,23 @@ def feet(b):
     return float(xs[low].mean()), float(bot)
 
 
+def forearm_over(im, b, fist, head, ox, oy, avoid=None, length=30, half_w=6):
+    """Redraw the body's pixels in a band from the right fist toward the shoulder on top of the frame."""
+    sh = np.array([head['left'] + 0.35 * (head['right'] - head['left']), head['bottom'] + 12.0])
+    f = np.array(fist, float); d = sh - f; L = np.linalg.norm(d)
+    if L < 1: return im
+    d /= L; e = f + d * min(length, L)
+    yy, xx = np.mgrid[:b.shape[0], :b.shape[1]]
+    t = np.clip(((xx - f[0]) * d[0] + (yy - f[1]) * d[1]), 0, min(length, L))
+    dist = np.hypot(xx - (f[0] + d[0] * t), yy - (f[1] + d[1] * t))
+    m = (dist <= half_w) & (b[..., 3] > 0)
+    if avoid is not None:                                   # never the shield hand behind the shield
+        m &= np.hypot(xx - avoid[0], yy - avoid[1]) > 10
+    layer = np.zeros_like(b); layer[m] = b[m]
+    im = im.copy(); A.paste(im, layer, ox, oy)
+    return im
+
+
 def render(cls, data):
     rows = []
     for sex in 'mf':
@@ -326,17 +343,14 @@ def render(cls, data):
                 dx = round(ref[0]) - A.CELL; dy = round(ref[1]) - A.TOP
                 g2 = split2h(g)
                 its = items[state]
-                # shield attack (Roman stance): the sword arm thrusts from BEHIND the shield, so the shield goes on top
-                # of everything, including the redrawn sword fist
-                shield_top = state == 'attack' and shielded
-                if shield_top: its = [it for it in its if it[1] != 'shield']
                 im = A.frame(cls, f'{sex}_{stance}', sramp, its, (dx, dy, 0, 0, None), [], 'attack', g2, b)
                 if head and hair:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
-                if shield_top:
-                    im = im.copy(); p = g2['front']['point']
-                    A.paste(im, A.SHIELD, A.CELL + dx + p[0] - A.SHIELD_FIST[0], A.TOP + dy + p[1] - A.SHIELD_FIST[1])
+                if state == 'attack' and shielded and head:
+                    # shield strike: the sword arm swings across IN FRONT of the shield, so the right forearm (fist ->
+                    # elbow, toward the shoulder) is redrawn over it; the sword and fist are already on top
+                    im = forearm_over(im, b, g2['back']['point'], head, A.CELL + dx, A.TOP + dy, avoid=g2['front']['point'])
                 frames[state] = im
                 Image.fromarray(im).save(os.path.join(HERE, 'sprites', f'{cls}_{sex}_{load}_{state}.png'))
             rows.append((f'{cls} {sex} {load}  (sample hair: {hair}, {hramp}; skin {sramp})', frames))
