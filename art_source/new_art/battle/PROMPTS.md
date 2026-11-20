@@ -173,6 +173,12 @@ Attach the sheet ChatGPT made and send:
 > fully extended forward at shoulder height, the magenta rod level and pointing straight forward, not downward. Rods stay
 > flat pure #FF00FF (right) and #00FFFF (left), sticking out of both sides of the fists. Bare skin stays yellow.
 
+## Shield strike (Soldier 1h attack, user reference 2026-11-20)
+Reference: `source/concepts/shield_strike_ref.png` (pose only). Attach the Soldier sheet + that reference, then:
+```
+Edit the first attached sheet. Change ONLY the top-middle cell (one-handed attack); every other cell, the canvas, the grid and the green must stay pixel-identical. Copy the striking pose of the second image (pose only - ignore its outfit, hair, shield, sword, slash effect, sparks, dummy and background): deep forward lunge, upper body hunched forward, head ducked down behind the left fist. The LEFT elbow is bent and the left fist is held close in front of the face/upper chest, the cyan rod upright and leaning a little forward (where the shield is held up in front of the face). The RIGHT arm has just swung a diagonal downward slash: right fist low in front of the hips, just below the left fist, magenta rod pointing forward and down at about 30-40 degrees, as in the reference. Same character, outfit, scale and ground line. Rods stay flat pure #FF00FF (right) and #00FFFF (left), sticking out of both sides of the fists. Bare skin stays yellow. Bald head. No shield, no weapon, no effects.
+```
+
 ## If ChatGPT struggles
 - Too many figures (Soldier, Acolyte, Warrior have 9): ask for **one row at a time** on the same template ("draw only
   row 1, leave the other cells empty green").
