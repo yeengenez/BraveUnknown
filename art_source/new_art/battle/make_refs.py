@@ -30,10 +30,20 @@ W, H = 1536, 1024
 GREEN, LINE, GROUND, TOP = (0, 255, 0), (0, 200, 0), (0, 130, 0), (0, 205, 60)
 
 
-def cells(rows):
+# per-class cell order (user, 2026-11-20): Soldier rows get a READY (wind-up just before the attack) cell; the dual row
+# gets two attacks instead (ATTACK = main hand, ATTACK2 = off-hand)
+CLASS_STATES = {'soldier': {'1h': ['stand', 'ready', 'attack', 'hit'], 'dual': ['stand', 'attack', 'attack2', 'hit'],
+                            '2h': ['stand', 'ready', 'attack', 'hit'], 'reach': ['stand', 'ready', 'attack', 'hit']}}
+
+
+def states_for(cls, stance):
+    return CLASS_STATES.get(cls, {}).get(stance) or STATES.get(stance, ['stand', 'attack', 'hit'])
+
+
+def cells(rows, cls=None):
     rh = H / len(rows)
     for r, (stance, _) in enumerate(rows):
-        states = STATES.get(stance, ['stand', 'attack', 'hit'])
+        states = states_for(cls, stance)
         cw = W / len(states)
         for c, st in enumerate(states):
             yield r, c, stance, st, (round(c * cw), round(r * rh), round((c + 1) * cw), round((r + 1) * rh))
@@ -42,7 +52,7 @@ def cells(rows):
 def template(cls):
     rows = CLASSES[cls]
     im = Image.new('RGB', (W, H), GREEN); d = ImageDraw.Draw(im)
-    for r, c, stance, st, (x0, y0, x1, y1) in cells(rows):
+    for r, c, stance, st, (x0, y0, x1, y1) in cells(rows, cls):
         h = y1 - y0
         g = y0 + round(h * 0.92); t = g - round(h * 0.78)          # figure = 78% of the cell height
         d.rectangle([x0, y0, x1 - 1, y1 - 1], outline=LINE, width=2)
@@ -71,7 +81,7 @@ def ref(cls, sex):
     d.text((10, 8), f'{cls} ({sex}) - outfit from the new portrait (draw it bald)', fill=(40, 30, 30))
     b = bust(sex, cls).resize((340, 340), Image.NEAREST); im.paste(b, (10, 30), b)
     d.text((side + 8, 8), 'poses to follow (LEGACY sprites: pose only - old outfit, weapons become guide rods)', fill=(40, 30, 30))
-    for r, c, stance, st, (x0, y0, x1, y1) in cells(rows):
+    for r, c, stance, st, (x0, y0, x1, y1) in cells(rows, cls):
         loadout = dict(rows)[stance]
         p = os.path.join(LEG, f'{LEGACY_ID.get(cls, cls)}_{sex}_{loadout}_{st}.png') if loadout else ''
         X0, Y0, X1, Y1 = side + x0 // 2, 30 + y0 // 2, side + x1 // 2, 30 + y1 // 2

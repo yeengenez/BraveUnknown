@@ -27,7 +27,7 @@ import process_pose as PP          # (chdirs to poses/)
 import anim as A                   # (chdirs to animation/)
 from skin_layers import tint
 import finish
-from make_refs import CLASSES, cells
+from make_refs import CLASSES, cells, states_for
 os.chdir(cwd)
 
 FIG_H = 190                         # stand figure height in sprite pixels (Legacy: ~197 incl. outline)
@@ -235,6 +235,7 @@ def toward_longer(v, mask):
 
 def one_cell(cls, sex, stance, state, c, fg, s):
     st = state.split('_')[0]
+    st = 'attack' if st.startswith('attack') else ('hit' if st == 'ready' else st)    # attack2 reads like attack, ready like hit
     ground = figure_height(c, fg)[1]
     body, on = to_body(c, fg, s, ground); body = body.astype(int)
     m = PP.rod_mask(body); cy = PP.cyan_mask(body)
@@ -280,10 +281,12 @@ def process(cls):
     for d in ('layers', 'grips', 'sprites', 'source'): os.makedirs(os.path.join(HERE, d), exist_ok=True)
     rows = CLASSES[cls]; data = {}
     for sex in 'mf':
-        a = np.asarray(Image.open(os.path.join(HERE, 'source', f'{cls}_{sex}_sheet.png')).convert('RGB'))
+        src = os.path.join(HERE, 'source', f'{cls}_{sex}_sheet.png')
+        if not os.path.exists(src): print('no sheet yet:', src); continue
+        a = np.asarray(Image.open(src).convert('RGB'))
         sx, sy = a.shape[1] / 1536, a.shape[0] / 1024
         cut = {}
-        for r, c, stance, state, (x0, y0, x1, y1) in cells(rows):
+        for r, c, stance, state, (x0, y0, x1, y1) in cells(rows, cls):
             box = (round(x0 * sx), round(y0 * sy), round(x1 * sx), round(y1 * sy))
             cut[(stance, state)] = cut_cell(a, box)
         hs = [figure_height(*cut[k])[0] for k in cut if k[1] == 'stand']
@@ -295,7 +298,7 @@ def process(cls):
         for (xs, stance, state, tag, fname) in EXTRA.get(cls, []):
             if xs != sex or not os.path.exists(os.path.join(HERE, 'source', fname)): continue
             b2 = np.asarray(Image.open(os.path.join(HERE, 'source', fname)).convert('RGB'))
-            box = [bx for _, _, st, sta, bx in cells(rows) if (st, sta) == (stance, state)][0]
+            box = [bx for _, _, st, sta, bx in cells(rows, cls) if (st, sta) == (stance, state)][0]
             k2 = (b2.shape[1] / 1536, b2.shape[0] / 1024)
             c, fg = cut_cell(b2, (round(box[0] * k2[0]), round(box[1] * k2[1]), round(box[2] * k2[0]), round(box[3] * k2[1])))
             data[(sex, stance, f'{state}_{tag}')] = one_cell(cls, sex, stance, f'{state}_{tag}', c, fg, s)
@@ -322,12 +325,16 @@ def render(cls, data):
     rows = []
     for sex in 'mf':
         for li, (load, stance, items) in enumerate(LOADOUTS[cls]):
-            if stance in PENDING.get(cls, ()): continue
+            if stance in PENDING.get(cls, ()) or not any(k[0] == sex and k[1] == stance for k in data): continue
             hair, hramp, sramp = SAMPLE_HAIR[sex][li % len(SAMPLE_HAIR[sex])]
             frames = {}
             ref = None
-            for state in ('stand', 'attack', 'hit'):
-                shielded = any(w == 'shield' for _, w, _ in items[state])
+            sts = [t for t in states_for(cls, stance) if (sex, stance, t) in data]
+            if not any(w for h_, w, _ in items['attack'] if h_ == 'front'):
+                sts = [t for t in sts if t != 'attack2']            # one weapon: only the main-hand attack
+            for state in sts:
+                its = items.get(state) or items['attack']
+                shielded = any(w == 'shield' for _, w, _ in its)
                 fixed, skin, g, head, hairp = data.get((sex, stance, f'{state}_shield') if shielded else None) or data[(sex, stance, state)]
                 b = tint(fixed, skin, sramp)
                 if hairp is not None and hair in HAIR_LEN[sex]['long']:     # long hair shows under the helmet
@@ -337,7 +344,6 @@ def render(cls, data):
                 if ref is None: ref = (CANVAS_FEET[0] - fx_, CANVAS_FEET[1] - fy)
                 dx = round(ref[0]) - A.CELL; dy = round(ref[1]) - A.TOP
                 g2 = split2h(g)
-                its = items[state]
                 im = A.frame(cls, f'{sex}_{stance}', sramp, its, (dx, dy, 0, 0, None), [], 'attack', g2, b)
                 if head and hair and cls not in HEADGEAR:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
@@ -347,11 +353,11 @@ def render(cls, data):
             rows.append((f'{cls} {sex} {load}  (sample hair: {hair}, {hramp}; skin {sramp})', frames))
     x0, x1 = 20, 399
     cw = x1 - x0; ch = 270
-    sheet = Image.new('RGB', (2 * (cw * 3 + 12), ((len(rows) + 1) // 2) * (ch + 16)), (236, 230, 216)); d = ImageDraw.Draw(sheet)
+    sheet = Image.new('RGB', (2 * (cw * 4 + 12), ((len(rows) + 1) // 2) * (ch + 16)), (236, 230, 216)); d = ImageDraw.Draw(sheet)
     for i, (lab, fr) in enumerate(rows):
-        ox = (i % 2) * (cw * 3 + 12); oy = (i // 2) * (ch + 16)
+        ox = (i % 2) * (cw * 4 + 12); oy = (i // 2) * (ch + 16)
         d.text((ox + 4, oy + 2), lab, fill=(60, 50, 40))
-        for j, st in enumerate(('stand', 'attack', 'hit')):
+        for j, st in enumerate(fr):
             t = Image.fromarray(fr[st][:, x0:x1]); sheet.paste(t, (ox + j * cw, oy + 14), t)
     sheet.save(os.path.join(HERE, f'review_{cls}.png'))
 
