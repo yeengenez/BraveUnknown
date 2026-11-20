@@ -242,8 +242,6 @@ def one_cell(cls, sex, stance, state, c, fg, s):
         g = PP.orient(PP.grips_for(m, stance, body), o); rods = m
     clean, on = clean_rods(body, rods, on)
     pts = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
-    if state.endswith('_shield') and 'front' in g:
-        on = strip_drawn_shield(clean, on, g['front']['point'])
     fixed, skin, head, shield = skin_split(clean, on, pts)
     n = f'{cls}_{sex}_{stance}_{state}'
     Image.fromarray(fixed).save(os.path.join(HERE, 'layers', f'{n}_fixed.png'))
@@ -254,38 +252,12 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     return fixed, skin, g, head, shield
 
 
-def strip_drawn_shield(a, on, p):
-    """ChatGPT sometimes draws a shield on the braced arm. The code shield (anim.SHIELD at the left fist) covers most
-    of it; the rim that sticks out past the code shield on the far side (dark or orange pixels right of the shield's
-    centre, within 10 px) is cleared."""
-    H, W = on.shape; S = np.zeros((H + 400, W + 400), bool)
-    x0 = int(round(p[0] - A.SHIELD_FIST[0])) + 200; y0 = int(round(p[1] - A.SHIELD_FIST[1])) + 200
-    sa = A.SHIELD[..., 3] > 0; S[y0:y0 + sa.shape[0], x0:x0 + sa.shape[1]] = sa; S = S[200:200 + H, 200:200 + W]
-    ys, xs = np.where(S)
-    if not len(xs): return on
-    r, g, b = a[..., 0].astype(int), a[..., 1].astype(int), a[..., 2].astype(int)
-    lum = 0.3 * r + 0.59 * g + 0.11 * b
-    rim = (lum < 90) | ((r > 140) & (b < 0.6 * r))            # dark body of the drawn shield, orange/gold rim
-    xx = np.arange(W)[None, :]
-    zone = ndi.binary_dilation(S, iterations=12) & ~S & (xx > xs.min() + 0.4 * (xs.max() - xs.min()))
-    on = on & ~(zone & rim & on)
-    # leftover rim crumbs: small pieces outside the code shield, on its far side
-    far = ndi.binary_dilation(S, iterations=20) & ~S & (xx > xs.min() + 0.4 * (xs.max() - xs.min()))
-    lab, n = ndi.label(on & ~S, np.ones((3, 3)))
-    for i in range(1, n + 1):
-        m = lab == i
-        if m.sum() < 80 and (m & far).sum() > 0.6 * m.sum(): on &= ~m
-    # nothing of the body reaches past the shield's far edge at chest height: what is there is the drawn rim
-    yy = np.arange(H)[:, None]
-    past = (xx >= xs.max() - 1) & (xx < xs.max() + 16) & (yy > ys.min() - 16) & (yy < ys.max() + 8)
-    past |= (xx > (xs.min() + xs.max()) / 2 + 2) & (xx < xs.max() + 16) & (yy < ys.min()) & (yy > ys.min() - 14)
-    return on & ~(past & ~S)
-
-
 # fix sheets: (sex, stance, state, tag, file) -> extra state '<state>_<tag>'. 'shield' = the 1h attack with the shield
 # arm braced at the chest; loadouts with a shield use it, the others keep the plain attack.
-EXTRA = {'soldier': [('m', '1h', 'attack', 'shield', 'soldier_m_sheet_strike.png'),
-                      ('f', '1h', 'attack', 'shield', 'soldier_f_sheet_strike.png')]}   # shield strike, user reference 2026-11-20
+EXTRA = {}
+# rows waiting for a new ChatGPT drawing: not cut, and their loadouts are not built (Soldier shield row: old code-shield
+# poses removed 2026-11-20, waiting for the drawn-in square shield)
+PENDING = {'soldier': {'1h'}}
 
 
 def process(cls):
@@ -301,6 +273,7 @@ def process(cls):
         hs = [figure_height(*cut[k])[0] for k in cut if k[1] == 'stand']
         s = FIG_H / float(np.median(hs))
         for (stance, state), (c, fg) in cut.items():
+            if stance in PENDING.get(cls, ()): continue
             data[(sex, stance, state)] = one_cell(cls, sex, stance, state, c, fg, s)
         # extra cells from fix sheets (same grid): e.g. the shield-braced 1h attack, used only with a shield
         for (xs, stance, state, tag, fname) in EXTRA.get(cls, []):
@@ -329,27 +302,11 @@ def feet(b):
     return float(xs[low].mean()), float(bot)
 
 
-def forearm_over(im, b, fist, head, ox, oy, avoid=None, length=30, half_w=6):
-    """Redraw the body's pixels in a band from the right fist toward the shoulder on top of the frame."""
-    sh = np.array([head['left'] + 0.35 * (head['right'] - head['left']), head['bottom'] + 12.0])
-    f = np.array(fist, float); d = sh - f; L = np.linalg.norm(d)
-    if L < 1: return im
-    d /= L; e = f + d * min(length, L)
-    yy, xx = np.mgrid[:b.shape[0], :b.shape[1]]
-    t = np.clip(((xx - f[0]) * d[0] + (yy - f[1]) * d[1]), 0, min(length, L))
-    dist = np.hypot(xx - (f[0] + d[0] * t), yy - (f[1] + d[1] * t))
-    m = (dist <= half_w) & (b[..., 3] > 0)
-    if avoid is not None:                                   # never the shield hand behind the shield
-        m &= np.hypot(xx - avoid[0], yy - avoid[1]) > 10
-    layer = np.zeros_like(b); layer[m] = b[m]
-    im = im.copy(); A.paste(im, layer, ox, oy)
-    return im
-
-
 def render(cls, data):
     rows = []
     for sex in 'mf':
         for li, (load, stance, items) in enumerate(LOADOUTS[cls]):
+            if stance in PENDING.get(cls, ()): continue
             hair, hramp, sramp = SAMPLE_HAIR[sex][li % len(SAMPLE_HAIR[sex])]
             frames = {}
             ref = None
@@ -371,10 +328,6 @@ def render(cls, data):
                 if head and hair:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
-                if state == 'attack' and shielded and head:
-                    # shield strike: the sword arm swings across IN FRONT of the shield, so the right forearm (fist ->
-                    # elbow, toward the shoulder) is redrawn over it; the sword and fist are already on top
-                    im = forearm_over(im, b, g2['back']['point'], head, A.CELL + dx, A.TOP + dy, avoid=g2['front']['point'])
                 frames[state] = im
                 Image.fromarray(im).save(os.path.join(HERE, 'sprites', f'{cls}_{sex}_{load}_{state}.png'))
             rows.append((f'{cls} {sex} {load}  (sample hair: {hair}, {hramp}; skin {sramp})', frames))

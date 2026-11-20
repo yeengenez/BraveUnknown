@@ -163,22 +163,6 @@ Attach `templates/archer_ammo_template.png` (and `refs/archer_m_ref.png` for the
   so the common prompt now asks for silver / dark bronze trims.
 - The 1h attack's left (shield) fist ended low at the belt instead of braced in front of the chest.
 
-## Fix: shield arm in the one-handed attack (Soldier, Acolyte)
-Only the classes that can use a shield need this (Soldier, Acolyte; Warrior, Archer, Mage and Rogue have no shield).
-Attach the sheet ChatGPT made and send:
-> Edit the attached sheet. Change ONLY the top-middle cell (one-handed attack); every other cell, the canvas, the
-> grid and the green must stay pixel-identical. In that cell keep the same character, outfit, deep lunge and legs, and
-> change the arms: the LEFT forearm is raised and braced across the front of the chest, left fist at chest height in
-> front of the body, holding the cyan rod upright (as if holding a shield up in front of the chest). The RIGHT arm stays
-> fully extended forward at shoulder height, the magenta rod level and pointing straight forward, not downward. Rods stay
-> flat pure #FF00FF (right) and #00FFFF (left), sticking out of both sides of the fists. Bare skin stays yellow.
-
-## Shield strike (Soldier 1h attack, user reference 2026-11-20)
-Reference: `source/concepts/shield_strike_ref.png` (pose only). Attach the Soldier sheet + that reference, then:
-```
-Edit the first attached sheet. Change ONLY the top-middle cell (one-handed attack); every other cell, the canvas, the grid and the green must stay pixel-identical. Copy the striking pose of the second image (pose only - ignore its outfit, hair, shield, sword, slash effect, sparks, dummy and background): deep forward lunge, upper body hunched forward, head ducked down behind the left fist. The LEFT elbow is bent and the left fist is held close in front of the face/upper chest, the cyan rod upright and leaning a little forward (where the shield is held up in front of the face). The RIGHT arm has just swung a diagonal downward slash: right fist low in front of the hips, just below the left fist, magenta rod pointing forward and down at about 30-40 degrees, as in the reference. Same character, outfit, scale and ground line. Rods stay flat pure #FF00FF (right) and #00FFFF (left), sticking out of both sides of the fists. Bare skin stays yellow. Bald head. No shield, no weapon, no effects.
-```
-
 ## Shield rule (user, 2026-11-20)
 Each class with a shield has its OWN shield shape, drawn by ChatGPT **into the body** (on the left arm) in **shades of
 pure red**, so the overlaps are right; `process_battle.py` cuts the red into a shield layer (value map) that is tinted
@@ -186,7 +170,7 @@ per shield item. Soldier = **square** shield, Acolyte and Warrior = **round** sh
 future Knight class. A one-handed weapon **without** a shield uses the **dual-weapon stance** (left hand empty).
 
 ### Fix: redraw only the Soldier's shield row (keep the other rows)
-Attach the Soldier sheet (the `_strike` one) and the concept sheet, then:
+Attach the current Soldier sheet (`source/soldier_<sex>_sheet.png`) and the concept sheet; `source/concepts/shield_strike_ref.png` can go along as a third image for the strike pose. Then:
 ```
 Edit the first attached sheet. Redraw ONLY the top row (3 cells); rows 2-4, the canvas, the grid and the green must stay pixel-identical. Same character, outfit, scale and ground lines. In all three top-row cells the LEFT arm now carries a large SQUARE shield: a slightly curved rectangle with rounded corners, from the shoulder to mid-thigh, as wide as the torso, with a raised round boss in the middle and a thick rim. Paint the WHOLE shield in shades of pure red (#FF0000 family: very dark red for the rim edge and shadows, mid red for the face, bright red for highlights on the boss and rim) - no other colour on the shield, no emblem. The left fist is hidden behind the shield; remove the cyan rod. Poses: STAND = low guard, shield in front of the body, right fist raised by the shoulder with the magenta rod pointing up. ATTACK = shield strike: deep lunge, upper body hunched behind the raised shield, the right arm swinging a diagonal downward slash ACROSS IN FRONT of the shield, right fist low in front of the hips, magenta rod pointing forward and down. GET HIT = pushed back behind the shield, knees bent, wincing, magenta rod still held. Rods stay flat pure #FF00FF. Bare skin stays yellow. Bald head. No other red anywhere, no sword, no effects.
 ```
