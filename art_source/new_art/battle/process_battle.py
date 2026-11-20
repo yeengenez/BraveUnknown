@@ -223,6 +223,8 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     if stance == 'dual' and cy.sum() > 8:
         # two blades: each points along its rod's longer side past the fist (rods are drawn mostly blade-side)
         g = {'back': toward_longer(hand(m, body), m), 'front': toward_longer(hand(cy, body), cy)}
+        if (cls, stance, st) in SWAP_HANDS:      # ChatGPT swapped the rod colours between the hands in this pose
+            g = {'back': g['front'], 'front': g['back']}
         rods = m | cy
     elif stance == '1h' and cy.sum() > 8:
         g = PP.orient({'back': hand(m, body)}, o); g['front'] = PP.orient({'f': hand(cy, body)}, 'hit')['f']
@@ -246,9 +248,12 @@ def one_cell(cls, sex, stance, state, c, fg, s):
 # fix sheets: (sex, stance, state, tag, file) -> extra state '<state>_<tag>'. 'shield' = the 1h attack with the shield
 # arm braced at the chest; loadouts with a shield use it, the others keep the plain attack.
 EXTRA = {}
+# poses where the drawn rod colours are on the wrong hands (the arm that held magenta in STAND holds cyan here):
+# the grips are swapped back so each weapon stays in its own hand
+SWAP_HANDS = set()   # tried for the Soldier dual attack (2026-11-20): wrong - the colours were right, the body turns
 # rows waiting for a new ChatGPT drawing: not cut, and their loadouts are not built (Soldier shield row: old code-shield
 # poses removed 2026-11-20, waiting for the drawn-in square shield)
-PENDING = {'soldier': {'1h'}}
+PENDING = {}
 
 
 def process(cls):
