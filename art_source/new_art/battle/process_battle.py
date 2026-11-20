@@ -41,15 +41,13 @@ def one_hand(w, shield=False):      # same rule as poses/compose.py: weapon in t
 LOADOUTS = {
     # a one-handed weapon without a shield uses the dual stance (left hand empty) - shield rule 2026-11-20
     'soldier': [('longsword', 'dual', {s: [('back', 'longsword', 'over')] for s in ('stand', 'attack', 'hit')}),
-                ('sword_shield', '1h', one_hand('longsword', True)),
+                # the shield stance always shows the class's own shield, drawn into the body (Soldier: square shield);
+                # the equipped shield item (light / heavy / tower) changes rules only, not the look
+                ('sword_shield', '1h', {s: [('back', 'longsword', 'over')] for s in ('stand', 'attack', 'hit')}),
                 ('dual_swords', 'dual', {s: [('front', 'longsword', 'over'), ('back', 'longsword', 'over')] for s in ('stand', 'attack', 'hit')}),
                 ('greataxe', '2h', {s: [('back', 'greataxe', 'over')] for s in ('stand', 'attack', 'hit')}),
                 ('longspear', 'reach', {s: [('back', 'longspear', 'over')] for s in ('stand', 'attack', 'hit')})],
 }
-# per-class shield ramps (drawn-in shields are value maps): Soldier square shield = painted crimson
-SHIELD_RAMP = {'soldier': ['#2a0e10', '#5c1a1c', '#8e2a26', '#c2543c', '#eaa274'],
-               'acolyte': ['#24160e', '#4e3220', '#7a5434', '#a77d50', '#d6b07c'],
-               'warrior': ['#24160e', '#4e3220', '#7a5434', '#a77d50', '#d6b07c']}
 SAMPLE_HAIR = {'m': [('sidepart', 'brown', 'fair'), ('messy', 'black', 'tan'), ('slicked', 'auburn', 'deep')],
                'f': [('ponytail', 'auburn', 'fair'), ('bob', 'black', 'tan'), ('braids', 'blonde', 'bronze')]}
 
@@ -141,17 +139,8 @@ def skin_split(a, fgm, grips):
     lum = a[..., 0] * 0.35 + a[..., 1] * 0.45 + a[..., 2] * 0.2
     med = np.median(lum[m]) if m.any() else 180
     val = np.clip(204 + (lum - med) * 1.15, 40, 245)
-    # shield drawn by ChatGPT in shades of pure red (shield rule 2026-11-20): its own value-map layer
-    red = fgm & ~m & (r > 60) & (g < 0.22 * r) & (b < 0.22 * r)      # pure red only (maroon leather has g, b > 0.25 r)
-    lab_r, nr = ndi.label(red, np.ones((3, 3)))
-    red = np.isin(lab_r, [i + 1 for i in range(nr) if (lab_r == i + 1).sum() >= 40])
-    shield = None
-    if red.sum() > 300:
-        lo_, hi_ = np.percentile(r[red], [2, 98])
-        sv = np.clip(30 + (r - lo_) / max(1, hi_ - lo_) * 205, 10, 245)
-        shield = np.zeros(a.shape[:2] + (2,), np.uint8); shield[..., 0] = sv.astype(np.uint8); shield[..., 1] = red * 255
-    if shield is None: red = np.zeros_like(red)
-    fixed = np.dstack([a, (fgm & ~m & ~red) * 255]).astype(np.uint8)
+    shield = None    # the class shield is drawn in its own colours as part of the body (shield rule 2026-11-20)
+    fixed = np.dstack([a, (fgm & ~m) * 255]).astype(np.uint8)
     skin = np.zeros(a.shape[:2] + (2,), np.uint8); skin[..., 0] = val.astype(np.uint8); skin[..., 1] = m * 255
     # head box for the hair: the skin blob at the top
     hl, hn = ndi.label(m & (np.arange(a.shape[0])[:, None] < top + 0.3 * Hh))
@@ -236,7 +225,7 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     elif stance == '1h' and cy.sum() > 8:
         g = PP.orient({'back': hand(m, body)}, o); g['front'] = PP.orient({'f': hand(cy, body)}, 'hit')['f']
         rods = m | cy
-    elif stance == '1h':                     # shield drawn in (red): only the sword hand has a rod
+    elif stance == '1h':                     # shield drawn into the body: only the sword hand has a rod
         g = PP.orient({'back': hand(m, body)}, o); rods = m
     else:
         g = PP.orient(PP.grips_for(m, stance, body), o); rods = m
@@ -314,11 +303,6 @@ def render(cls, data):
                 shielded = any(w == 'shield' for _, w, _ in items[state])
                 fixed, skin, g, head, shield = data.get((sex, stance, f'{state}_shield') if shielded else None) or data[(sex, stance, state)]
                 b = tint(fixed, skin, sramp)
-                if shielded and shield is not None:      # drawn-in shield: tint it and drop the code shield
-                    sl = shield[..., 1] > 0
-                    b = b.copy(); b[sl, :3] = finish.ramp_rgb(SHIELD_RAMP[cls], shield[..., 0][sl].astype(float)).astype(np.uint8); b[sl, 3] = 255
-                    items = {k: [it for it in v if it[1] != 'shield'] for k, v in items.items()}
-                    shielded = False
                 fx_, fy = feet(b)
                 if ref is None: ref = (CANVAS_FEET[0] - fx_, CANVAS_FEET[1] - fy)
                 dx = round(ref[0]) - A.CELL; dy = round(ref[1]) - A.TOP
