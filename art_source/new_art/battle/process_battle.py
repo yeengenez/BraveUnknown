@@ -265,7 +265,8 @@ def strip_drawn_shield(a, on, p):
 
 # fix sheets: (sex, stance, state, tag, file) -> extra state '<state>_<tag>'. 'shield' = the 1h attack with the shield
 # arm braced at the chest; loadouts with a shield use it, the others keep the plain attack.
-EXTRA = {}   # e.g. {'soldier': [('m', '1h', 'attack', 'shield', '<fix sheet>.png')]}; shield-wall try (source/soldier_m_sheet_shieldwall.png) rejected 2026-11-20
+EXTRA = {'soldier': [('m', '1h', 'attack', 'shield', 'soldier_m_sheet_strike.png'),
+                      ('f', '1h', 'attack', 'shield', 'soldier_f_sheet_strike.png')]}   # shield strike, user reference 2026-11-20
 
 
 def process(cls):
