@@ -34,7 +34,7 @@ Archer and Mage melee weapons limited to **light** weapons on 2026-11-16 (user: 
 
 General rules decided:
 - **Simple weapons can be used by every class** (Archer and Mage: light ones only).
-- **Dual wield is open to anyone** holding two one-handed weapons (an Archer with two daggers is valid). **Secondary hit: −4 attack and half damage.** Placeholder numbers for testing; feats will ease the penalties. Read as: the primary hit is unaffected.
+- **Dual wield is open to anyone** holding two one-handed weapons (an Archer with two daggers is valid). **Secondary hit: −4 attack and half damage.** Placeholder numbers for testing; feats will ease the penalties. Read as: the primary hit is unaffected. (In the prototype since 2026-11-21: the off-hand swings first.)
 - **Secondary weapon slot**: every expeditioner can carry a secondary weapon, and it must be **one-handed** (for Archer and Mage, light). Used e.g. when an Archer runs out of ammunition.
 - **Class advancement exists**: classes branch into advanced classes later (e.g. an Acolyte branch that fights in melee). Not designed.
 
@@ -104,6 +104,15 @@ Findings from simulation (500 fights per setup, placeholder numbers):
 - Melee shows a **hit mark by damage type**: slash (crescent), pierce (triangular stab mark), blunt (impact burst and shock waves), claw (three rakes), bite (closing jaws). **Pierce and blunt show only the hit mark, never the weapon.**
 - **Every effect travels from the attacker's side to the far side** (left→right for the party, mirrored for enemies). No circular impact rings; missile hits spray out of the far side.
 - HP on a card changes only when the blow lands; floating numbers, MISS/CRITICAL/DOWNED/SLAIN text, screen shake on crits.
+
+## Soldier battle sprites in the game (2026-11-21, user: "rebuild and use battle sprite for soldier")
+- **Soldiers in battle are shown as their battle sprite** standing on the formation tile (feet on a floor ellipse that turns gold for the actor, red for a target, green for an ally target), with a small name/HP plate; other classes and monsters keep the card. Frames are swapped single sprites, as the user set: **stand → ready (wind-up) → attack → stand**; struck = **hit** frame; downed/dead = hit frame greyed. **Dual stance:** off-hand swing = **slash_left** (after ready), main-hand swing = **slash_right**, then **finish**, then stand.
+- Export: `art_source/new_art/battle/export_game.py <game repo> soldier` writes `sprites/battle/soldier/<sex>_<loadout>_<state>.png` (+ `_fx.png` for the drawn slash arc/smear) and `sprites/battle/soldier.json`. Frames are **keyed**: alpha 254 = skin (value in red), 253 = hair under the helmet (value in red), 255 = fixed colour. The game (`scripts/ui/battle_sprites.gd`) tints them with the hero's portrait skin and hair ramps and hides the hair piece for short hairstyles, so the sprite matches the portrait.
+- **Five Soldier loadouts** (`GameData.CLASSES.soldier.loadouts`, each with an `id`): `sword_shield` (longsword + heavy shield, shield stance), `dual_shortswords` (short sword + off-hand short sword, dual stance), `spear` (sheet Spear stats: 2h, 1d8 ×3, Brace; drawn with the long-spear reach-stance sprite), `greatsword`, `greataxe`. Short sword and greataxe were added from the weapon sheet.
+- **First Guild list of a new game** (user): seats 1–5 are those five Soldiers (random level 1–3); seat 6 is random. Later refreshes are random as before.
+- **Dual wield implemented** (placeholder rule above): one Attack action = off-hand swing first at −4 for half damage, then the main hand. The off-hand weapon shows on the Guild card and character sheet.
+- **Swords drawn in code** (`class_weapons.py`: `shortsword`, `longsword`, `greatsword`): straight blade with a short triangular point. The Legacy Canva longsword is no longer used for battle sprites.
+- The Soldier armour reads slightly pink in the processed sprites (same in `review_soldier.png`); it is how the current art processes, not a game tint.
 
 ## LEGACY ART: everything made with Canva (user decision, 2026-11-18)
 **All assets generated in Canva, and anything cut, edited or composed from a Canva image, are Legacy: use them for reference only** (style, proportions, colours, poses, grip positions). Do not build new game content from them and do not extend them with more Canva generations. New production art replaces them. Register: `art_source/LEGACY.md` and `art_source/legacy_assets.json` (branch `art-source`).
