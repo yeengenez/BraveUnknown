@@ -233,6 +233,26 @@ def toward_longer(v, mask):
     return v
 
 
+# drawn effects (slash waves from the user's Gemini redraws): cut cell RGBA in, body-canvas RGBA out
+CELL_FX, FX_LAYERS, GRIP_AT = {}, {}, {}
+
+
+def fx_to_body(f, s, ground):
+    """Same geometry as to_body, keeping the effect's soft alpha."""
+    al = f[..., 3].astype(np.float32) / 255
+    W, H = round(f.shape[1] * s), round(f.shape[0] * s)
+    pm = [np.asarray(Image.fromarray(f[..., k].astype(np.float32) * al).resize((W, H), Image.BOX)) for k in range(3)]
+    am = np.asarray(Image.fromarray(al).resize((W, H), Image.BOX))
+    rgb = np.dstack(pm) / np.maximum(am, 1e-6)[..., None]
+    out = np.zeros((BODY_H, BODY_W, 4), np.uint8)
+    oy = FEET_Y - round(ground * s); ox = (BODY_W - W) // 2
+    ys, xs = np.where(am > 0.004)
+    ty, tx = ys + oy, xs + ox; k = (ty >= 0) & (ty < BODY_H) & (tx >= 0) & (tx < BODY_W)
+    out[ty[k], tx[k], :3] = np.clip(rgb[ys[k], xs[k]], 0, 255).astype(np.uint8)
+    out[ty[k], tx[k], 3] = np.clip(am[ys[k], xs[k]] * 255, 0, 255).astype(np.uint8)
+    return out
+
+
 def one_cell(cls, sex, stance, state, c, fg, s):
     st = state.split('_')[0]
     # attack2 reads like attack; a spear's ready keeps its tip forward (like attack), other wind-ups keep the weapon up
@@ -255,6 +275,16 @@ def one_cell(cls, sex, stance, state, c, fg, s):
         g = PP.orient({'back': hand(m, body)}, o); rods = m
     else:
         g = PP.orient(PP.grips_for(m, stance, body), o); rods = m
+    for h_ in ('back', 'front'):                           # hand-given fist positions (see <sheet>_grips.json)
+        if (sex, stance, state, h_) in GRIP_AT and h_ in g:
+            cx_, cy_ = GRIP_AT[(sex, stance, state, h_)]
+            W_ = round(c.shape[1] * s)
+            g[h_]['point'] = [round(cx_ * s + (BODY_W - W_) // 2, 1), round(cy_ * s + FEET_Y - round(ground * s), 1)]
+    if state in SLASH_HIDE and SLASH_HIDE[state][0] in g:    # hidden blade points along its swing
+        import math
+        hh, kind = SLASH_HIDE[state]; a_ = math.radians(g[hh]['angle'])
+        if (kind == 'sweep' and math.cos(a_) < 0) or (kind == 'chop' and math.sin(a_) < 0):
+            g[hh]['angle'] = round(float((g[hh]['angle'] + 360) % 360 - 180), 1)
     clean, on = clean_rods(body, rods, on)
     pts = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
     fixed, skin, head, hairp = skin_split(clean, on, pts)
@@ -264,6 +294,10 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     json.dump({'grips': g, 'head': head, 'scale': round(s, 4)}, open(os.path.join(HERE, 'grips', f'{n}.json'), 'w'))
     print(n, {k: (v.get('point'), v.get('angle')) for k, v in g.items() if isinstance(v, dict) and 'point' in v}, 'head', head)
     if hairp is not None: Image.fromarray(hairp, 'LA').save(os.path.join(HERE, 'layers', f'{n}_hair.png'))
+    if (sex, stance, state) in CELL_FX:
+        fxl = fx_to_body(CELL_FX[(sex, stance, state)], s, ground)
+        FX_LAYERS[(sex, stance, state)] = fxl
+        Image.fromarray(fxl).save(os.path.join(HERE, 'layers', f'{n}_fx.png'))
     return fixed, skin, g, head, hairp
 
 
@@ -293,10 +327,19 @@ def process(cls):
             sx, sy = a.shape[1] / 1536, a.shape[0] / 1024
             main = fname == sheets[0][0]
             cut = {}
+            fxp = os.path.join(HERE, 'source', fname.replace('_sheet.png', '_fx.png'))
+            fxa = np.asarray(Image.open(fxp).convert('RGBA')) if os.path.exists(fxp) else None
             for r, c, stance, state, (x0, y0, x1, y1) in cells(rws, cls):
                 if main and stance in extra_stances: continue          # that stance comes from its own sheet now
                 box = (round(x0 * sx), round(y0 * sy), round(x1 * sx), round(y1 * sy))
                 cut[(stance, state)] = cut_cell(a, box)
+                gjp = os.path.join(HERE, 'source', fname.replace('_sheet.png', '_grips.json'))
+                if os.path.exists(gjp):                       # fists hidden in a drawn effect: positions given by hand
+                    for h_, (gx_, gy_) in json.load(open(gjp)).get(state, {}).items():
+                        GRIP_AT[(sex, stance, state, h_)] = (gx_ * sx - 4, gy_ * sy - 4)   # cell px -> cut-cell px
+                if fxa is not None:
+                    f_ = fxa[box[1] + 4:box[3] - 4, box[0] + 4:box[2] - 4]
+                    if f_[..., 3].any(): CELL_FX[(sex, stance, state)] = f_
             hs = [figure_height(*cut[k])[0] for k in cut if k[1] == 'stand']
             s_sheet = FIG_H / float(np.median(hs))                  # each sheet scaled by its own stand figures
             if main: s = s_sheet
@@ -327,8 +370,8 @@ def split2h(g):
     return g
 
 
-# slash frames: the swinging hand's weapon is hidden behind a slash wave (user, 2026-11-21);
-# both weapons show again in FINISH. slash_left = off-hand (cyan, 'front') chop, slash_right = main hand (magenta, 'back') sweep.
+# slash frames (user, 2026-11-21): the swinging hand's weapon is drawn motion-blurred inside a slash wave (the wave the
+# user drew with Gemini, from <sheet>_fx.png, else slash_wave() in code); both weapons show normally again in FINISH. slash_left = off-hand (cyan, 'front') chop, slash_right = main hand (magenta, 'back') sweep.
 SLASH_HIDE = {'slash_left': ('front', 'chop'), 'slash_right': ('back', 'sweep')}
 
 
@@ -368,6 +411,33 @@ def slash_wave(im, kind, F, ang, L, SS=4):
     return np.asarray(out)
 
 
+def blur_weapon(im, wname, F, ang, kind, fist_r):
+    """The swinging weapon drawn fast: a few fading ghost copies along the swing, softened, plus the blade itself
+    slightly see-through. The handle inside the fist is left out so the blade comes out of the hand."""
+    import math
+    from PIL import ImageFilter
+    H, W = im.shape[:2]
+    def one(a, dx=0.0, dy=0.0, alpha=1.0):
+        img, gp, L = A.WEAPON[wname](a)
+        lay = np.zeros((H, W, 4), np.uint8); A.paste(lay, img, F[0] - gp[0] + dx, F[1] - gp[1] + dy)
+        lay = lay.astype(np.float32); lay[..., 3] *= alpha; return lay
+    ghosts = np.zeros((H, W, 4), np.float32)
+    N = 6
+    for k in range(N, 0, -1):               # oldest first, newer copies on top
+        if kind == 'chop':                   # came down from overhead: earlier = rotated back up about the fist
+            g_ = one(ang - 11 * k, alpha=0.5 * (1 - k / (N + 1)))
+        else:                                # backhand sweep: the hand came from the front, earlier = further right
+            g_ = one(ang - 2.5 * k, dx=7 * k, dy=-1.2 * k, alpha=0.5 * (1 - k / (N + 1)))
+        m = g_[..., 3] > 0; ghosts[m] = g_[m]
+    gim = Image.fromarray(np.clip(ghosts, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.6))
+    blade = Image.fromarray(np.clip(one(ang, alpha=0.88), 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.7))
+    yy, xx = np.mgrid[:H, :W]; inside = np.hypot(xx - F[0], yy - F[1]) < fist_r
+    out = Image.fromarray(im).convert('RGBA')
+    for lay in (gim, blade):
+        la = np.asarray(lay).copy(); la[inside, 3] = 0; out.alpha_composite(Image.fromarray(la))
+    return np.asarray(out)
+
+
 def feet(b):
     ys, xs = np.where(b[..., 3] > 0); bot = ys.max(); low = ys > bot - 10
     return float(xs[low].mean()), float(bot)
@@ -404,7 +474,14 @@ def render(cls, data):
                 if hidden:
                     p, ang = g2[hide]['point'], g2[hide]['angle']
                     L = A.WEAPON[hidden[0]](ang)[2]
-                    im = slash_wave(im, kind, (A.CELL + dx + p[0], A.TOP + dy + p[1]), ang, L)
+                    F = (A.CELL + dx + p[0], A.TOP + dy + p[1])
+                    fxl = FX_LAYERS.get((sex, stance, state))
+                    if fxl is not None:              # the slash wave drawn by the user (Gemini), over the body
+                        o_ = Image.fromarray(im).convert('RGBA'); lay = np.zeros_like(np.asarray(o_)); A.paste(lay, fxl, A.CELL + dx, A.TOP + dy)
+                        o_.alpha_composite(Image.fromarray(lay)); im = np.asarray(o_)
+                    else:
+                        im = slash_wave(im, kind, F, ang, L)
+                    im = blur_weapon(im, hidden[0], F, ang, kind, max(4.5, g2[hide].get('fist_gap', 9) / 2))
                 if head and hair and cls not in HEADGEAR:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
