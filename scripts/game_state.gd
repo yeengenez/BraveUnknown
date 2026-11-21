@@ -26,18 +26,23 @@ func new_game() -> void:
 	battles_won = 0
 	battles_fought = 0
 	in_battle = false
-	_roll_offers()
+	_roll_offers(true)
 	changed.emit()
 
 
 # ------------------------------------------------------------------ guild
-func _roll_offers() -> void:
+## first = the very first list of a new game: one Soldier per battle-sprite loadout first.
+func _roll_offers(first: bool = false) -> void:
 	var taken: Array = []
 	for unit: Unit in roster:
 		taken.append(unit.unit_name)
 	offers = []
 	for i in GameData.OFFER_COUNT:
-		var recruit := RecruitGenerator.make(taken)
+		var recruit: Unit
+		if first and i < GameData.FIRST_GUILD_SOLDIERS.size():
+			recruit = RecruitGenerator.make(taken, "soldier", 0, GameData.FIRST_GUILD_SOLDIERS[i])
+		else:
+			recruit = RecruitGenerator.make(taken)
 		taken.append(recruit.unit_name)
 		offers.append(recruit)
 

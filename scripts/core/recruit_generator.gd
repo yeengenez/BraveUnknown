@@ -77,14 +77,19 @@ static func roll_look(class_id: String, body: String = "") -> Dictionary:
 	return HeroAppearance.roll(Dice.rng, body, outfit).to_dict()
 
 
-static func make(taken_names: Array = [], forced_class: String = "", forced_level: int = 0) -> Unit:
+static func make(taken_names: Array = [], forced_class: String = "", forced_level: int = 0, forced_loadout: String = "") -> Unit:
 	var unit := Unit.new()
 	unit.class_id = forced_class if forced_class != "" else String(Dice.pick_weighted(GameData.CLASS_WEIGHTS))
 	unit.level = forced_level if forced_level > 0 else int(Dice.pick_weighted(GameData.RECRUIT_LEVEL_WEIGHTS))
 	var cls: Dictionary = GameData.CLASSES[unit.class_id]
 	var loadout: Dictionary = Dice.pick(cls["loadouts"])
+	for option: Dictionary in cls["loadouts"]:
+		if forced_loadout != "" and option.get("id", "") == forced_loadout:
+			loadout = option
 	unit.weapon_id = loadout["weapon"]
 	unit.shield_id = loadout["shield"]
+	unit.offhand_id = loadout.get("offhand", "")
+	unit.loadout_id = loadout.get("id", "")
 	unit.armor_id = Dice.pick(loadout["armor"])
 	unit.default_row = int(loadout["row"])
 	unit.abilities = roll_abilities(loadout["focus"])

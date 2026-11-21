@@ -1,0 +1,295 @@
+{
+ "canvas": [
+  399,
+  270
+ ],
+ "feet": [
+  199,
+  250
+ ],
+ "skin_alpha": 254,
+ "hair_alpha": 253,
+ "hair_long": {
+  "m": [
+   "ponytail",
+   "long",
+   "wild_mane"
+  ],
+  "f": [
+   "long",
+   "ponytail",
+   "braids",
+   "wavy",
+   "side_braid",
+   "curly_mane",
+   "warrior_halfup"
+  ]
+ },
+ "loadouts": {
+  "sword_shield": {
+   "stance": "1h",
+   "sexes": {
+    "m": [
+     {
+      "state": "stand",
+      "file": "m_sword_shield_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "m_sword_shield_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "m_sword_shield_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "m_sword_shield_hit.png",
+      "fx": null
+     }
+    ],
+    "f": [
+     {
+      "state": "stand",
+      "file": "f_sword_shield_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "f_sword_shield_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "f_sword_shield_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "f_sword_shield_hit.png",
+      "fx": null
+     }
+    ]
+   }
+  },
+  "dual_shortswords": {
+   "stance": "dual",
+   "sexes": {
+    "m": [
+     {
+      "state": "stand",
+      "file": "m_dual_shortswords_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "m_dual_shortswords_ready.png",
+      "fx": null
+     },
+     {
+      "state": "slash_left",
+      "file": "m_dual_shortswords_slash_left.png",
+      "fx": "m_dual_shortswords_slash_left_fx.png"
+     },
+     {
+      "state": "slash_right",
+      "file": "m_dual_shortswords_slash_right.png",
+      "fx": "m_dual_shortswords_slash_right_fx.png"
+     },
+     {
+      "state": "finish",
+      "file": "m_dual_shortswords_finish.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "m_dual_shortswords_hit.png",
+      "fx": null
+     }
+    ],
+    "f": [
+     {
+      "state": "stand",
+      "file": "f_dual_shortswords_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "f_dual_shortswords_ready.png",
+      "fx": null
+     },
+     {
+      "state": "slash_left",
+      "file": "f_dual_shortswords_slash_left.png",
+      "fx": "f_dual_shortswords_slash_left_fx.png"
+     },
+     {
+      "state": "slash_right",
+      "file": "f_dual_shortswords_slash_right.png",
+      "fx": "f_dual_shortswords_slash_right_fx.png"
+     },
+     {
+      "state": "finish",
+      "file": "f_dual_shortswords_finish.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "f_dual_shortswords_hit.png",
+      "fx": null
+     }
+    ]
+   }
+  },
+  "greatsword": {
+   "stance": "2h",
+   "sexes": {
+    "m": [
+     {
+      "state": "stand",
+      "file": "m_greatsword_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "m_greatsword_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "m_greatsword_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "m_greatsword_hit.png",
+      "fx": null
+     }
+    ],
+    "f": [
+     {
+      "state": "stand",
+      "file": "f_greatsword_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "f_greatsword_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "f_greatsword_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "f_greatsword_hit.png",
+      "fx": null
+     }
+    ]
+   }
+  },
+  "greataxe": {
+   "stance": "2h",
+   "sexes": {
+    "m": [
+     {
+      "state": "stand",
+      "file": "m_greataxe_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "m_greataxe_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "m_greataxe_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "m_greataxe_hit.png",
+      "fx": null
+     }
+    ],
+    "f": [
+     {
+      "state": "stand",
+      "file": "f_greataxe_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "f_greataxe_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "f_greataxe_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "f_greataxe_hit.png",
+      "fx": null
+     }
+    ]
+   }
+  },
+  "spear": {
+   "stance": "reach",
+   "sexes": {
+    "m": [
+     {
+      "state": "stand",
+      "file": "m_spear_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "m_spear_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "m_spear_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "m_spear_hit.png",
+      "fx": null
+     }
+    ],
+    "f": [
+     {
+      "state": "stand",
+      "file": "f_spear_stand.png",
+      "fx": null
+     },
+     {
+      "state": "ready",
+      "file": "f_spear_ready.png",
+      "fx": null
+     },
+     {
+      "state": "attack",
+      "file": "f_spear_attack.png",
+      "fx": null
+     },
+     {
+      "state": "hit",
+      "file": "f_spear_hit.png",
+      "fx": null
+     }
+    ]
+   }
+  }
+ }
+}

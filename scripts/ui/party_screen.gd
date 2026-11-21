@@ -272,6 +272,8 @@ func _rebuild_detail() -> void:
 	_detail.add_child(UIKit.label("HP %d / %d      Initiative %s      BAB +%d" % [unit.hp, unit.max_hp, GameData.signed(unit.init_mod), unit.bab], 13))
 	_detail.add_child(UIKit.wrapped(unit.defense_text(), 13, UIKit.TEXT))
 	_detail.add_child(UIKit.wrapped("Weapon: " + unit.weapon_text(), 13, UIKit.TEXT))
+	if unit.offhand_text() != "":
+		_detail.add_child(UIKit.wrapped(unit.offhand_text(), 13, UIKit.TEXT))
 	_detail.add_child(UIKit.wrapped("Armor: " + unit.armor_text(), 13, UIKit.TEXT))
 	if unit.caster_type != "":
 		var failure := "" if unit.spell_failure == 0 else "   ·   spell failure %d%%" % unit.spell_failure

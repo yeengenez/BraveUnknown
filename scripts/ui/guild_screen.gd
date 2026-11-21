@@ -149,6 +149,8 @@ func _offer_card(index: int) -> Control:
 	body.add_child(scores)
 
 	body.add_child(UIKit.wrapped(recruit.weapon_text(), 13, UIKit.TEXT))
+	if recruit.offhand_text() != "":
+		body.add_child(UIKit.wrapped(recruit.offhand_text(), 12, UIKit.TEXT))
 	body.add_child(UIKit.wrapped("Armor: " + recruit.armor_text(), 13, UIKit.MUTED))
 	if recruit.caster_type != "":
 		body.add_child(UIKit.wrapped("%s · %s" % [recruit.caster_type.capitalize(), recruit.slots_text()], 13, UIKit.MUTED))

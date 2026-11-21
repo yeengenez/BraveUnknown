@@ -20,6 +20,7 @@ func _init() -> void:
 	_test_point_buy()
 	_test_formation_rules()
 	_test_downed_and_death()
+	_test_dual_wield_and_sprites()
 	_simulate(battles)
 	print("\n%d checks, %d failed" % [checks, failures])
 	quit(1 if failures > 0 else 0)
@@ -170,6 +171,50 @@ func _test_downed_and_death() -> void:
 	check("Healed in combat: stands again", soldier.is_standing(), true)
 	combat._apply_damage(soldier, soldier.hp + 14)
 	check("At -CON score: dead", soldier.dead, true)
+
+
+func _test_dual_wield_and_sprites() -> void:
+	print("Dual wield, first Guild list, battle sprites")
+	var dual := RecruitGenerator.make([], "soldier", 1, "dual_shortswords")
+	check("Dual loadout has an off-hand short sword", dual.offhand_id, "shortsword")
+	check("Short sword from the weapon sheet: 1d6 19-20", [int(dual.weapon["sides"]), int(dual.weapon["threat"])], [6, 19])
+	var greataxe := RecruitGenerator.make([], "soldier", 1, "greataxe")
+	check("Greataxe from the weapon sheet: 1d12 x3", [int(greataxe.weapon["sides"]), int(greataxe.weapon["mult"])], [12, 3])
+	# Two swings per Attack action: off-hand first at -4, then the main hand.
+	var target := _grid(EncounterGenerator.make_monster("orc_raider"), 1, 0, 1)
+	target.max_hp = 999
+	target.hp = 999
+	_grid(dual, 0, 0, 1)
+	var combat := Combat.new()
+	combat.setup([dual], [target])
+	combat._do_attack_action(dual, target)
+	var events := combat.take_events()
+	var hands: Array = []
+	for e: Dictionary in events:
+		hands.append(e.get("hand", ""))
+	check("Dual wielder attacks off-hand then main hand", hands, ["off", "main"])
+	var lines := "\n".join(combat.take_new_lines())
+	check("Off-hand roll shows the -4", lines.contains("off-hand -4"), true)
+	# First Guild list of a new game
+	var state: Node = load("res://scripts/game_state.gd").new()
+	state.new_game()
+	var ids: Array = []
+	for i in 5:
+		ids.append((state.offers[i] as Unit).loadout_id)
+	check("First Guild list: the five Soldier loadouts", ids, ["sword_shield", "dual_shortswords", "spear", "greatsword", "greataxe"])
+	state.free()
+	# Every Soldier loadout has a full set of frames for both body types
+	var missing := 0
+	for load_id: String in GameData.FIRST_GUILD_SOLDIERS:
+		for body: String in ["m", "f"]:
+			var u := RecruitGenerator.make([], "soldier", 1, load_id)
+			u.look["body"] = body
+			var frames := BattleSprites.frames_for(u)
+			var need := ["stand", "ready", "slash_left", "slash_right", "finish", "hit"] if load_id == "dual_shortswords" else ["stand", "ready", "attack", "hit"]
+			for st: String in need:
+				if not frames.has(st) or frames[st][0] == null:
+					missing += 1
+	check("Soldier battle sprites: no missing frames", missing, 0)
 
 
 # ------------------------------------------------------------------ balance

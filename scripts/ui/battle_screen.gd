@@ -173,7 +173,8 @@ func _build_grid(title: String, color: Color, rows: Array, cells: Array) -> Cont
 		for row: int in rows:
 			var cell := UnitCell.new()
 			cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			cell.custom_minimum_size = Vector2(120, 78)
+			cell.custom_minimum_size = Vector2(120, 112)
+			cell.allow_sprites = true  # units with battle sprites stand on the tile
 			cell.card.mouse_default_cursor_shape = Control.CURSOR_ARROW
 			grid.add_child(cell)
 			cells[row * 3 + lane] = cell
@@ -287,6 +288,7 @@ func step_once() -> void:
 	_marks.clear()
 	_sync_shown()
 	_refresh(false)
+	_reset_poses()
 	if combat.finished:
 		_show_outcome()
 	_busy = false
@@ -434,6 +436,16 @@ func _play_event(event: Dictionary, time_scale: float) -> void:
 	if not targets.is_empty() and targets[0] != null:
 		aim = (targets[0] as UnitCell).card_center()
 
+	# Battle-sprite frames (user rule: swap single frames). Dual stance: off hand = slash_left,
+	# main hand = slash_right then finish; other stances: ready -> attack.
+	var melee: bool = type == "attack" and not event["ranged"]
+	var sprite := melee and actor_cell.has_sprite()
+	var dual := sprite and BattleSprites.stance(actor) == "dual"
+	var off_hand := String(event.get("hand", "main")) == "off"
+	var strike_pose := ("slash_left" if off_hand else "slash_right") if dual else "attack"
+	if sprite and not (dual and not off_hand and actor_cell.pose() == "slash_left"):
+		actor_cell.set_pose("ready")
+
 	# 2. Wind-up: the actor glows in its action colour.
 	actor_cell.glow(color if type == "spell" else UIKit.GOLD, time_scale)
 	await _wait(0.2 * time_scale)
@@ -447,6 +459,8 @@ func _play_event(event: Dictionary, time_scale: float) -> void:
 	var from := actor_cell.card_center()
 	if type == "attack" and not event["ranged"]:
 		var land := actor_cell.lunge(aim, time_scale)
+		if sprite:
+			get_tree().create_timer(land * 0.45).timeout.connect(actor_cell.set_pose.bind(strike_pose))
 		await _wait(land)
 	elif type == "attack":
 		actor_cell.recoil(aim, time_scale)
@@ -506,6 +520,8 @@ func _play_event(event: Dictionary, time_scale: float) -> void:
 				else:
 					_fx.splash(center, from, UIKit.GOLD if crit else color, crit, 0.36 * time_scale)
 				cell.take_hit(from, crit, time_scale)
+				if cell.has_sprite():
+					cell.set_pose("hit")
 				if crit:
 					_fx.float_text(center + Vector2(0, -26), "CRITICAL!", UIKit.GOLD, 17, 0.95 * time_scale, 40.0)
 					_fx.float_text(center, "-%d" % int(impact["amount"]), UIKit.GOLD, 34, 1.0 * time_scale, 52.0)
@@ -543,7 +559,25 @@ func _play_event(event: Dictionary, time_scale: float) -> void:
 		if id != _battle_id:
 			return
 		actor_cell.return_home(time_scale)
+		if dual and not off_hand:
+			actor_cell.set_pose("finish")
 	await _wait((0.5 if any_crit or any_down else 0.38) * time_scale)
+	if id != _battle_id:
+		return
+	# Back to standing, except a dual off-hand slash, which flows into the main-hand slash.
+	if sprite and not (dual and off_hand):
+		actor_cell.set_pose("stand")
+	for cell: UnitCell in targets:
+		if cell != null and cell.has_sprite() and cell.unit != null and _shown_hp(cell.unit) > 0 and not _shown_dead(cell.unit):
+			cell.set_pose("stand")
+
+
+## Every sprite figure still standing goes back to its stand frame (e.g. after a dual off-hand
+## slash that ended the fight before the main-hand slash).
+func _reset_poses() -> void:
+	for cell: UnitCell in _party_cells + _enemy_cells:
+		if cell.has_sprite() and cell.unit != null and _shown_hp(cell.unit) > 0 and not _shown_dead(cell.unit):
+			cell.set_pose("stand")
 
 
 func _screen_shake(strength: float, time_scale: float) -> void:

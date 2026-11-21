@@ -26,6 +26,22 @@ var _flash_tween: Tween
 var _glow_tween: Tween
 var _bar_tween: Tween
 
+## Battle screen only: units with battle sprites (BattleSprites) stand on the tile as a figure
+## instead of a card, and swap single frames (set_pose).
+var allow_sprites := false
+var _sprite_mode := false
+var _sprite_root: Control
+var _floor: Control
+var _sprite: TextureRect
+var _sprite_fx: TextureRect
+var _frames: Dictionary = {}
+var _frames_key := ""
+var _pose := ""
+var _pose_down := false
+var _floor_color := Color(0, 0, 0, 0.35)
+var _sprite_tween: Tween
+const PLATE_H := 24.0
+
 
 func _init() -> void:
 	custom_minimum_size = Vector2(148, 84)
@@ -83,11 +99,41 @@ func _init() -> void:
 	_flash.add_theme_stylebox_override("panel", UIKit.box(Color.WHITE, Color.WHITE, 0, 6, 0))
 	_flash.modulate.a = 0.0
 	card.add_child(_flash)
+
+	# Sprite figure (battle): floor shadow, frame, effect layer. Drawn behind the name plate.
+	_sprite_root = Control.new()
+	_sprite_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_sprite_root.visible = false
+	card.add_child(_sprite_root)
+	card.move_child(_sprite_root, _glow.get_index() + 1)
+	_floor = Control.new()
+	_floor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_floor.draw.connect(_draw_floor)
+	_sprite_root.add_child(_floor)
+	_sprite = TextureRect.new()
+	_sprite_fx = TextureRect.new()
+	for rect: TextureRect in [_sprite, _sprite_fx]:
+		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		rect.stretch_mode = TextureRect.STRETCH_SCALE
+		rect.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		_sprite_root.add_child(rect)
 	show_unit(null)
 
 
-## Portrait on the left, text to its right.
+## Portrait on the left, text to its right. In sprite mode: figure on the tile, plate at the bottom.
 func _layout() -> void:
+	if _sprite_mode:
+		_portrait.visible = false
+		_body.offset_left = 4.0
+		_body.offset_right = -4.0
+		_body.offset_top = card.size.y - PLATE_H
+		_body.offset_bottom = -1.0
+		_layout_sprite()
+		return
+	_body.offset_top = 7.0
+	_body.offset_right = -7.0
+	_body.offset_bottom = -7.0
 	var side := clampf(card.size.y - 12.0, 0.0, 62.0)
 	var has_portrait := unit != null and not unit.look.is_empty() and side >= 24.0
 	_portrait.visible = has_portrait
@@ -100,7 +146,9 @@ func _layout() -> void:
 ## hp / dead override what is drawn, so the battle screen can hold back a
 ## result until the blow lands. hp = -9999 means "use the unit's real values".
 func show_unit(p_unit: Unit, highlight: String = "", empty_text: String = "", hp: int = -9999, dead: int = -1, animate_bar: bool = false) -> void:
+	var changed := p_unit != unit
 	unit = p_unit
+	_set_sprite_mode(allow_sprites and unit != null and BattleSprites.has_sprites(unit), changed)
 	_layout()
 	var bg := UIKit.PANEL_ALT
 	var border := UIKit.BORDER
@@ -144,6 +192,13 @@ func show_unit(p_unit: Unit, highlight: String = "", empty_text: String = "", hp
 			bg = UIKit.PANEL_DARK
 		card.modulate = Color(1, 1, 1, 0.55) if is_dead else Color.WHITE
 		_portrait.show_unit(unit, not standing)
+		if _sprite_mode:
+			_name.text = "%s  %d/%d%s" % [unit.unit_name, shown_hp, unit.max_hp, ("  · " + status) if status != "" else ""]
+			_name.add_theme_color_override("font_color", side_color if standing else UIKit.BAD)
+			_sprite.modulate = Color(0.55, 0.55, 0.6) if not standing else Color.WHITE
+			if changed or _pose == "" or (not standing) != _pose_down:
+				set_pose("stand" if standing else "hit")  # downed / dead: recoil frame, greyed
+			_pose_down = not standing
 	match highlight:
 		"selected":
 			border = UIKit.GOLD
@@ -160,6 +215,14 @@ func show_unit(p_unit: Unit, highlight: String = "", empty_text: String = "", hp
 			border = UIKit.GOOD
 			width = 3
 			bg = Color("#24352a")
+	if _sprite_mode:
+		var plate := StyleBoxEmpty.new()
+		for state: String in ["normal", "hover", "pressed", "disabled"]:
+			card.add_theme_stylebox_override(state, plate)
+		_floor_color = {"active": Color(UIKit.GOLD, 0.75), "target": Color(UIKit.BAD, 0.75),
+			"ally_target": Color(UIKit.GOOD, 0.7), "selected": Color(UIKit.GOLD, 0.6)}.get(highlight, Color(0, 0, 0, 0.35))
+		_floor.queue_redraw()
+		return
 	var normal := UIKit.box(bg, border, width, 6, 6)
 	var hover := UIKit.box(bg.lightened(0.06), border if highlight != "" else UIKit.GOLD.darkened(0.35), width, 6, 6)
 	card.add_theme_stylebox_override("normal", normal)
@@ -169,7 +232,86 @@ func show_unit(p_unit: Unit, highlight: String = "", empty_text: String = "", hp
 
 
 func card_center() -> Vector2:
+	if _sprite_mode and _sprite.size.x > 0.0:
+		# middle of the figure's torso
+		var s := _sprite.size.y / BattleSprites.canvas(unit.class_id).y
+		var feet := BattleSprites.feet(unit.class_id)
+		return _sprite.get_global_rect().position + Vector2(feet.x, feet.y - 95.0) * s
 	return card.get_global_rect().get_center()
+
+
+# ------------------------------------------------------------------ sprite mode
+func has_sprite() -> bool:
+	return _sprite_mode
+
+
+func _set_sprite_mode(on: bool, changed: bool) -> void:
+	if on != _sprite_mode:
+		_sprite_mode = on
+		_sprite_root.visible = on
+		_sub.visible = not on
+		_hp.visible = not on
+		_glow.visible = not on
+		_flash.visible = not on
+		card.clip_contents = not on
+		_name.add_theme_font_size_override("font_size", 12 if on else 14)
+		_bar.custom_minimum_size = Vector2(0, 5 if on else 7)
+		_pose = ""
+	if on:
+		var key := "%d|%s" % [unit.uid, JSON.stringify(unit.look)]
+		if key != _frames_key:
+			_frames = BattleSprites.frames_for(unit)
+			_frames_key = key
+			_pose = ""
+
+
+## Swap to one frame (stand, ready, attack, hit, slash_left, slash_right, finish). Missing frames
+## fall back to stand.
+func set_pose(state: String) -> void:
+	if not _sprite_mode:
+		return
+	if not _frames.has(state):
+		state = "stand"
+	_pose = state
+	var frame: Array = _frames.get(state, [null, null])
+	_sprite.texture = frame[0]
+	_sprite_fx.texture = frame[1]
+	_sprite_fx.visible = frame[1] != null
+
+
+func pose() -> String:
+	return _pose
+
+
+func _layout_sprite() -> void:
+	if unit == null:
+		return
+	var canvas := BattleSprites.canvas(unit.class_id)
+	var feet := BattleSprites.feet(unit.class_id)
+	var ground := card.size.y - PLATE_H + 2.0
+	var s := (ground - 2.0) / 196.0  # stand figure: ~190 px from the helmet top to the feet
+	var size_px := canvas * s
+	var pos := Vector2(card.size.x * 0.5 - feet.x * s, ground - feet.y * s)
+	for rect: TextureRect in [_sprite, _sprite_fx]:
+		rect.position = pos
+		rect.size = size_px
+	_floor.position = Vector2.ZERO
+	_floor.size = card.size
+	_floor.set_meta("feet", Vector2(card.size.x * 0.5, ground))
+	_floor.set_meta("scale", s)
+	_floor.queue_redraw()
+
+
+func _draw_floor() -> void:
+	if not _sprite_mode or not _floor.has_meta("feet"):
+		return
+	var at: Vector2 = _floor.get_meta("feet")
+	var s: float = _floor.get_meta("scale")
+	var points := PackedVector2Array()
+	for i in 28:
+		var a := TAU * i / 28.0
+		points.append(at + Vector2(cos(a) * 62.0 * s, sin(a) * 13.0 * s))
+	_floor.draw_colored_polygon(points, _floor_color)
 
 
 # ------------------------------------------------------------------ motion
@@ -196,6 +338,9 @@ func reset_motion() -> void:
 	card.z_index = 0
 	_flash.modulate.a = 0.0
 	_glow.modulate.a = 0.0
+	if _sprite_tween != null:
+		_sprite_tween.kill()
+	_sprite.self_modulate = Color.WHITE
 
 
 ## Melee: pull back, then dash toward `toward` (global position).
@@ -267,6 +412,13 @@ func slide_from(global_from: Vector2, time_scale: float) -> void:
 
 ## A colour wash over the whole card that fades out.
 func flash(color: Color, strength: float, time_scale: float) -> void:
+	if _sprite_mode:
+		if _sprite_tween != null:
+			_sprite_tween.kill()
+		_sprite.self_modulate = Color(1, 1, 1).lerp(color * 2.2, clampf(strength, 0.0, 1.0))
+		_sprite_tween = create_tween()
+		_sprite_tween.tween_property(_sprite, "self_modulate", Color.WHITE, 0.38 * time_scale).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		return
 	if _flash_tween != null:
 		_flash_tween.kill()
 	_flash.self_modulate = color
@@ -277,6 +429,10 @@ func flash(color: Color, strength: float, time_scale: float) -> void:
 
 ## The acting unit's outline pulses in its action colour.
 func glow(color: Color, time_scale: float) -> void:
+	if _sprite_mode:
+		_floor_color = Color(color, 0.85)
+		_floor.queue_redraw()
+		return
 	if _glow_tween != null:
 		_glow_tween.kill()
 	_glow.add_theme_stylebox_override("panel", UIKit.box(Color(color, 0.0), color, 3, 9, 0))

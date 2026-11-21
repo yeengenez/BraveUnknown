@@ -132,6 +132,8 @@ static func sheet(unit: Unit) -> String:
 	lines.append("HP %d/%d   Initiative %s" % [unit.hp, unit.max_hp, GameData.signed(unit.init_mod)])
 	lines.append(unit.defense_text())
 	lines.append(unit.weapon_text())
+	if unit.offhand_text() != "":
+		lines.append(unit.offhand_text())
 	if unit.armor_text() != "":
 		lines.append("Armor: " + unit.armor_text())
 	if unit.caster_type != "":

@@ -28,6 +28,9 @@ var look: Dictionary = {}
 var weapon_id := ""
 var armor_id := ""
 var shield_id := ""
+var offhand_id := ""  ## second one-handed weapon (dual wield)
+var loadout_id := ""  ## class loadout id; picks the battle sprite set
+var offhand: Dictionary = {}
 var weapon: Dictionary = {}
 
 # ---- derived stats
@@ -125,6 +128,7 @@ func recalc(full_heal: bool = false) -> void:
 
 	# Attack and damage
 	weapon = GameData.weapon(weapon_id)
+	offhand = GameData.weapon(offhand_id) if offhand_id != "" else {}
 	var uses_dex: bool = weapon["ranged"] or weapon["finesse"]
 	attack_bonus = bab + (dex_mod if uses_dex else str_mod)
 	if weapon["ranged"]:
@@ -253,6 +257,15 @@ func weapon_text() -> String:
 		weapon["name"], GameData.signed(attack_bonus),
 		GameData.dice_text(int(weapon["n"]), int(weapon["sides"]), damage_bonus),
 		GameData.crit_text(weapon), kind,
+	]
+
+
+func offhand_text() -> String:
+	if offhand.is_empty():
+		return ""
+	return "Off-hand %s %s (%s, half damage)" % [
+		String(offhand["name"]).to_lower(), GameData.signed(attack_bonus + GameData.OFFHAND_ATTACK_PENALTY),
+		GameData.dice_text(int(offhand["n"]), int(offhand["sides"]), damage_bonus),
 	]
 
 

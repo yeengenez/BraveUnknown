@@ -29,6 +29,9 @@ const WEAPONS := {
 	"dagger": {"name": "Dagger", "hands": 1, "n": 1, "sides": 4, "threat": 19, "mult": 2, "weight": 1, "dtype": "pierce"},
 	"longsword": {"name": "Longsword", "hands": 1, "n": 1, "sides": 8, "threat": 19, "mult": 2, "weight": 4, "dtype": "slash"},
 	"battleaxe": {"name": "Battleaxe", "hands": 1, "n": 1, "sides": 8, "threat": 20, "mult": 3, "weight": 6, "dtype": "slash"},
+	# [SHEET] from the user's weapon sheet ("Brave unknown Weapon sheet", PF1e baseline)
+	"shortsword": {"name": "Short sword", "hands": 1, "n": 1, "sides": 6, "threat": 19, "mult": 2, "weight": 2, "light": true, "dtype": "pierce"},
+	"greataxe": {"name": "Greataxe", "hands": 2, "n": 1, "sides": 12, "threat": 20, "mult": 3, "weight": 12, "dtype": "slash"},
 	"rapier": {"name": "Rapier", "hands": 1, "n": 1, "sides": 6, "threat": 18, "mult": 2, "weight": 2, "finesse": true, "dtype": "pierce"},
 	"spear": {"name": "Spear", "hands": 2, "n": 1, "sides": 8, "threat": 20, "mult": 3, "weight": 6, "brace": true, "dtype": "pierce"},
 	"greatsword": {"name": "Greatsword", "hands": 2, "n": 2, "sides": 6, "threat": 19, "mult": 2, "weight": 8, "dtype": "slash"},
@@ -73,13 +76,14 @@ const CLASSES := {
 	"soldier": {
 		"name": "Soldier", "hit_die": 10, "bab": "full", "caster": "", "cast_ability": "",
 		"spells": [],
+		# The five loadouts that have battle sprites (2026-11-21). "id" = sprite loadout in
+		# res://sprites/battle/soldier.json; "offhand" = second weapon (dual wield).
 		"loadouts": [
-			{"weapon": "longsword", "shield": "heavy_shield", "armor": ["scale_mail", "breastplate", "splint_mail"], "row": 0, "focus": ["STR", "CON", "DEX"]},
-			{"weapon": "battleaxe", "shield": "light_shield", "armor": ["hide", "scale_mail", "breastplate"], "row": 0, "focus": ["STR", "CON", "DEX"]},
-			{"weapon": "greatsword", "shield": "", "armor": ["scale_mail", "breastplate", "half_plate"], "row": 0, "focus": ["STR", "CON", "DEX"]},
-			{"weapon": "halberd", "shield": "", "armor": ["hide", "scale_mail", "breastplate"], "row": 1, "focus": ["STR", "CON", "DEX"]},
-			{"weapon": "spear", "shield": "", "armor": ["hide", "scale_mail"], "row": 0, "focus": ["STR", "CON", "DEX"]},
-			{"weapon": "rapier", "shield": "light_shield", "armor": ["studded_leather", "chain_shirt"], "row": 0, "focus": ["DEX", "CON", "STR"]},
+			{"id": "sword_shield", "weapon": "longsword", "shield": "heavy_shield", "armor": ["scale_mail", "breastplate", "splint_mail"], "row": 0, "focus": ["STR", "CON", "DEX"]},
+			{"id": "dual_shortswords", "weapon": "shortsword", "offhand": "shortsword", "shield": "", "armor": ["chain_shirt", "scale_mail", "breastplate"], "row": 0, "focus": ["STR", "DEX", "CON"]},
+			{"id": "spear", "weapon": "spear", "shield": "", "armor": ["hide", "scale_mail", "breastplate"], "row": 0, "focus": ["STR", "CON", "DEX"]},
+			{"id": "greatsword", "weapon": "greatsword", "shield": "", "armor": ["scale_mail", "breastplate", "half_plate"], "row": 0, "focus": ["STR", "CON", "DEX"]},
+			{"id": "greataxe", "weapon": "greataxe", "shield": "", "armor": ["hide", "scale_mail", "breastplate"], "row": 0, "focus": ["STR", "CON", "DEX"]},
 		],
 	},
 	"archer": {
@@ -154,7 +158,17 @@ const TACTIC_INFO := {
 	"Conserve": "Cantrips and weapons only; slots kept for a Downed ally. Targets as Balanced.",
 }
 
+# ---------------------------------------------------------------- dual wield
+## [DOC: design notes, class design 2026-11-16; placeholder numbers] Anyone holding two one-handed
+## weapons attacks with both. The secondary (off-hand) hit has -4 attack and deals half damage;
+## the primary hit is unaffected.
+const OFFHAND_ATTACK_PENALTY := -4
+const OFFHAND_DAMAGE_FACTOR := 0.5
+
 # ---------------------------------------------------------------- guild
+## The very first Guild list of a new game (user, 2026-11-21): one Soldier per battle-sprite
+## loadout, then random recruits for the remaining seats.
+const FIRST_GUILD_SOLDIERS: Array[String] = ["sword_shield", "dual_shortswords", "spear", "greatsword", "greataxe"]
 ## [PLACEHOLDER] Economy numbers.
 const START_GOLD := 1000
 const REFRESH_COST := 30

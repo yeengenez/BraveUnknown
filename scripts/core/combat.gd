@@ -407,6 +407,12 @@ func _do_attack_action(unit: Unit, first_target: Unit) -> void:
 		if unit.bab >= threshold:
 			attacks += 1
 	var target := first_target
+	# Dual wield (design notes): one extra hit with the off-hand weapon at -4 attack, half damage.
+	# It lands first, matching the sprites (off-hand slash, then main-hand slash).
+	if not unit.offhand.is_empty() and not unit.weapon["ranged"]:
+		_attack_roll(unit, target, GameData.OFFHAND_ATTACK_PENALTY, "off")
+		if finished:
+			return
 	for i in attacks:
 		if target == null or not target.is_standing():
 			target = TacticsAI.pick_target(self, unit, weapon_targets(unit))  # each attack can pick a new target
@@ -417,12 +423,16 @@ func _do_attack_action(unit: Unit, first_target: Unit) -> void:
 			break
 
 
-func _attack_roll(unit: Unit, target: Unit, penalty: int) -> void:
-	var weapon: Dictionary = unit.weapon
+## hand: "main" or "off" (off-hand weapon: half damage; the penalty already holds its -4).
+func _attack_roll(unit: Unit, target: Unit, penalty: int, hand: String = "main") -> void:
+	var off := hand == "off"
+	var weapon: Dictionary = unit.offhand if off else unit.weapon
 	var is_ranged: bool = weapon["ranged"]
 	var bonus := unit.attack_bonus + unit.attack_buff + penalty
 	var notes: Array[String] = []
-	if penalty != 0:
+	if off:
+		notes.append("off-hand %d" % penalty)
+	elif penalty != 0:
 		notes.append("iterative %d" % penalty)
 	if unit.attack_buff != 0:
 		notes.append("blessed %s" % GameData.signed(unit.attack_buff))
@@ -458,6 +468,7 @@ func _attack_roll(unit: Unit, target: Unit, penalty: int) -> void:
 	# Natural 1 always misses; natural 20 always hits and threatens.
 	var hit := roll == 20 or (roll != 1 and total >= def_value)
 	var event := _event("attack", unit, weapon_fx(weapon), String(weapon["name"]), is_ranged)
+	event["hand"] = hand
 	if not hit:
 		_impact(event, target, "miss", 0, target.hp)
 		say("%s [color=%s]Miss%s.[/color]" % [head, C_DIM, " (natural 1)" if roll == 1 else ""])
@@ -486,6 +497,10 @@ func _attack_roll(unit: Unit, target: Unit, penalty: int) -> void:
 	var math := "%d damage" % damage
 	if unit.damage_bonus != 0:
 		math = "%d %s = %d damage" % [rolled, _signed_term(unit.damage_bonus * multiplier), damage]
+	if off:
+		var full := damage
+		damage = maxi(1, int(floor(full * GameData.OFFHAND_DAMAGE_FACTOR)))
+		math += ", halved (off-hand) = %d" % damage
 	var hp_before := target.hp
 	var result_text := _apply_damage(target, damage)
 	_impact(event, target, "crit" if multiplier > 1 else "hit", damage, hp_before)
