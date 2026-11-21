@@ -327,6 +327,47 @@ def split2h(g):
     return g
 
 
+# slash frames: the swinging hand's weapon is hidden behind a slash wave (user, 2026-11-21);
+# both weapons show again in FINISH. slash_left = off-hand (cyan, 'front') chop, slash_right = main hand (magenta, 'back') sweep.
+SLASH_HIDE = {'slash_left': ('front', 'chop'), 'slash_right': ('back', 'sweep')}
+
+
+def slash_wave(im, kind, F, ang, L, SS=4):
+    """Crescent slash trail on a frame (RGBA uint8 array). F = fist (frame px), ang = blade angle (deg), L = blade length.
+    The thick bright end is where the blade is now; it thins and fades along the path it came from."""
+    import math
+    F = np.array(F, float); d = np.array([math.cos(math.radians(ang)), math.sin(math.radians(ang))])
+    T = F + d * L
+    n = 64
+    if kind == 'chop':          # tip came down from overhead: circle around a point above and behind the fist
+        C = F + np.array([-0.15 * L, -0.6 * L]); R = np.linalg.norm(T - C) * 1.02
+        th1 = math.atan2(*(T - C)[::-1]); th0 = th1 - math.radians(155)
+        ts = np.linspace(th1, th0, n)                                    # u = 0 at the blade, 1 at the oldest end
+        outer = C + R * np.stack([np.cos(ts), np.sin(ts)], 1); inward = (C - outer) / R
+        wmax = 0.42 * L
+    else:                       # sweep: flat ellipse at waist height, from the hand round the front of the body and curling up
+        a_ = 1.5 * L; b_ = 0.3 * a_
+        C = F + np.array([a_, 0.0])
+        ph = np.linspace(math.pi, -math.radians(25), n)                 # pi = at the hand, pi/2 = in front of the body
+        outer = C + np.stack([a_ * np.cos(ph), b_ * np.sin(ph)], 1)
+        inward = np.stack([np.zeros(n), -np.ones(n)], 1)                 # thickness goes up (the blurred inner side)
+        wmax = 0.36 * L
+    u = np.linspace(0, 1, n)
+    w = wmax * np.minimum(1, u / 0.05) * (1 - u) ** 0.8
+    fade = 1 - 0.7 * u
+    H, W = im.shape[:2]
+    lay = Image.new('RGBA', (W * SS, H * SS), (0, 0, 0, 0)); dr = ImageDraw.Draw(lay)
+    bands = [(0.0, 0.16, (255, 255, 246), 1.0), (0.16, 0.45, (255, 212, 118), 0.95), (0.45, 1.0, (118, 104, 122), 0.5)]
+    for i in range(n - 1):
+        for f0, f1, col, al in bands:
+            q = [outer[i] + inward[i] * w[i] * f0, outer[i + 1] + inward[i + 1] * w[i + 1] * f0,
+                 outer[i + 1] + inward[i + 1] * w[i + 1] * f1, outer[i] + inward[i] * w[i] * f1]
+            dr.polygon([tuple(p * SS) for p in q], fill=col + (int(255 * al * fade[i]),))
+    lay = lay.resize((W, H), Image.BOX)
+    out = Image.fromarray(im).convert('RGBA'); out.alpha_composite(lay)
+    return np.asarray(out)
+
+
 def feet(b):
     ys, xs = np.where(b[..., 3] > 0); bot = ys.max(); low = ys > bot - 10
     return float(xs[low].mean()), float(bot)
@@ -357,7 +398,13 @@ def render(cls, data):
                 if ref is None: ref = (CANVAS_FEET[0] - fx_, CANVAS_FEET[1] - fy)
                 dx = round(ref[0]) - A.CELL; dy = round(ref[1]) - A.TOP
                 g2 = split2h(g)
-                im = A.frame(cls, f'{sex}_{stance}', sramp, its, (dx, dy, 0, 0, None), [], 'attack', g2, b)
+                hide, kind = SLASH_HIDE.get(state, (None, None))
+                hidden = [w for h_, w, _ in its if h_ == hide]
+                im = A.frame(cls, f'{sex}_{stance}', sramp, [i for i in its if i[0] != hide], (dx, dy, 0, 0, None), [], 'attack', g2, b)
+                if hidden:
+                    p, ang = g2[hide]['point'], g2[hide]['angle']
+                    L = A.WEAPON[hidden[0]](ang)[2]
+                    im = slash_wave(im, kind, (A.CELL + dx + p[0], A.TOP + dy + p[1]), ang, L)
                 if head and hair and cls not in HEADGEAR:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
