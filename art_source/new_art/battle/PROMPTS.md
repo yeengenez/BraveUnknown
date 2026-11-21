@@ -349,3 +349,25 @@ Keep exactly as they are: the character, pose, armour, face, hair, the cyan stic
 ```
 If Gemini still draws a recognisable weapon, follow up in the same chat: "Remove every shape of the weapon - no edge, tip,
 head or handle. Keep only a soft steel-grey motion streak along the arc, like a blur of light on metal."
+
+### Soldier dual sheet - Gemini puts the smear frames into the sheet (2026-11-21)
+Attach, in this order: (1) `source/concepts/soldier_dual_m_sheet_handfixed.png` (the hand-fixed sheet, clean cells),
+(2) `source/concepts/soldier_dual_m_slash1_gemini_smear.png`, (3) `source/concepts/soldier_dual_m_slash2_gemini_smear.png`.
+The result becomes `source/soldier_dual_m_sheet.png`; the glow and smear are then split off the green into the effect layer.
+
+```
+Edit the first attached image, a sprite sheet of 2 rows x 3 cells on a flat pure green (#00FF00) background. Replace ONLY two cells and keep everything else pixel-identical.
+
+- Top row, RIGHT cell (cell 3): replace the figure with the character from the second attached image, together with its yellow slash arc and its grey motion smear.
+- Bottom row, LEFT cell (cell 4): replace the figure with the character from the third attached image, together with its yellow sweep and its grey motion smear.
+
+For both new cells:
+- Remove their black background completely: the figure, arc and smear sit on the same flat pure green as the rest of the sheet, with no black or dark halo anywhere. The glow of the arc fades straight into the green.
+- Scale the character to exactly the same size as the characters in the other cells (same helmet size, same height when standing), feet standing on that cell's dark ground line, horizontally in the same place as the figures in the other cells.
+- Keep the arc and smear whole: shrink them together with the character, never crop them; they may come close to the cell edge but must not cross into the next cell.
+- Keep the character, pose, colours, the magenta stick (cell 3) and the cyan stick (cell 4) exactly as in the attached images.
+
+Do not change the other four cells, the grid lines, the ground lines, the dashed lines or the canvas size. No text, no new effects.
+```
+If Gemini changes the other cells or leaves black around the effects, the cells can also be put in by code
+(`tools/gemini_fx_split.py` + `gemini_fx_compose.py` take the black-background images directly).
