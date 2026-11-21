@@ -40,8 +40,14 @@ def w_qstaff(a):
     a = round(a); img, gp = cached(('qs', a), lambda: CW.quarterstaff(a)); return img, gp, 80
 def w_mstaff(a):
     a = round(a); img, gp, tip = cached(('ms', a), lambda: CW.mage_staff(a)); return img, gp, 54
+def w_shortsword(a):
+    a = round(a); img, gp = cached(('ss', a), lambda: CW.shortsword(a)); return img, gp, 44
+def w_sword(a):          # code-drawn longsword (the Legacy 'longsword' above is cut from a Canva image)
+    a = round(a); img, gp = cached(('cs', a), lambda: CW.longsword(a)); return img, gp, 58
+def w_greatsword(a):
+    a = round(a); img, gp = cached(('gs', a), lambda: CW.greatsword(a)); return img, gp, 104
 WEAPON = dict(longsword=w_longsword, greataxe=w_greataxe, longspear=w_spear, dagger=w_dagger, mace=w_mace,
-              quarterstaff=w_qstaff, staff=w_mstaff)
+              quarterstaff=w_qstaff, staff=w_mstaff, shortsword=w_shortsword, sword=w_sword, greatsword=w_greatsword)
 
 # ---- bodies ---------------------------------------------------------------------------------------------
 def body(cls, key, ramp):

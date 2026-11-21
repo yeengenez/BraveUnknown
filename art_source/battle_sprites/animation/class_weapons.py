@@ -101,3 +101,33 @@ if __name__ == '__main__':
     for i in items:
         im = Image.fromarray(i); sheet.alpha_composite(im.resize((im.width * Z, im.height * Z), Image.NEAREST), (10, yy)); yy += im.height * Z + 10
     sheet.save('class_weapons.png'); print(sheet.size)
+
+
+def _sword(L, grip_end, guard_x, guard_h, half_w, angle, pivot, cy, pommel=1.9, grip_r=1.5, taper=2.6):
+    """Shared straight-sword painter (short sword, longsword, greatsword): pommel, leather grip, gold
+    cross-guard, steel blade with a bright fuller line, tapering to the point at x = L - 1."""
+    H = int(2 * cy + 1); c = Canvas(L, H, angle, pivot); x, y = c.x, c.y
+    d, n = cyl(c, y, cy, grip_r)
+    c.paint((np.abs(d) <= 1) & (x >= 2) & (x <= grip_end), 'leather', n)                                  # grip
+    c.paint(((x - 1.4) ** 2 + (y - cy) ** 2) < pommel ** 2, 'gold', ((x - 1.4), (y - cy), np.ones_like(x)), spec=0.7)
+    c.paint((np.abs(x - guard_x) <= 1.0) & (np.abs(y - cy) <= guard_h), 'gold', n, spec=0.6)              # cross-guard
+    b0 = guard_x + 1.2; point = half_w * taper                                                         # point length
+    narrow = 1 - 0.12 * np.clip((x - b0) / max((L - 1 - point) - b0, 1), 0, 1)                         # slight distal taper
+    half = np.where(x < L - 1 - point, half_w * narrow, half_w * 0.88 * np.clip((L - 1 - x) / point, 0, 1))
+    blade = (x >= b0) & (x <= L - 1) & (np.abs(y - cy) <= half)
+    c.paint(blade, 'steel', (np.zeros_like(x), np.sign(y - cy) * 0.55, np.ones_like(x)), spec=0.9)
+    c.paint(blade & (np.abs(y - cy) < 0.5) & (x < L - 1 - point), 'steel', None, flat=np.full_like(x, 0.97))  # fuller
+    return c.finish(), (c.pivot_out[0] + 1, c.pivot_out[1] + 1)
+
+def shortsword(angle=0.0, pivot=(6.0, 5.0)):
+    """Short sword (light, one-handed): broad leaf-straight blade, short grip. Tip ~44 px from the hand."""
+    return _sword(50, 10, 11.5, 4.4, 3.0, angle, pivot, cy=5.0, taper=2.6)
+
+def longsword(angle=0.0, pivot=(6.5, 5.0)):
+    """Longsword (one-handed), code-drawn replacement for the Legacy Canva-cut sword. Tip ~58 px from the hand."""
+    return _sword(65, 11, 12.5, 4.8, 2.8, angle, pivot, cy=5.0, taper=2.8)
+
+def greatsword(angle=0.0, pivot=(8.0, 6.0)):
+    """Greatsword (two-handed): long grip for two stacked fists (~21 px apart), wide guard, long blade.
+    Pivot = the rear (lower) fist, like the great axe."""
+    return _sword(112, 30, 31.5, 6.2, 3.8, angle, pivot, cy=6.0, pommel=2.4, grip_r=1.7, taper=3.0)
