@@ -50,6 +50,26 @@ LOADOUTS = {
 }
 # classes whose battle sprites wear headgear drawn into the body (user, 2026-11-20): no hair layer on the sprite
 HEADGEAR = {'soldier'}
+# plate armour drawn with a rosy tint by ChatGPT/Gemini -> neutral cool steel (user, 2026-11-21: "make them all metallic")
+METAL_ARMOUR = {'soldier'}
+
+
+def to_steel(rgba):
+    """Rosy greys (armour, shield rim and cross, their outlines) -> cool steel of the same brightness. Leaves blue
+    cloth and shield face (blue > red), brown leather and gold trim (blue < green) and saturated reds alone."""
+    a = rgba[..., :3].astype(float); r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    sat = (r - np.minimum(g, b)) / np.maximum(r, 1)
+    arm = (rgba[..., 3] > 0) & (r - g > 5) & (b >= g - 8) & ((sat < 0.6) | (r < 80))
+    v = (r + g + b) / 3 * 1.06
+    v = np.clip(128 + (v - 128) * 1.12, 0, 255)                           # a little more contrast reads as polished metal
+    steel = np.dstack([v * 0.94, v * 0.99, v * 1.07])
+    # maroon padding between the plates -> dark steel (mail); brown leather (blue < green) stays
+    pad = (rgba[..., 3] > 0) & ~arm & (r - g > 25) & (b >= g - 8) & (r < 175)
+    vp = (r + g + b) / 3 * 1.25
+    mail = np.dstack([vp * 0.93, vp * 0.98, vp * 1.08])
+    out = rgba.copy(); out[..., :3][arm] = np.clip(steel[arm], 0, 255).astype(np.uint8)
+    out[..., :3][pad] = np.clip(mail[pad], 0, 255).astype(np.uint8)
+    return out
 HAIR_LEN = json.load(open(os.path.join(HERE, 'hair_length.json')))
 SAMPLE_HAIR = {'m': [('long', 'brown', 'fair'), ('messy', 'black', 'tan'), ('ponytail', 'auburn', 'deep')],
                'f': [('ponytail', 'auburn', 'fair'), ('bob', 'black', 'tan'), ('braids', 'blonde', 'bronze')]}
@@ -294,6 +314,7 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     pts = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
     fixed, skin, head, hairp = skin_split(clean, on, pts)
     n = f'{cls}_{sex}_{stance}_{state}'
+    if cls in METAL_ARMOUR: fixed = to_steel(fixed)
     Image.fromarray(fixed).save(os.path.join(HERE, 'layers', f'{n}_fixed.png'))
     Image.fromarray(skin, 'LA').save(os.path.join(HERE, 'layers', f'{n}_skin.png'))
     json.dump({'grips': g, 'head': head, 'scale': round(s, 4)}, open(os.path.join(HERE, 'grips', f'{n}.json'), 'w'))
