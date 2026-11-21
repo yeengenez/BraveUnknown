@@ -167,6 +167,31 @@ If one cell still comes out wrong, ask ChatGPT to redraw only that cell: "Redraw
 pose sheet exactly - the near arm (big shoulder plate in front of the chest, left side of the picture) holds magenta, the far
 arm holds cyan. Keep the other 5 cells pixel-identical." If it still fails, send the sheet anyway and it is fixed in code.
 
+### Soldier dual weapons - Gemini edit (2026-11-21, user: "let's try using Gemini on this")
+Gemini is used as an EDITOR: attach only `source/soldier_dual_m_sheet.png` (the hand-fixed male sheet) and ask for the same
+sheet with a female body. Poses, rods, colour keys and grid are already right, so nothing about the arms is left to redraw.
+
+```
+Edit the attached sprite sheet. It shows a male armoured soldier in six poses, in a grid of 2 rows x 3 cells on a flat green screen. Turn him into a FEMALE soldier and change nothing else.
+
+Keep exactly as they are:
+- the canvas size, the 2 x 3 grid, the flat pure green background, the dark ground line and the dashed line in each cell;
+- the position, height and feet of every figure, standing on the same ground lines;
+- every pose: the same stance, legs, body angle and arm positions in each cell, nothing mirrored;
+- the flat magenta and cyan sticks in the hands: the same stick in the same hand, at the same angle, the same flat colours with no shading;
+- the red ponytail behind the neck (same shades of pure red), the face painted in shades of pure yellow;
+- the plain barbute helmet, silver plate armour, blue scarf, blue tabard, belt, gloves and greaves, with the same colours;
+- the pixel-art style, outlines and shading.
+
+Change only the body and face: clearly feminine - a smaller, slimmer frame, narrower shoulders, curved waist and hips, a visible chest under the breastplate, slimmer arms and legs, smaller shoulder plates, and a soft feminine face with larger eyes and a small chin.
+
+Do not add swords, weapons, slash effects, motion lines, shadows, text or anything else. Output the whole sheet at the same size.
+```
+If Gemini changes a pose or moves a stick to the other hand, attach its result together with the male sheet and say:
+"Fix cell <N> of the first image so its pose and sticks match cell <N> of the second image exactly. Keep everything else."
+The Gemini app may put a small sparkle logo in a corner: fine, it is cut out with the green.
+
+
 ### Archer
 > Character: **<SEX> Archer** (light armour and hooded cloak with the hood DOWN, from the portrait). Rows, top to bottom:
 > 1. **One-handed (dagger)**, cells = stand | attack | hit: stand = right fist raised by the shoulder (magenta rod up),
