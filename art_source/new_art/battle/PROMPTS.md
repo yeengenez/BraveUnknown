@@ -318,3 +318,31 @@ If a sheet comes back with the main-hand attack instead, ask for the OFF-HAND at
 - Rods missing or shaded: reply "the guide rods must be flat pure #FF00FF (right hand) and #00FFFF (left hand), straight,
   sticking out of both ends of the fist".
 - Hair or weapons appear: reply "remove all hair and weapons, keep everything else identical".
+
+### Soldier dual slash frames - Gemini adds the motion-blurred weapon (2026-11-21)
+The code-drawn blurred sword was rejected ("bad design"). Gemini edits the user's own slash redraws instead; one image
+per chat message. Attach `source/concepts/soldier_dual_m_slash1_gemini.png` (or `_slash2_gemini.png`) and paste the
+matching prompt. The blur is kept generic (no hilt or guard detail) because the same frame is used for every one-handed
+weapon in the dual stance. The result replaces the image in `source/concepts/` and is run through `tools/gemini_fx_*`.
+
+Slash 1:
+```
+Edit the attached image. Add ONE sword swinging very fast, and change nothing else.
+
+The sword is held in the fist at the bottom of the yellow slash arc (the hand at the front hip, on the right of the picture, inside the glow). It has just chopped down: the blade comes straight out of that fist and points down and forward toward the front foot.
+
+Draw it as a fast motion blur: a bright silver-white blade smeared along the yellow arc, with 3 or 4 fading, see-through after-images of the blade trailing back UP the arc behind it. Soft streaky edges, no sharp details: no hilt, guard, pommel or engraving visible, just a blurred steel blade, so it could be any one-handed weapon. It stays inside or along the yellow arc and blends into its glow.
+
+Keep exactly as they are: the character, pose, armour, face, hair, the magenta stick in the other hand, the yellow slash arc, the image size and the pure black background. No new colours: no magenta, cyan, red or yellow on the sword. No text, no other effects.
+```
+
+Slash 2:
+```
+Edit the attached image. Add ONE sword swinging very fast, and change nothing else.
+
+The sword is held in the fist at the far LEFT of the picture (the arm stretched out behind the body, the fist inside the yellow glow). The blade comes straight out of that fist and points FORWARD (to the right), slightly downward, across the front of the waist, below the outstretched arm.
+
+Draw it as a fast motion blur: a bright silver-white blade smeared along the yellow sweep, with 3 or 4 fading, see-through after-images of the blade trailing to the RIGHT along the sweep, where the swing came from. Soft streaky edges, no sharp details: no hilt, guard, pommel or engraving visible, just a blurred steel blade, so it could be any one-handed weapon. It stays inside or along the yellow sweep and blends into its glow.
+
+Keep exactly as they are: the character, pose, armour, face, hair, the cyan stick in the other hand, the yellow sweep, the image size and the pure black background. No new colours: no magenta, cyan, red or yellow on the sword. No text, no other effects.
+```
