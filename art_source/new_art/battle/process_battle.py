@@ -262,7 +262,12 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     m = PP.rod_mask(body); cy = PP.cyan_mask(body)
     PP.ANIM = st if st != 'stand' else 'hit'
     o = 'attack' if st == 'attack' else 'hit'
-    if stance == 'dual' and cy.sum() > 8:
+    if stance == 'dual' and state in SLASH_HIDE and min(m.sum(), cy.sum()) <= 8:
+        # the swinging hand's weapon is drawn as a smear in the effect layer: only the other hand has a rod
+        vis = 'back' if SLASH_HIDE[state][0] == 'front' else 'front'; vr = m if vis == 'back' else cy
+        g = {vis: toward_longer(hand(vr, body), vr)}
+        rods = m | cy
+    elif stance == 'dual' and cy.sum() > 8:
         # two blades: each points along its rod's longer side past the fist (rods are drawn mostly blade-side)
         g = {'back': toward_longer(hand(m, body), m), 'front': toward_longer(hand(cy, body), cy)}
         if (cls, sex, stance, state) in SWAP_HANDS:      # ChatGPT swapped the rod colours between the hands in this pose
@@ -370,8 +375,8 @@ def split2h(g):
     return g
 
 
-# slash frames (user, 2026-11-21): the swinging hand's weapon is drawn motion-blurred inside a slash wave (the wave the
-# user drew with Gemini, from <sheet>_fx.png, else slash_wave() in code); both weapons show normally again in FINISH. slash_left = off-hand (cyan, 'front') chop, slash_right = main hand (magenta, 'back') sweep.
+# slash frames (user, 2026-11-21): the swinging hand's weapon is not drawn; the user's Gemini slash arc + weapon smear
+# (effect layer <sheet>_fx.png) stands in for it, else slash_wave() in code. Both weapons show again in FINISH. slash_left = off-hand (cyan, 'front') chop, slash_right = main hand (magenta, 'back') sweep.
 SLASH_HIDE = {'slash_left': ('front', 'chop'), 'slash_right': ('back', 'sweep')}
 
 
@@ -411,33 +416,6 @@ def slash_wave(im, kind, F, ang, L, SS=4):
     return np.asarray(out)
 
 
-def blur_weapon(im, wname, F, ang, kind, fist_r):
-    """The swinging weapon drawn fast: a few fading ghost copies along the swing, softened, plus the blade itself
-    slightly see-through. The handle inside the fist is left out so the blade comes out of the hand."""
-    import math
-    from PIL import ImageFilter
-    H, W = im.shape[:2]
-    def one(a, dx=0.0, dy=0.0, alpha=1.0):
-        img, gp, L = A.WEAPON[wname](a)
-        lay = np.zeros((H, W, 4), np.uint8); A.paste(lay, img, F[0] - gp[0] + dx, F[1] - gp[1] + dy)
-        lay = lay.astype(np.float32); lay[..., 3] *= alpha; return lay
-    ghosts = np.zeros((H, W, 4), np.float32)
-    N = 6
-    for k in range(N, 0, -1):               # oldest first, newer copies on top
-        if kind == 'chop':                   # came down from overhead: earlier = rotated back up about the fist
-            g_ = one(ang - 11 * k, alpha=0.5 * (1 - k / (N + 1)))
-        else:                                # backhand sweep: the hand came from the front, earlier = further right
-            g_ = one(ang - 2.5 * k, dx=7 * k, dy=-1.2 * k, alpha=0.5 * (1 - k / (N + 1)))
-        m = g_[..., 3] > 0; ghosts[m] = g_[m]
-    gim = Image.fromarray(np.clip(ghosts, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.6))
-    blade = Image.fromarray(np.clip(one(ang, alpha=0.88), 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.7))
-    yy, xx = np.mgrid[:H, :W]; inside = np.hypot(xx - F[0], yy - F[1]) < fist_r
-    out = Image.fromarray(im).convert('RGBA')
-    for lay in (gim, blade):
-        la = np.asarray(lay).copy(); la[inside, 3] = 0; out.alpha_composite(Image.fromarray(la))
-    return np.asarray(out)
-
-
 def feet(b):
     ys, xs = np.where(b[..., 3] > 0); bot = ys.max(); low = ys > bot - 10
     return float(xs[low].mean()), float(bot)
@@ -467,21 +445,18 @@ def render(cls, data):
                 fx_, fy = feet(b)
                 if ref is None: ref = (CANVAS_FEET[0] - fx_, CANVAS_FEET[1] - fy)
                 dx = round(ref[0]) - A.CELL; dy = round(ref[1]) - A.TOP
-                g2 = split2h(g)
+                g2 = split2h(g) if stance != 'dual' else dict(g)
                 hide, kind = SLASH_HIDE.get(state, (None, None))
                 hidden = [w for h_, w, _ in its if h_ == hide]
                 im = A.frame(cls, f'{sex}_{stance}', sramp, [i for i in its if i[0] != hide], (dx, dy, 0, 0, None), [], 'attack', g2, b)
                 if hidden:
-                    p, ang = g2[hide]['point'], g2[hide]['angle']
-                    L = A.WEAPON[hidden[0]](ang)[2]
-                    F = (A.CELL + dx + p[0], A.TOP + dy + p[1])
                     fxl = FX_LAYERS.get((sex, stance, state))
-                    if fxl is not None:              # the slash wave drawn by the user (Gemini), over the body
+                    if fxl is not None:              # slash arc + weapon smear drawn by the user (Gemini), over the body
                         o_ = Image.fromarray(im).convert('RGBA'); lay = np.zeros_like(np.asarray(o_)); A.paste(lay, fxl, A.CELL + dx, A.TOP + dy)
                         o_.alpha_composite(Image.fromarray(lay)); im = np.asarray(o_)
-                    else:
-                        im = slash_wave(im, kind, F, ang, L)
-                    im = blur_weapon(im, hidden[0], F, ang, kind, max(4.5, g2[hide].get('fist_gap', 9) / 2))
+                    elif hide in g2:                 # no drawn effect: code slash wave, weapon hidden
+                        p, ang = g2[hide]['point'], g2[hide]['angle']
+                        im = slash_wave(im, kind, (A.CELL + dx + p[0], A.TOP + dy + p[1]), ang, A.WEAPON[hidden[0]](ang)[2])
                 if head and hair and cls not in HEADGEAR:
                     hl, hx, hy = hair_layer(sex, hair, hramp, head)
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
