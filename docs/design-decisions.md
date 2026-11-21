@@ -112,7 +112,7 @@ Findings from simulation (500 fights per setup, placeholder numbers):
 - **First Guild list of a new game** (user): seats 1–5 are those five Soldiers (random level 1–3); seat 6 is random. Later refreshes are random as before.
 - **Dual wield implemented** (placeholder rule above): one Attack action = off-hand swing first at −4 for half damage, then the main hand. The off-hand weapon shows on the Guild card and character sheet.
 - **Swords drawn in code** (`class_weapons.py`: `shortsword`, `longsword`, `greatsword`): straight blade with a short triangular point. The Legacy Canva longsword is no longer used for battle sprites.
-- The Soldier armour reads slightly pink in the processed sprites (same in `review_soldier.png`); it is how the current art processes, not a game tint.
+- The Soldier armour read slightly pink in the processed sprites; fixed in the art pipeline on 2026-11-21 (`to_steel()`, see Shields/Soldier notes above). The game's exported frames need a re-export (`export_game.py`) to pick it up.
 
 ## LEGACY ART: everything made with Canva (user decision, 2026-11-18)
 **All assets generated in Canva, and anything cut, edited or composed from a Canva image, are Legacy: use them for reference only** (style, proportions, colours, poses, grip positions). Do not build new game content from them and do not extend them with more Canva generations. New production art replaces them. Register: `art_source/LEGACY.md` and `art_source/legacy_assets.json` (branch `art-source`).
