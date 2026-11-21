@@ -47,30 +47,29 @@ sheet has a crossbow row (stand | aim | release | hit, user's choice 2026-11-19)
 
 ## Class blocks (paste after the common prompt)
 
-### Soldier (v5, 2026-11-20 - self-contained, do NOT paste the common prompt)
-v5 = 4 cells per row (user, 2026-11-20): STAND | READY | ATTACK | GET HIT, and the dual row STAND | ATTACK 1 (main
-hand) | ATTACK 2 (off-hand) | GET HIT. Otherwise as v4 = dual row with fixed hands (see the hand rule below) and a long-hair piece in a
-red key under the helmet for both sexes (shown only for long portrait hairstyles, `hair_length.json`).
+### Soldier main sheet (v6, 2026-11-21 - self-contained, do NOT paste the common prompt)
+Main sheet = shield, two-handed and spear rows, 4 cells each (STAND | READY | ATTACK | GET HIT); the dual weapons have
+their own sheet (next section). Long-hair piece in a red key under the helmet for both sexes (shown only for long
+portrait hairstyles, `hair_length.json`).
 Attach, in this order: (1) `templates/soldier_template.png`, (2) `source/concepts/soldier_outfit_ref.png` (the final design cropped to the outfit only: its animation frames had the dual
 weapons in the wrong hands, so they are left out),
 (3) `refs/soldier_shield_ref.png`. Replace `<SEX>`, add the male or female line, one run per sex.
 
 ```
-Use the first attached image as the canvas: a grid of 4 rows x 4 cells on flat pure green (#00FF00), each cell with a dark-green ground line and a dashed head-top line. Keep the canvas size, the grid and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the helmet at the dashed line when standing upright, all 16 figures at the same scale and the same character.
+Use the first attached image as the canvas: a grid of 3 rows x 4 cells on flat pure green (#00FF00), each cell with a dark-green ground line and a dashed head-top line. Keep the canvas size, the grid and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the helmet at the dashed line when standing upright, all 12 figures at the same scale and the same character.
 
 Character: <SEX> Soldier, exactly as in the second attached image (outfit reference only - it shows no poses): Standard plain BARBUTE helm (open face, no crest, no gold, no emblem), simple silver plate armour (rounded pauldrons, plain cuirass, segmented tassets), blue scarf, blue tabard with a light trim, brown leather belt and gloves, steel greaves. Ignore its text labels. Style: Fire Emblem-style anime pixel art matching that sheet: clean dark outlines, cel shading, light from the upper left, natural anime proportions about 6 heads tall including the helmet, 3/4 view FACING RIGHT in every cell, body turned to the right.
 
-Rows, top to bottom. Rows 1, 3 and 4: cells left to right = STAND | READY | ATTACK | GET HIT, where READY is the wind-up a moment before the attack. Row 2: STAND | ATTACK 1 | ATTACK 2 | GET HIT.
+Rows, top to bottom; cells left to right = STAND | READY | ATTACK | GET HIT, where READY is the wind-up a moment before the attack.
 1. Sword + SQUARE shield (the third attached image shows STAND, ATTACK and GET HIT - copy those poses only): the LEFT arm carries the Soldier's own large SQUARE shield in every cell of this row: an upright rectangle with slightly rounded corners, from the shoulder to mid-thigh, as wide as the torso, dark navy-blue face with a silver/white cross in relief, a silver steel rim with rivets - no gold or yellow on it. The left fist is hidden behind the shield (no cyan rod in this row). STAND = guard: shield held upright in front of the torso, covering it; right fist raised beside the shoulder with the magenta rod pointing up (sword raised). READY = wind-up: shield pulled in tight in front of the chest, body coiled, weight on the back foot, the right arm drawn back behind the shoulder with the magenta rod angled back. ATTACK = controlled horizontal slash: deep lunge forward, the right arm sweeps across IN FRONT of the body at waist height, magenta rod pointing forward and slightly down; the shield opens slightly to the side (still on the left arm, turned a little outward) so the sword arm passes in front of it. GET HIT = grounded recoil: feet planted, knees bent, braced behind the shield, the shield tilted up and forward to absorb the blow, head knocked back and wincing, right fist low by the hip holding the magenta rod pointing down.
-2. Dual weapons (no shield): the same side-on stance as the shield row - the LEFT arm is the lead arm in front (on the right-hand side of the picture, where the shield arm is in row 1) and the RIGHT arm is the rear arm (its shoulder on the left side of the picture). STAND = left (lead) hand forward at waist height holding the cyan rod pointing forward and slightly down; right (rear) hand back and low holding the magenta rod. ATTACK 1 (main hand) = the RIGHT (rear) arm swings forward ACROSS the front of the body and thrusts out at shoulder height holding the magenta rod level and pointing forward; the left arm pulls back and down with the cyan rod. ATTACK 2 (off-hand) = the LEFT (lead) arm thrusts fully forward at shoulder height holding the cyan rod level; the right arm pulls back low with the magenta rod. GET HIT = recoiling back, wincing, left hand in front with the cyan rod, right hand back with the magenta rod.
-3. Two-handed (no shield): both fists together on ONE magenta rod (one fist above the other). STAND = rod held upright in front of the body, fists at the waist. READY = wind-up: rod raised high over the right shoulder, both fists together above the head, body leaning back, weight on the back foot. ATTACK = heavy downward strike finishing low in front, rod angled down and forward, deep lunge. GET HIT = recoiling back, rod pulled up across the body.
-4. Spear (no shield): ONE long magenta pole, as long as the body is tall, held at hip height through both fists, front fist forward, back fist at the rear hip. STAND = spear guard, pole level and pointing forward. READY = coiled: pole drawn back along the hip, back fist far behind the body, front fist close to the chest, crouched, weight on the back foot. ATTACK = full forward thrust, deep lunge, pole level. GET HIT = recoiling back, pole still held, tip lifted.
+2. Two-handed (no shield): both fists together on ONE magenta rod (one fist above the other). STAND = rod held upright in front of the body, fists at the waist. READY = wind-up: rod raised high over the right shoulder, both fists together above the head, body leaning back, weight on the back foot. ATTACK = heavy downward strike finishing low in front, rod angled down and forward, deep lunge. GET HIT = recoiling back, rod pulled up across the body.
+3. Spear (no shield): ONE long magenta pole, as long as the body is tall, held at hip height through both fists, front fist forward, back fist at the rear hip. STAND = spear guard, pole level and pointing forward. READY = coiled: pole drawn back along the hip, back fist far behind the body, front fist close to the chest, crouched, weight on the back foot. ATTACK = full forward thrust, deep lunge, pole level. GET HIT = recoiling back, pole still held, tip lifted.
 
 Hair under the helmet: in EVERY cell, a ponytail of long hair comes out from under the back of the helmet and hangs down behind the neck, following each pose (swinging back in the lunges, flicking up in the get-hit poses). It always stays BEHIND the body: it never covers the armour, scarf, arms or face, so the figure looks complete without it. Paint the hair entirely in shades of pure red (#FF0000 family: very dark red for the outline and shadows, mid red, bright red for highlights), shaded like hair - no black outline on it. No other hair visible.
 
 Hard rules:
 - No weapons and no capes. The square shield appears ONLY in row 1. Each fist that holds a weapon grips a flat, straight guide rod instead, 2-3% of the figure height thick, sticking out of both sides of the fist where the handle would be, fingers wrapped over it: pure magenta (#FF00FF) in the character's RIGHT hand, pure cyan (#00FFFF) in the LEFT hand. Flat single colours, no shading or outline. No other magenta or cyan anywhere.
-- Hands (same in every cell): the character's LEFT arm is the lead arm, on the right-hand side of the picture (the shield arm in row 1); the RIGHT arm is the rear arm, its shoulder on the left side of the picture. Magenta is ALWAYS in the right (rear-arm) hand, cyan ALWAYS in the left (lead-arm) hand - a rod never changes hands between cells. When the right arm attacks, it swings forward across the front of the body.
+- Rods: magenta is ALWAYS in the hand of the BACK arm (its shoulder on the left side of the picture - the sword arm of row 1); in rows 2 and 3 both fists share the one magenta rod.
 - The barbute helm is worn in every cell, same design.
 - The face is the only bare skin: paint it in shades of pure yellow (red = green, blue near zero): dark yellow for shadows, bright yellow for highlights, shaded like normal skin. Small anime face: dark eye lines, a tiny bit of white, short mouth line. Nothing else may be yellow or gold.
 - Pure red is used ONLY for the hair. Leather and trims stay brown or blue.
@@ -82,7 +81,46 @@ curved waist and hips, visible chest under the armour, slimmer limbs, smaller pa
 larger eyes and a small chin, same armour and helmet."
 
 Earlier Soldier sheets: v1 in `source/soldier_v1/`, v2 (bald) in `source/soldier_v2/`; v3 in `source/soldier_v3/`, v4 (3 cells per row) in
-`source/soldier_v4/`; v5 sheets go to `source/soldier_<sex>_sheet.png`. The current sprites stay until then.
+`source/soldier_v4/`. The male v5 sheet (4 x 4, with the old dual row) is still `source/soldier_m_sheet.png` and is read
+with its old layout (`SHEET_ROWS` in `make_refs.py`); the female should use this v6 main sheet + the dual sheet.
+
+### Soldier dual weapons (own sheet, 2026-11-21, from the user's concept `source/concepts/dual_slash_concept.png`)
+Attach, in this order: (1) `templates/soldier_dual_template.png` (2 rows x 3 cells), (2) `source/concepts/soldier_outfit_ref.png`,
+(3) `source/concepts/dual_slash_concept.png` (poses only). Replace `<SEX>`, add the male/female line. The arms are named by
+their ROD COLOUR, never "left/right", because ChatGPT mixes up the character's left and right in a right-facing view.
+
+```
+Use the first attached image as the canvas: a grid of 2 rows x 3 cells on flat pure green (#00FF00), each cell with a dark-green ground line and a dashed head-top line. Keep the canvas size, the grid and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the helmet at the dashed line when standing upright, all 6 figures at the same scale and the same character.
+
+Character: <SEX> Soldier, exactly as in the second attached image (outfit reference only): Standard plain BARBUTE helm (open face, no crest, no gold, no emblem), simple silver plate armour, blue scarf, blue tabard with a light trim, brown leather belt and gloves, steel greaves. No shield. Style: Fire Emblem-style anime pixel art matching that sheet: clean dark outlines, cel shading, light from the upper left, about 6 heads tall including the helmet, 3/4 view FACING RIGHT in every cell.
+
+Poses: copy the dual-sword attack of the third attached image (poses only - ignore its character, outfit, swords, slash arcs and text). Each hand grips a flat straight guide rod instead of a sword:
+- the FRONT arm - its shoulder on the RIGHT side of the picture, closer to where the character faces - always holds the CYAN rod (#00FFFF);
+- the BACK arm - its shoulder on the LEFT side of the picture - always holds the MAGENTA rod (#FF00FF).
+The rods NEVER change arms. Below, the arms are named by their rod colour.
+
+Cells, top row left to right, then bottom row left to right:
+1. STAND: low wide stance, both rods held low at the sides pointing down and outward - the cyan rod down and forward, the magenta rod down and back (concept: first figure).
+2. READY: the CYAN arm raised high above the head, its rod angled back over the head, ready to chop; the magenta arm low and back, its rod pointing down behind; weight shifting forward (concept: "Wind-up").
+3. SLASH 1: the CYAN arm has chopped down in front of the body, its rod pointing down and forward near the front foot; the magenta arm still low and back (concept: "Slash Down").
+4. SLASH 2: deep lunge; the MAGENTA arm sweeps horizontally across the front of the body at waist height (mid-swing), its rod level; the cyan arm pulled back low (concept: "Slash").
+5. FINISH: follow-through; the MAGENTA arm fully extended forward at shoulder height, its rod level and pointing forward; the cyan arm pulled back and down behind the body, its rod pointing down and back; scarf and tabard swinging (concept: "Follow-through").
+6. GET HIT: recoiling back, knees bent, head knocked back, wincing; cyan rod still in the front hand, magenta rod in the back hand, both held low.
+
+Hair under the helmet: in EVERY cell, a ponytail of long hair comes out from under the back of the helmet and hangs down behind the neck, following each pose. It always stays BEHIND the body: it never covers the armour, scarf, arms or face. Paint the hair entirely in shades of pure red (#FF0000 family: very dark red for the outline and shadows, mid red, bright red for highlights) - no black outline on it.
+
+Hard rules:
+- No swords or other weapons, no shield, no cape. Rods: flat single colours, no shading or outline, 2-3% of the figure height thick, sticking out of both sides of the fist where the handle would be, fingers wrapped over them. No other magenta or cyan anywhere.
+- The face is the only bare skin: shades of pure yellow (red = green, blue near zero), shaded like normal skin. Small anime face: dark eye lines, a tiny bit of white, short mouth line. Nothing else may be yellow or gold.
+- Pure red is used ONLY for the hair.
+- No text, labels, slash arcs, motion lines, dust, shadows on the ground or background objects.
+- Output one PNG at the canvas's exact size.
+```
+Male line: "Male: broad, sturdy frame." Female line: "Female: clearly feminine - smaller frame, narrower shoulders, curved
+waist and hips, visible chest under the armour, slimmer limbs, smaller pauldrons, a soft feminine face with larger eyes and
+a small chin, same armour and helmet."
+In game: stand -> ready -> slash 1 (cyan / off-hand weapon) -> slash 2 (magenta / main-hand weapon) -> finish -> stand.
+One weapon only (no shield): stand -> slash 2 -> finish, from the magenta (main) hand.
 
 ### Archer
 > Character: **<SEX> Archer** (light armour and hooded cloak with the hood DOWN, from the portrait). Rows, top to bottom:

@@ -27,7 +27,7 @@ import process_pose as PP          # (chdirs to poses/)
 import anim as A                   # (chdirs to animation/)
 from skin_layers import tint
 import finish
-from make_refs import CLASSES, cells, states_for
+from make_refs import CLASSES, cells, states_for, EXTRA_SHEETS, SHEET_ROWS
 os.chdir(cwd)
 
 FIG_H = 190                         # stand figure height in sprite pixels (Legacy: ~197 incl. outline)
@@ -281,21 +281,30 @@ PENDING = {}
 
 def process(cls):
     for d in ('layers', 'grips', 'sprites', 'source'): os.makedirs(os.path.join(HERE, d), exist_ok=True)
-    rows = CLASSES[cls]; data = {}
+    data = {}
     for sex in 'mf':
-        src = os.path.join(HERE, 'source', f'{cls}_{sex}_sheet.png')
-        if not os.path.exists(src): print('no sheet yet:', src); continue
-        a = np.asarray(Image.open(src).convert('RGB'))
-        sx, sy = a.shape[1] / 1536, a.shape[0] / 1024
-        cut = {}
-        for r, c, stance, state, (x0, y0, x1, y1) in cells(rows, cls):
-            box = (round(x0 * sx), round(y0 * sy), round(x1 * sx), round(y1 * sy))
-            cut[(stance, state)] = cut_cell(a, box)
-        hs = [figure_height(*cut[k])[0] for k in cut if k[1] == 'stand']
-        s = FIG_H / float(np.median(hs))
-        for (stance, state), (c, fg) in cut.items():
-            if stance in PENDING.get(cls, ()): continue
-            data[(sex, stance, state)] = one_cell(cls, sex, stance, state, c, fg, s)
+        rows = SHEET_ROWS.get((cls, sex), CLASSES[cls])
+        sheets = [(f'{cls}_{sex}_sheet.png', rows)] + [(f'{cls}_{nm}_{sex}_sheet.png', r_) for nm, r_ in EXTRA_SHEETS.get(cls, {}).items()]
+        have = [(f, r_) for f, r_ in sheets if os.path.exists(os.path.join(HERE, 'source', f))]
+        if not have: print('no sheet yet:', cls, sex); continue
+        extra_stances = {st for f, r_ in have[1:] if f != sheets[0][0] for st, _ in r_}
+        s = None
+        for fname, rws in have:
+            a = np.asarray(Image.open(os.path.join(HERE, 'source', fname)).convert('RGB'))
+            sx, sy = a.shape[1] / 1536, a.shape[0] / 1024
+            main = fname == sheets[0][0]
+            cut = {}
+            for r, c, stance, state, (x0, y0, x1, y1) in cells(rws, cls):
+                if main and stance in extra_stances: continue          # that stance comes from its own sheet now
+                box = (round(x0 * sx), round(y0 * sy), round(x1 * sx), round(y1 * sy))
+                cut[(stance, state)] = cut_cell(a, box)
+            hs = [figure_height(*cut[k])[0] for k in cut if k[1] == 'stand']
+            s_sheet = FIG_H / float(np.median(hs))                  # each sheet scaled by its own stand figures
+            if main: s = s_sheet
+            for (stance, state), (c, fg) in cut.items():
+                if stance in PENDING.get(cls, ()): continue
+                data[(sex, stance, state)] = one_cell(cls, sex, stance, state, c, fg, s_sheet)
+        if s is None: s = s_sheet
         # extra cells from fix sheets (same grid): e.g. the shield-braced 1h attack, used only with a shield
         for (xs, stance, state, tag, fname) in EXTRA.get(cls, []):
             if xs != sex or not os.path.exists(os.path.join(HERE, 'source', fname)): continue
@@ -332,9 +341,11 @@ def render(cls, data):
             hair, hramp, sramp = SAMPLE_HAIR[sex][li % len(SAMPLE_HAIR[sex])]
             frames = {}
             ref = None
-            sts = [t for t in states_for(cls, stance) if (sex, stance, t) in data]
-            if not any(w for h_, w, _ in items['attack'] if h_ == 'front'):
-                sts = [t for t in sts if t != 'attack2']            # one weapon: only the main-hand attack
+            ORDER = ['stand', 'ready', 'attack', 'attack2', 'slash_left', 'slash_right', 'finish', 'hit']
+            sts = [t for t in ORDER if (sex, stance, t) in data]
+            if not any(w for h_, w, _ in items['attack'] if h_ == 'front'):   # one weapon: only the main-hand (magenta) moves
+                sts = [t for t in sts if t not in ('attack2', 'slash_left')] if 'slash_right' not in sts else \
+                      [t for t in sts if t not in ('ready', 'slash_left')]
             for state in sts:
                 its = items.get(state) or items['attack']
                 shielded = any(w == 'shield' for _, w, _ in its)
@@ -356,9 +367,10 @@ def render(cls, data):
             rows.append((f'{cls} {sex} {load}  (sample hair: {hair}, {hramp}; skin {sramp})', frames))
     x0, x1 = 20, 399
     cw = x1 - x0; ch = 270
-    sheet = Image.new('RGB', (2 * (cw * 4 + 12), ((len(rows) + 1) // 2) * (ch + 16)), (236, 230, 216)); d = ImageDraw.Draw(sheet)
+    NC = max(len(fr) for _, fr in rows) if rows else 4
+    sheet = Image.new('RGB', (2 * (cw * NC + 12), ((len(rows) + 1) // 2) * (ch + 16)), (236, 230, 216)); d = ImageDraw.Draw(sheet)
     for i, (lab, fr) in enumerate(rows):
-        ox = (i % 2) * (cw * 4 + 12); oy = (i // 2) * (ch + 16)
+        ox = (i % 2) * (cw * NC + 12); oy = (i // 2) * (ch + 16)
         d.text((ox + 4, oy + 2), lab, fill=(60, 50, 40))
         for j, st in enumerate(fr):
             t = Image.fromarray(fr[st][:, x0:x1]); sheet.paste(t, (ox + j * cw, oy + 14), t)

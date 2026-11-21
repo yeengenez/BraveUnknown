@@ -16,7 +16,8 @@ import finish
 
 # stance rows per class (design doc table) and the legacy loadout that shows each row's poses
 CLASSES = {
-    'soldier': [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v2 (user concept)
+    # v6 (2026-11-21): main sheet = shield, two-handed, spear; the dual weapons get their own sheet (EXTRA_SHEETS)
+    'soldier': [('1h', 'sword_shield'), ('2h', 'greataxe'), ('reach', 'longspear')],
     'archer':  [('1h', 'dagger'), ('bow', 'bow'), ('crossbow', None)],
     'acolyte': [('1h', 'mace_shield'), ('2h', 'quarterstaff'), ('reach', 'longspear')],
     'mage':    [('1h', 'staff')],
@@ -36,21 +37,28 @@ CLASS_STATES = {'soldier': {'1h': ['stand', 'ready', 'attack', 'hit'], 'dual': [
                             '2h': ['stand', 'ready', 'attack', 'hit'], 'reach': ['stand', 'ready', 'attack', 'hit']}}
 
 
+# extra sheets per class: name -> rows of (stance, [cell states]). Soldier dual = user's dual-slash concept (2026-11-21):
+# stand, ready (front/cyan arm winds up), slash_left (cyan slashes down), slash_right (magenta sweeps), finish, hit
+EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}
+# older sheets drawn on an earlier layout: (class, sex) -> rows
+SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # v5 male
+
+
 def states_for(cls, stance):
     return CLASS_STATES.get(cls, {}).get(stance) or STATES.get(stance, ['stand', 'attack', 'hit'])
 
 
 def cells(rows, cls=None):
     rh = H / len(rows)
-    for r, (stance, _) in enumerate(rows):
-        states = states_for(cls, stance)
+    for r, (stance, extra) in enumerate(rows):
+        states = extra if isinstance(extra, list) else states_for(cls, stance)
         cw = W / len(states)
         for c, st in enumerate(states):
             yield r, c, stance, st, (round(c * cw), round(r * rh), round((c + 1) * cw), round((r + 1) * rh))
 
 
-def template(cls):
-    rows = CLASSES[cls]
+def template(cls, rows=None, name=None):
+    rows = rows or CLASSES[cls]
     im = Image.new('RGB', (W, H), GREEN); d = ImageDraw.Draw(im)
     for r, c, stance, st, (x0, y0, x1, y1) in cells(rows, cls):
         h = y1 - y0
@@ -59,7 +67,7 @@ def template(cls):
         d.line([x0 + 12, g, x1 - 12, g], fill=GROUND, width=3)
         for x in range(x0 + 12, x1 - 12, 24): d.line([x, t, x + 12, t], fill=TOP, width=2)
     os.makedirs(os.path.join(HERE, 'templates'), exist_ok=True)
-    im.save(os.path.join(HERE, 'templates', f'{cls}_template.png'))
+    im.save(os.path.join(HERE, 'templates', f'{name or cls}_template.png'))
 
 
 def bust(sex, cls):
@@ -117,5 +125,6 @@ if __name__ == '__main__':
     ammo_template()
     for cls in CLASSES:
         template(cls)
+        for nm, rows_x in EXTRA_SHEETS.get(cls, {}).items(): template(cls, rows_x, f'{cls}_{nm}')
         for sex in 'mf': ref(cls, sex)
     print('ok')
