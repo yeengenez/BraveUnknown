@@ -272,8 +272,7 @@ def one_cell(cls, sex, stance, state, c, fg, s):
 EXTRA = {}
 # poses where the drawn rod colours are on the wrong hands (the arm that held magenta in STAND holds cyan here):
 # the grips are swapped back so each weapon stays in its own hand
-SWAP_HANDS = {('soldier', 'm', 'dual', 'stand'), ('soldier', 'm', 'dual', 'hit')}   # v5 male sheet: magenta in the
-# lead (left) hand in stand/hit; swapped back so the main weapon is in the right (rear) hand. Remove for corrected sheets.
+SWAP_HANDS = set()   # (the v5 male dual row needed stand/hit swapped; the dual stance now comes from its own sheet)
 # rows waiting for a new ChatGPT drawing: not cut, and their loadouts are not built (Soldier shield row: old code-shield
 # poses removed 2026-11-20, waiting for the drawn-in square shield)
 PENDING = {}
