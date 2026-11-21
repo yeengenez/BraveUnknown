@@ -319,30 +319,33 @@ If a sheet comes back with the main-hand attack instead, ask for the OFF-HAND at
   sticking out of both ends of the fist".
 - Hair or weapons appear: reply "remove all hair and weapons, keep everything else identical".
 
-### Soldier dual slash frames - Gemini adds the motion-blurred weapon (2026-11-21)
-The code-drawn blurred sword was rejected ("bad design"). Gemini edits the user's own slash redraws instead; one image
-per chat message. Attach `source/concepts/soldier_dual_m_slash1_gemini.png` (or `_slash2_gemini.png`) and paste the
-matching prompt. The blur is kept generic (no hilt or guard detail) because the same frame is used for every one-handed
-weapon in the dual stance. The result replaces the image in `source/concepts/` and is run through `tools/gemini_fx_*`.
+### Soldier dual slash frames - Gemini adds the weapon smear (2026-11-21, v2)
+The code-drawn blurred sword was rejected ("bad design"). v1 of this prompt said "sword" and "blade", so Gemini drew a
+recognisable sword; the dual stance takes any one-handed weapon (sword, mace, axe...), so the smear must read as "a weapon
+swung fast" without showing which weapon (user). v2 never names a weapon: it asks for an animation SMEAR - a steel-grey
+streak with no edge, head or handle shape. One image per chat message: attach `source/concepts/soldier_dual_m_slash1_gemini.png`
+(or `_slash2_gemini.png`) and paste the matching prompt. The result replaces the image and is run through `tools/gemini_fx_*`.
 
 Slash 1:
 ```
-Edit the attached image. Add ONE sword swinging very fast, and change nothing else.
+Edit the attached image. Add a SMEAR of something heavy swung extremely fast, the way classic 2D fighting games and anime draw a smear frame, and change nothing else.
 
-The sword is held in the fist at the bottom of the yellow slash arc (the hand at the front hip, on the right of the picture, inside the glow). It has just chopped down: the blade comes straight out of that fist and points down and forward toward the front foot.
+The smear comes out of the fist at the bottom of the yellow slash arc (the hand at the front hip, on the right of the picture, inside the glow). It sweeps down along the arc: narrow where it leaves the fist, wider and brighter along the arc, ending near the front foot, then fading back UP the arc in 2 or 3 thin see-through streaks.
 
-Draw it as a fast motion blur: a bright silver-white blade smeared along the yellow arc, with 3 or 4 fading, see-through after-images of the blade trailing back UP the arc behind it. Soft streaky edges, no sharp details: no hilt, guard, pommel or engraving visible, just a blurred steel blade, so it could be any one-handed weapon. It stays inside or along the yellow arc and blends into its glow.
+What the smear looks like: a solid streak of cold steel grey and white, like polished metal stretched by speed - a pale silver core, a slightly darker steel-grey edge, soft streaky lines along the direction of motion. It must NOT show any object: no outline of an edge, point, head, spikes, guard, handle or pommel - nobody can tell what was swung, only that a metal weapon passed through. It sits on top of the yellow arc and blends into its glow.
 
-Keep exactly as they are: the character, pose, armour, face, hair, the magenta stick in the other hand, the yellow slash arc, the image size and the pure black background. No new colours: no magenta, cyan, red or yellow on the sword. No text, no other effects.
+Keep exactly as they are: the character, pose, armour, face, hair, the magenta stick in the other hand, the yellow slash arc, the image size and the pure black background. No magenta, cyan, red or yellow in the smear. No text, no other effects.
 ```
 
 Slash 2:
 ```
-Edit the attached image. Add ONE sword swinging very fast, and change nothing else.
+Edit the attached image. Add a SMEAR of something heavy swung extremely fast, the way classic 2D fighting games and anime draw a smear frame, and change nothing else.
 
-The sword is held in the fist at the far LEFT of the picture (the arm stretched out behind the body, the fist inside the yellow glow). The blade comes straight out of that fist and points FORWARD (to the right), slightly downward, across the front of the waist, below the outstretched arm.
+The smear comes out of the fist at the far LEFT of the picture (the arm stretched out behind the body, the fist inside the yellow glow). It runs forward (to the right) along the yellow sweep across the front of the waist, below the outstretched arm: narrow where it leaves the fist, wider and brighter in front of the body, then fading out to the RIGHT along the sweep in 2 or 3 thin see-through streaks.
 
-Draw it as a fast motion blur: a bright silver-white blade smeared along the yellow sweep, with 3 or 4 fading, see-through after-images of the blade trailing to the RIGHT along the sweep, where the swing came from. Soft streaky edges, no sharp details: no hilt, guard, pommel or engraving visible, just a blurred steel blade, so it could be any one-handed weapon. It stays inside or along the yellow sweep and blends into its glow.
+What the smear looks like: a solid streak of cold steel grey and white, like polished metal stretched by speed - a pale silver core, a slightly darker steel-grey edge, soft streaky lines along the direction of motion. It must NOT show any object: no outline of an edge, point, head, spikes, guard, handle or pommel - nobody can tell what was swung, only that a metal weapon passed through. It sits on top of the yellow sweep and blends into its glow.
 
-Keep exactly as they are: the character, pose, armour, face, hair, the cyan stick in the other hand, the yellow sweep, the image size and the pure black background. No new colours: no magenta, cyan, red or yellow on the sword. No text, no other effects.
+Keep exactly as they are: the character, pose, armour, face, hair, the cyan stick in the other hand, the yellow sweep, the image size and the pure black background. No magenta, cyan, red or yellow in the smear. No text, no other effects.
 ```
+If Gemini still draws a recognisable weapon, follow up in the same chat: "Remove every shape of the weapon - no edge, tip,
+head or handle. Keep only a soft steel-grey motion streak along the arc, like a blur of light on metal."
