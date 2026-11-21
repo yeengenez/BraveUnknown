@@ -41,7 +41,8 @@ CLASS_STATES = {'soldier': {'1h': ['stand', 'ready', 'attack', 'hit'], 'dual': [
 # stand, ready (front/cyan arm winds up), slash_left (cyan slashes down), slash_right (magenta sweeps), finish, hit
 EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}
 # older sheets drawn on an earlier layout: (class, sex) -> rows
-SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # v5 male
+SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v5 male
+              ('soldier', 'f'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # Gemini edit of v5 male
 
 
 def states_for(cls, stance):

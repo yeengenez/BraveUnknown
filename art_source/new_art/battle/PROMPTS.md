@@ -371,3 +371,53 @@ Do not change the other four cells, the grid lines, the ground lines, the dashed
 ```
 If Gemini changes the other cells or leaves black around the effects, the cells can also be put in by code
 (`tools/gemini_fx_split.py` + `gemini_fx_compose.py` take the black-background images directly).
+
+### Female Soldier - Gemini edits of the male sheets (2026-11-21)
+Same approach that worked for the dual sheet: Gemini only turns the finished male sheets female, so poses, rods, colour
+keys and grid are copied, not redrawn. One sheet per chat message.
+- Main sheet: attach `source/soldier_m_sheet.png` (4 x 4; its row 2 is the old dual row and is skipped in processing) ->
+  save the result as `source/soldier_f_sheet.png` (`SHEET_ROWS` for `('soldier', 'f')` = the male v5 layout).
+- Dual sheet: attach `source/concepts/soldier_dual_m_sheet_gemini_smear.png` (the user's sheet with the slash arcs and
+  smears) -> save as `source/soldier_dual_f_sheet.png`.
+Earlier mistakes this guards against: female figures with a big head and a manly face; poses mirrored or rods moved to
+the other hand; shields or effects redrawn differently.
+
+Main sheet:
+```
+Edit the attached sprite sheet. It shows a male armoured soldier in 16 poses, in a grid of 4 rows x 4 cells on a flat green screen. Turn him into a FEMALE soldier and change nothing else.
+
+Keep exactly as they are:
+- the canvas size, the 4 x 4 grid, the flat pure green background, the dark ground line and the dashed line in each cell;
+- the position and feet of every figure, standing on the same ground lines;
+- every pose: the same stance, legs, body angle and arm positions in each cell, nothing mirrored;
+- the flat magenta and cyan sticks in the hands: the same stick in the same hand, at the same angle and length, the same flat colours with no shading;
+- the square navy shield with the silver cross and rim in the top row, on the same arm and at the same angle;
+- the red ponytail behind the neck (same shades of pure red), the face painted in shades of pure yellow;
+- the plain barbute helmet, silver plate armour, blue scarf, blue tabard, belt, gloves and greaves, with the same colours;
+- the pixel-art style, outlines and shading.
+
+Change only the body and face: clearly feminine - a smaller, slimmer frame, narrower shoulders, a curved waist and hips, a visible chest under the breastplate, slimmer arms and legs, smaller shoulder plates, and a soft feminine face with larger eyes, softer cheeks and a small chin. Keep the head and helmet in proportion: the helmet is NOT bigger than his, the figure is about 6 helmet-heights tall. She is about as tall as him, so her helmet top stays near the dashed line.
+
+Do not add weapons, effects, shadows, text or anything else. Output the whole sheet at the same size.
+```
+
+Dual sheet:
+```
+Edit the attached sprite sheet. It shows a male armoured soldier in six poses, in a grid of 2 rows x 3 cells on a flat green screen, two of them with a yellow slash arc and a grey motion smear. Turn him into a FEMALE soldier and change nothing else.
+
+Keep exactly as they are:
+- the canvas size, the 2 x 3 grid, the flat pure green background, the dark ground line and the dashed line in each cell;
+- the position and feet of every figure, standing on the same ground lines;
+- every pose: the same stance, legs, body angle and arm positions in each cell, nothing mirrored;
+- the flat magenta and cyan sticks in the hands: the same stick in the same hand, at the same angle and length, the same flat colours with no shading;
+- the yellow slash arcs and grey smears in the top-right and bottom-left cells: same shape, size, position and colours;
+- the red ponytail behind the neck (same shades of pure red), the face painted in shades of pure yellow;
+- the plain barbute helmet, silver plate armour, blue scarf, blue tabard, belt, gloves and greaves, with the same colours;
+- the pixel-art style, outlines and shading.
+
+Change only the body and face: clearly feminine - a smaller, slimmer frame, narrower shoulders, a curved waist and hips, a visible chest under the breastplate, slimmer arms and legs, smaller shoulder plates, and a soft feminine face with larger eyes, softer cheeks and a small chin. Keep the head and helmet in proportion: the helmet is NOT bigger than his, the figure is about 6 helmet-heights tall. She is about as tall as him, so her helmet top stays near the dashed line.
+
+Do not add weapons, new effects, shadows, text or anything else. Output the whole sheet at the same size.
+```
+If one cell changes pose or a stick swaps hands, attach Gemini's result together with the male sheet and say:
+"Fix cell <N> of the first image so its pose and sticks match cell <N> of the second image exactly. Keep everything else."
