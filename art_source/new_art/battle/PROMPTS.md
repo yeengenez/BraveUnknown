@@ -121,6 +121,51 @@ waist and hips, visible chest under the armour, slimmer limbs, smaller pauldrons
 a small chin, same armour and helmet."
 In game: stand -> ready -> slash 1 (cyan / off-hand weapon) -> slash 2 (magenta / main-hand weapon) -> finish -> stand.
 One weapon only (no shield): stand -> slash 2 -> finish, from the magenta (main) hand.
+**Superseded by v2 below**: with this prompt ChatGPT kept putting the cyan rod on the near arm in SLASH 1 (10+ tries) and read
+the concept's slash 2 / follow-through backwards. The male sheet was then fixed by hand in code.
+
+### Soldier dual weapons v2 (2026-11-21) - copy the fixed male sheet
+Use this for every new dual sheet (female, redraws). The pose reference is the hand-fixed male sheet, so ChatGPT copies
+finished poses instead of reading the concept. Attach, in this order: (1) `templates/soldier_dual_template.png`,
+(2) `source/soldier_dual_m_sheet.png` (fixed male sheet: poses and rods), (3) `source/concepts/soldier_outfit_ref.png`.
+The arms are named by their shoulder plate and rod colour. "Left/right" and "front/back" both confused ChatGPT.
+Slash waves are added in code; ChatGPT must not draw them.
+
+```
+Use the first attached image as the canvas: a grid of 2 rows x 3 cells on flat pure green (#00FF00), each cell with a dark-green ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, all 6 figures at the same scale and the same character.
+
+POSES: the second attached image is the pose sheet. Copy each of its 6 cells into the same cell of the canvas: the same stance, the same leg positions, the same body angle, the same arm positions, and the same coloured rod in the same hand pointing the same way. Change only the character's build as described below. Do not invent new poses, do not mirror any figure, do not swap the rods.
+
+The two arms (check this in every cell before you finish):
+- The NEAR arm is the arm closest to the viewer. Its big round shoulder plate sits IN FRONT of the chest, on the LEFT side of the picture, and overlaps the torso. The near arm ALWAYS holds the MAGENTA rod (#FF00FF).
+- The FAR arm is the arm farther from the viewer. Its shoulder is half hidden BEHIND the scarf and chest, on the RIGHT side of the picture. The far arm ALWAYS holds the CYAN rod (#00FFFF).
+- The chest always faces the viewer at 3/4, turned toward the right. Never show the character's back, and never move the big near shoulder plate to the right side of the chest.
+
+Cells (top row left to right, then bottom row left to right) - all exactly as in the pose sheet:
+1. STAND: wide low stance; magenta rod low on the left pointing down and back, cyan rod low on the right pointing down and forward.
+2. READY: the FAR (cyan) arm raised high above the helmet, its rod angled back over the head; the near (magenta) arm low, rod pointing down and back.
+3. SLASH 1: the FAR (cyan) arm has come down in front: its hand at the front hip, the cyan rod pointing down and forward toward the front foot, the arm passing BEHIND the torso. The near (magenta) arm stays low with its rod pointing down and back. This is the cell that usually goes wrong: the cyan rod belongs to the far arm, never to the near arm.
+4. SLASH 2: the NEAR (magenta) arm swung out BEHIND the body to the left at chest height, almost straight; the magenta rod passes through the fist and points FORWARD (to the right) across the waist, below the arm. The far (cyan) arm low in front, rod pointing down and forward.
+5. FINISH: the NEAR (magenta) arm extended back and slightly up to the left at shoulder height; the magenta rod points back and up-left past the fist. The far (cyan) arm low in front, rod pointing down and forward.
+6. GET HIT: recoiling back, head knocked back, wincing; rods held low, magenta in the near hand, cyan in the far hand.
+
+Character: <SEX> Soldier, outfit exactly as in the third attached image: plain BARBUTE helm (open face, no crest, no gold, no emblem), simple silver plate armour, blue scarf, blue tabard with a light trim, brown leather belt and gloves, steel greaves. No shield. Style: Fire Emblem-style anime pixel art matching the pose sheet: clean dark outlines, cel shading, light from the upper left, about 6 heads tall including the helmet, FACING RIGHT in every cell.
+
+Hair under the helmet: in EVERY cell a ponytail comes out from under the back of the helmet and hangs behind the neck, following each pose as in the pose sheet. It always stays BEHIND the body and never covers the armour, scarf, arms or face. Paint the hair entirely in shades of pure red (#FF0000 family: very dark red for outline and shadows, mid red, bright red highlights), with no black outline.
+
+Hard rules:
+- No swords or other weapons, no shield, no cape. Rods: flat single colours, no shading or outline, as thick as in the pose sheet, sticking out of both sides of the fist where the handle would be, fingers wrapped over them. No other magenta or cyan anywhere.
+- The face is the only bare skin: shades of pure yellow (red = green, blue near zero), shaded like normal skin. Small anime face: dark eye lines, a tiny bit of white, short mouth line. Nothing else may be yellow or gold.
+- Pure red is used ONLY for the hair.
+- No text, labels, slash arcs, slash waves, motion lines, dust, ground shadows or background objects.
+- Output one PNG at the canvas's exact size.
+```
+Female line (add at the end): "Female: clearly feminine - smaller frame, narrower shoulders, curved waist and hips, visible
+chest under the armour, slimmer limbs, smaller pauldrons, a soft feminine face with larger eyes and a small chin, same armour
+and helmet, same poses as the pose sheet." Male line: "Male: broad, sturdy frame, same build as the pose sheet."
+If one cell still comes out wrong, ask ChatGPT to redraw only that cell: "Redraw only cell <N> so it matches cell <N> of the
+pose sheet exactly - the near arm (big shoulder plate in front of the chest, left side of the picture) holds magenta, the far
+arm holds cyan. Keep the other 5 cells pixel-identical." If it still fails, send the sheet anyway and it is fixed in code.
 
 ### Archer
 > Character: **<SEX> Archer** (light armour and hooded cloak with the hood DOWN, from the portrait). Rows, top to bottom:
