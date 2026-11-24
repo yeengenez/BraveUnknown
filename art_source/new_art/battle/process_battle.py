@@ -145,7 +145,7 @@ def clean_rods(a, rods, on):
 
 
 # ---------------------------------------------------------------- skin key (shades of yellow/orange)
-def skin_split(a, fgm, grips):
+def skin_split(a, fgm, grips, head_frac=0.24):
     r, g, b = a[..., 0].astype(int), a[..., 1].astype(int), a[..., 2].astype(int)
     key = fgm & (r > 120) & (g > 0.5 * r) & (b < 0.55 * r) & (r - b > 70)
     lab, n = ndi.label(key, np.ones((3, 3)))
@@ -155,7 +155,7 @@ def skin_split(a, fgm, grips):
         m = lab == i; sz = m.sum()
         if sz < 6: continue
         cy, cx = np.argwhere(m).mean(0)
-        head = (cy - top) / Hh < 0.24 and sz >= 25
+        head = (cy - top) / Hh < head_frac and sz >= 25
         hand = any(m[max(0, int(p[1]) - 6):int(p[1]) + 7, max(0, int(p[0]) - 6):int(p[0]) + 7].any() for p in grips)
         if head or hand: keep.append(i)
     m = np.isin(lab, keep)
@@ -282,7 +282,9 @@ def one_cell(cls, sex, stance, state, c, fg, s):
     m = PP.rod_mask(body); cy = PP.cyan_mask(body)
     PP.ANIM = st if st != 'stand' else 'hit'
     o = 'attack' if st == 'attack' else 'hit'
-    if stance == 'dual' and state in SLASH_HIDE and min(m.sum(), cy.sum()) <= 8:
+    if stance == 'downed':                  # knocked out: empty hands, no rods, shared by every loadout
+        g = {}; rods = np.zeros_like(m)
+    elif stance == 'dual' and state in SLASH_HIDE and min(m.sum(), cy.sum()) <= 8:
         # the swinging hand's weapon is drawn as a smear in the effect layer: only the other hand has a rod
         vis = 'back' if SLASH_HIDE[state][0] == 'front' else 'front'; vr = m if vis == 'back' else cy
         g = {vis: toward_longer(hand(vr, body), vr)}
@@ -312,7 +314,16 @@ def one_cell(cls, sex, stance, state, c, fg, s):
             g[hh]['angle'] = round(float((g[hh]['angle'] + 360) % 360 - 180), 1)
     clean, on = clean_rods(body, rods, on)
     pts = [v['point'] for v in g.values() if isinstance(v, dict) and 'point' in v]
-    fixed, skin, head, hairp = skin_split(clean, on, pts)
+    hf = 0.24
+    if stance == 'downed':                  # kneeling: the face sits lower; the gloves rest on the ground (no grips)
+        hf = 0.42
+        r_, g_, b_ = [clean[..., i].astype(int) for i in range(3)]
+        key = on & (r_ > 120) & (g_ > 0.5 * r_) & (b_ < 0.55 * r_) & (r_ - b_ > 70) & (g_ < 0.75 * r_)   # orange gloves, not gold trim
+        lab_, n_ = ndi.label(key, np.ones((3, 3))); ys_ = np.where(on.any(1))[0]
+        for i in range(1, n_ + 1):
+            yy_, xx_ = np.where(lab_ == i)
+            if len(yy_) >= 25 and yy_.mean() > ys_.min() + 0.7 * (ys_.max() - ys_.min()): pts.append([xx_.mean(), yy_.mean()])
+    fixed, skin, head, hairp = skin_split(clean, on, pts, hf)
     n = f'{cls}_{sex}_{stance}_{state}'
     if cls in METAL_ARMOUR: fixed = to_steel(fixed)
     Image.fromarray(fixed).save(os.path.join(HERE, 'layers', f'{n}_fixed.png'))
@@ -382,7 +393,22 @@ def process(cls):
             c, fg = cut_cell(b2, (round(box[0] * k2[0]), round(box[1] * k2[1]), round(box[2] * k2[0]), round(box[3] * k2[1])))
             name = f'{state}_{tag}' if tag else state          # empty tag = the fix sheet REPLACES that cell
             data[(sex, stance, name)] = one_cell(cls, sex, stance, name, c, fg, s)
+    process_downed(cls, data)
     return data
+
+
+def process_downed(cls, data):
+    """<cls>_downed_sheet.png (templates/<cls>_downed_template.png, user 2026-11-24): one downed sprite per sex for every
+    loadout. Top row: male | female downed; bottom row: their STAND figures, which give the scale (a kneeling figure
+    must not be scaled up to standing height)."""
+    p = os.path.join(HERE, 'source', f'{cls}_downed_sheet.png')
+    if not os.path.exists(p): return
+    a = np.asarray(Image.open(p).convert('RGB')); sx, sy = a.shape[1] / 1536, a.shape[0] / 1024
+    for col, sex in ((0, 'm'), (1, 'f')):
+        box = lambda r: (round(col * 512 * sx), round(r * 512 * sy), round((col + 1) * 512 * sx), round((r + 1) * 512 * sy))
+        s_ = FIG_H / figure_height(*cut_cell(a, box(1)))[0]
+        c, fg = cut_cell(a, box(0))
+        data[(sex, 'downed', 'downed')] = one_cell(cls, sex, 'downed', 'downed', c, fg, s_)
 
 
 def split2h(g):
@@ -483,6 +509,17 @@ def render(cls, data):
                     A.paste(im := im.copy(), hl, A.CELL + dx + hx, A.TOP + dy + hy)
                 frames[state] = im
                 Image.fromarray(im).save(os.path.join(HERE, 'sprites', f'{cls}_{sex}_{load}_{state}.png'))
+            if (sex, 'downed', 'downed') in data and ref is not None:
+                fixed, skin, g, head, hairp = data[(sex, 'downed', 'downed')]
+                b = tint(fixed, skin, sramp)
+                if hairp is not None and hair in HAIR_LEN[sex]['long']:
+                    hm = hairp[..., 1] > 0
+                    b = b.copy(); b[hm, :3] = finish.ramp_rgb(finish.PAL['hair'][hramp], hairp[..., 0][hm].astype(float)).astype(np.uint8); b[hm, 3] = 255
+                fx_, fy = feet(b)
+                dx = round(CANVAS_FEET[0] - fx_) - A.CELL; dy = round(CANVAS_FEET[1] - fy) - A.TOP
+                im = A.frame(cls, f'{sex}_downed', sramp, [], (dx, dy, 0, 0, None), [], 'attack', {}, b)
+                frames['downed'] = im
+                Image.fromarray(im).save(os.path.join(HERE, 'sprites', f'{cls}_{sex}_{load}_downed.png'))
             rows.append((f'{cls} {sex} {load}  (sample hair: {hair}, {hramp}; skin {sramp})', frames))
     x0, x1 = 20, 399
     cw = x1 - x0; ch = 270
