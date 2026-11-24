@@ -421,3 +421,30 @@ Do not add weapons, new effects, shadows, text or anything else. Output the whol
 ```
 If one cell changes pose or a stick swaps hands, attach Gemini's result together with the male sheet and say:
 "Fix cell <N> of the first image so its pose and sticks match cell <N> of the second image exactly. Keep everything else."
+
+### Soldier DOWNED sprite, both sexes (2026-11-24, user: "downed sprite for each gender, used for all soldier")
+One downed pose per sex, shared by every Soldier loadout, so no weapon, rod or shield. Attach only
+`templates/soldier_downed_template.png` (`tools/make_downed_template.py`): top row empty, bottom row = the finished male
+and female STAND figures as outfit, scale and colour-key reference. The result is saved as
+`source/soldier_downed_sheet.png`. If one sex comes out wrong, redo only that cell with Gemini ("Fix cell <N> ... keep
+everything else"), or turn the good male figure female with the Gemini edit prompt above.
+
+```
+Use the attached image as the canvas: a grid of 2 rows x 3 cells on flat pure green (#00FF00), each cell with a dark ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are, and keep the whole bottom row exactly as it is.
+
+The bottom row shows the same armoured soldier, MALE in the bottom-left cell and FEMALE in the bottom-middle cell, standing. Draw each of them DOWNED in the empty cell directly above them:
+- top-left cell: the male soldier from the bottom-left cell;
+- top-middle cell: the female soldier from the bottom-middle cell;
+- top-right cell: leave empty green.
+
+DOWNED pose (knocked out of the fight but still alive), the same for both: collapsed on both knees on the ground line, sitting back on the heels, torso slumped forward, head hanging down so the face is half hidden, both arms hanging limp with the open, empty hands resting on the ground beside the knees. Still in 3/4 view, the body turned toward the right, like the figures below. The ponytail hangs down behind the neck.
+
+Same character, same scale: the helmet, armour plates and limbs are exactly as big as in the standing figure below (the figure is shorter only because it kneels). Copy the outfit and colours exactly from the figure below: plain barbute helmet, silver plate armour, blue scarf, blue tabard with light trim, brown belt and gloves, steel greaves, same pixel-art style, outlines and shading. Each figure keeps its own build: the male broad and sturdy, the female slimmer and clearly feminine, as below.
+
+Colour keys, exactly as in the figures below:
+- the face is the only bare skin and is painted in shades of pure yellow;
+- the ponytail is painted in shades of pure red, behind the neck and never covering the armour;
+- nothing else is yellow, gold or pure red.
+
+No weapons, no sticks or rods, no shield, nothing in the hands. No text, labels, shadows on the ground, effects or background objects. Output one PNG at the canvas's exact size.
+```
