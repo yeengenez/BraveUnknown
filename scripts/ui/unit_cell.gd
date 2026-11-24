@@ -215,6 +215,13 @@ func show_unit(p_unit: Unit, highlight: String = "", empty_text: String = "", hp
 			border = UIKit.GOOD
 			width = 3
 			bg = Color("#24352a")
+	if allow_sprites:
+		# On the battlefield background: empty slots are faint marks on the grass, cards slightly see-through.
+		if unit == null and highlight == "":
+			bg = Color(0.05, 0.09, 0.04, 0.22)
+			border = Color(1, 1, 1, 0.10)
+		else:
+			bg = Color(bg, 0.9)
 	if _sprite_mode:
 		var plate := StyleBoxEmpty.new()
 		for state: String in ["normal", "hover", "pressed", "disabled"]:
@@ -255,6 +262,8 @@ func _set_sprite_mode(on: bool, changed: bool) -> void:
 		_flash.visible = not on
 		card.clip_contents = not on
 		_name.add_theme_font_size_override("font_size", 12 if on else 14)
+		_name.add_theme_constant_override("outline_size", 5 if on else 0)
+		_name.add_theme_color_override("font_outline_color", Color(0.04, 0.06, 0.03, 0.9))
 		_bar.custom_minimum_size = Vector2(0, 5 if on else 7)
 		_pose = ""
 	if on:

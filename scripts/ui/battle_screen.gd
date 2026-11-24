@@ -86,9 +86,23 @@ func _init() -> void:
 	_camp_button.pressed.connect(_on_camp)
 	controls.add_child(_camp_button)
 
-	# ---- battlefield
+	# ---- battlefield, on an isometric grassland with the supply cart behind the party
+	var arena := MarginContainer.new()
+	arena.clip_contents = true
+	root.add_child(arena)
+	var ground := TextureRect.new()
+	ground.texture = load("res://sprites/battle/bg_grassland.png")
+	ground.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ground.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	ground.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena.add_child(ground)
+	var pad := MarginContainer.new()
+	for side: String in ["left", "top", "right", "bottom"]:
+		pad.add_theme_constant_override("margin_" + side, {"left": 142, "top": 14, "right": 12, "bottom": 10}[side])
+	arena.add_child(pad)
 	var field := UIKit.hbox(10)
-	root.add_child(field)
+	pad.add_child(field)
 	field.add_child(_build_grid("YOUR PARTY", UIKit.ALLY, [2, 1, 0], _party_cells))
 	var center := UIKit.vbox(6)
 	center.custom_minimum_size = Vector2(170, 0)
@@ -96,10 +110,12 @@ func _init() -> void:
 	field.add_child(center)
 	_round_label = UIKit.label("", 16, UIKit.GOLD, true)
 	_round_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_outline(_round_label)
 	center.add_child(_round_label)
 	_banner = UIKit.label("", 15, UIKit.TEXT, true)
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_banner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_outline(_banner)
 	center.add_child(_banner)
 	_action = RichTextLabel.new()
 	_action.bbcode_enabled = true
@@ -108,6 +124,8 @@ func _init() -> void:
 	_action.custom_minimum_size = Vector2(170, 92)
 	_action.add_theme_font_size_override("normal_font_size", 14)
 	_action.add_theme_font_size_override("bold_font_size", 15)
+	_action.add_theme_constant_override("outline_size", 5)
+	_action.add_theme_color_override("font_outline_color", Color(0.04, 0.06, 0.03, 0.9))
 	center.add_child(_action)
 	field.add_child(_build_grid("ENEMIES", UIKit.ENEMY, [0, 1, 2], _enemy_cells))
 
@@ -157,6 +175,7 @@ func _build_grid(title: String, color: Color, rows: Array, cells: Array) -> Cont
 	var box := UIKit.vbox(4)
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var caption := UIKit.label(title, 13, color, true)
+	_outline(caption)
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(caption)
 	var grid := GridContainer.new()
@@ -166,7 +185,8 @@ func _build_grid(title: String, color: Color, rows: Array, cells: Array) -> Cont
 	box.add_child(grid)
 	cells.resize(9)
 	for row: int in rows:
-		var head := UIKit.label(GameData.ROWS[row], 12, UIKit.MUTED)
+		var head := UIKit.label(GameData.ROWS[row], 12, Color("#d8dccf"))
+		_outline(head)
 		head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		grid.add_child(head)
 	for lane in 3:
@@ -179,6 +199,11 @@ func _build_grid(title: String, color: Color, rows: Array, cells: Array) -> Cont
 			grid.add_child(cell)
 			cells[row * 3 + lane] = cell
 	return box
+
+
+func _outline(label: Label) -> void:
+	label.add_theme_constant_override("outline_size", 5)
+	label.add_theme_color_override("font_outline_color", Color(0.04, 0.06, 0.03, 0.9))
 
 
 func on_show() -> void:
