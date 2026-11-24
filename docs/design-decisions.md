@@ -114,6 +114,12 @@ Findings from simulation (500 fights per setup, placeholder numbers):
 - **Swords drawn in code** (`class_weapons.py`: `shortsword`, `longsword`, `greatsword`): straight blade with a short triangular point. The Legacy Canva longsword is no longer used for battle sprites.
 - The Soldier armour read slightly pink in the processed sprites; fixed in the art pipeline on 2026-11-21 (`to_steel()`, see Shields/Soldier notes above). Re-exported into the game on 2026-11-24 (`main`).
 
+## Battle background (2026-11-24, user: "create a background in Isometric, grassland with the supply cart on the back of party")
+- `sprites/battle/bg_grassland.png`: 640 × 200 pixel art drawn in code (`art_source/new_art/battle/background/make_battle_bg.py`), shown at 2x (nearest filter, keep-aspect-covered) behind the whole battlefield. Isometric 2:1 grass tiles (32 × 16) with tile-to-tile tone variation and faint seams, tufts, flowers, a few rocks between the lines, a bush line along the top and bottom edges; light from the upper left, darker at the edges.
+- **Supply cart** (covered wagon: canvas cover on hoops, two spoked wheels, shafts resting on the ground, crates, barrel and sacks beside it, wheel ruts) parked behind the party's back row on the left; the party grid starts 142 px in to leave it room. The cart is the visual stand-in for the **wagon** that stores ammunition and supplies.
+- The formation grid itself is unchanged (rectangular slots over the isometric ground). Empty slots show as faint marks on the grass, cards are slightly see-through; labels and sprite name plates have a dark outline.
+- Only one biome so far. Not decided: other terrains per expedition route, an enemy-side prop, and whether formation slots should become isometric diamonds.
+
 ## LEGACY ART: everything made with Canva (user decision, 2026-11-18)
 **All assets generated in Canva, and anything cut, edited or composed from a Canva image, are Legacy: use them for reference only** (style, proportions, colours, poses, grip positions). Do not build new game content from them and do not extend them with more Canva generations. New production art replaces them. Register: `art_source/LEGACY.md` and `art_source/legacy_assets.json` (branch `art-source`).
 - **Legacy:** hero portrait parts (`portraits/parts/`) and their source images; every battle sprite body, grip body, stand/attack/hit pose, sprite sheet and GIF in `art_source/battle_sprites/`; the style reference and first layer test; the longsword and kite shield cut from the first test image; the enemy sprites (wolf, boar, goblin).
