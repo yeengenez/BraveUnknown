@@ -305,8 +305,11 @@ func step_once() -> void:
 		if id != _battle_id:
 			return
 
-	for event: Dictionary in events:
-		await _play_event(event, time_scale)
+	for i in events.size():
+		# Dual wield: the off-hand slash flows straight into the main-hand slash (one combo).
+		var chain_out := i + 1 < events.size() and _is_dual_pair(events[i], events[i + 1])
+		var chain_in := i > 0 and _is_dual_pair(events[i - 1], events[i])
+		await _play_event(events[i], time_scale, chain_out, chain_in)
 		if id != _battle_id:
 			return
 
@@ -412,7 +415,15 @@ func _wait(seconds: float) -> void:
 
 
 # ------------------------------------------------------------------ playback
-func _play_event(event: Dictionary, time_scale: float) -> void:
+## Off-hand swing followed by the same unit's main-hand swing.
+func _is_dual_pair(first: Dictionary, second: Dictionary) -> bool:
+	return String(first.get("hand", "")) == "off" and String(second.get("hand", "")) == "main" \
+		and first.get("actor") == second.get("actor") and first["type"] == "attack" and second["type"] == "attack"
+
+
+## chain_out: a dual off-hand slash that flows into the main-hand slash (stay forward, short beat);
+## chain_in: that main-hand slash (no wind-up, no second lunge).
+func _play_event(event: Dictionary, time_scale: float, chain_out := false, chain_in := false) -> void:
 	var actor: Unit = event["actor"]
 	var actor_cell := _cell_of(actor)
 	var impacts: Array = event["impacts"]
@@ -473,16 +484,22 @@ func _play_event(event: Dictionary, time_scale: float) -> void:
 
 	# 2. Wind-up: the actor glows in its action colour.
 	actor_cell.glow(color if type == "spell" else UIKit.GOLD, time_scale)
-	await _wait(0.2 * time_scale)
-	if id != _battle_id:
-		return
+	if not chain_in:
+		await _wait(0.2 * time_scale)
+		if id != _battle_id:
+			return
 
 	# 3. Delivery: a lunge for melee, a missile for everything else.
 	var kind := ""
 	if type == "spell":
 		kind = String(GameData.SPELLS[event["spell"]]["kind"])
 	var from := actor_cell.card_center()
-	if type == "attack" and not event["ranged"]:
+	if type == "attack" and not event["ranged"] and chain_in:
+		# second slash of the combo: already forward, just swap to the swing
+		if sprite:
+			actor_cell.set_pose(strike_pose)
+		await _wait(0.07 * time_scale)
+	elif type == "attack" and not event["ranged"]:
 		var land := actor_cell.lunge(aim, time_scale)
 		if sprite:
 			get_tree().create_timer(land * 0.45).timeout.connect(actor_cell.set_pose.bind(strike_pose))
@@ -579,6 +596,9 @@ func _play_event(event: Dictionary, time_scale: float) -> void:
 		_screen_shake(4.0, time_scale)
 
 	# 5. Recover.
+	if chain_out:
+		await _wait(0.16 * time_scale)  # short beat between the two slashes
+		return
 	if type == "attack" and not event["ranged"]:
 		await _wait(0.08 * time_scale)
 		if id != _battle_id:
