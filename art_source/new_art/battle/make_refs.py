@@ -18,7 +18,8 @@ import finish
 CLASSES = {
     # v6 (2026-11-21): main sheet = shield, two-handed, spear; the dual weapons get their own sheet (EXTRA_SHEETS)
     'soldier': [('1h', 'sword_shield'), ('2h', 'greataxe'), ('reach', 'longspear')],
-    'archer':  [('1h', 'dagger'), ('bow', 'bow'), ('crossbow', None)],
+    # (2026-11-24) the dagger has no shield -> dual stance on its own sheet, like the Soldier's dual weapons
+    'archer':  [('bow', 'bow'), ('crossbow', None)],
     'acolyte': [('1h', 'mace_shield'), ('2h', 'quarterstaff'), ('reach', 'longspear')],
     'mage':    [('1h', 'staff')],
     'warrior': [('1h', 'unarmed'), ('2h', 'greataxe'), ('reach', 'longspear')],
@@ -39,7 +40,8 @@ CLASS_STATES = {'soldier': {'1h': ['stand', 'ready', 'attack', 'hit'], 'dual': [
 
 # extra sheets per class: name -> rows of (stance, [cell states]). Soldier dual = user's dual-slash concept (2026-11-21):
 # stand, ready (front/cyan arm winds up), slash_left (cyan slashes down), slash_right (magenta sweeps), finish, hit
-EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}
+EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]},
+                'archer': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}
 # older sheets drawn on an earlier layout: (class, sex) -> rows
 SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v5 male
               ('soldier', 'f'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # Gemini edit of v5 male

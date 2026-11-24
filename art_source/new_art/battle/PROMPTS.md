@@ -469,3 +469,36 @@ Show on one sheet, on a plain light background:
 
 No bow, crossbow or other weapon in the hands (weapons are added in the game). No text other than the small letters a, b, c under the headgear options. Output one image.
 ```
+
+### Archer step 2 - main pose sheet from the pose draft (2026-11-24)
+User chose: headgear **c, hood UP** (so no hair key: the hood hides the hair) and a **pose draft** drawn in code
+(`tools/archer_pose_draft.py` -> `refs/archer_pose_draft.png`): grey mannequins on the archer template, NEAR arm darker
+in front of the body, FAR arm lighter behind it, sticks in the right hands. Main sheet = bow row + crossbow row
+(the dagger uses the dual stance on its own sheet - later, as a Gemini edit of the finished Soldier dual sheet).
+Male first; the female is a Gemini edit of the finished male sheet. Attach, in order: (1) `templates/archer_template.png`,
+(2) `refs/archer_pose_draft.png`, (3) `source/concepts/archer_design.png`.
+
+```
+Use the first attached image as the canvas: a grid of 2 rows x 4 cells on flat pure green (#00FF00), each cell with a dark ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the hood at the dashed line when standing upright, all 8 figures at the same scale and the same character.
+
+POSES: the second attached image is the pose draft: grey mannequins on the same grid. Copy each mannequin's pose into the same cell: the same stance, legs, body angle, arm positions and the same coloured stick in the same hand at the same angle. Do not invent new poses and do not mirror any figure.
+
+The two arms (check every cell before you finish):
+- The NEAR arm (darker grey in the draft) is the arm closest to the viewer: its shoulder is on the LEFT side of the picture and it is drawn IN FRONT of the body.
+- The FAR arm (lighter grey in the draft) is the arm farther from the viewer: its shoulder is on the RIGHT side of the picture, partly hidden BEHIND the body.
+- Top row (bow): the FAR hand holds the bow = a straight vertical CYAN stick (#00FFFF). In the 2nd cell the NEAR hand draws a thin straight MAGENTA line (#FF00FF, the arrow) back to the cheek. In the 3rd cell the NEAR hand is open and flung back, and there is no magenta.
+- Bottom row (crossbow): ONE straight MAGENTA stick (the crossbow stock) held in BOTH fists, the NEAR fist at its rear end, the FAR fist further forward under it.
+
+Cells, top row left to right: BOW STAND (bow lowered at the side) | NOCK (full draw) | RELEASE | GET HIT (recoiling back, wincing, still holding the bow). Bottom row left to right: CROSSBOW STAND (held low across the hips) | AIM (raised to the shoulder, sighting along it) | RELEASE (kicked up by the recoil) | GET HIT (recoiling back, crossbow pointing up, still in both fists).
+
+Character: MALE ARCHER exactly as on the left of the third attached image (design sheet): forest-green hooded cloak with a thin gold trim, HOOD UP over the head with the face open, brown leather vest laced at the front over a white shirt, brass buckles, leather bracer, fingerless brown gloves, brown trousers, laced knee-high boots, a belt with a pouch. Lean and athletic. Style: Fire Emblem-style anime pixel art matching the design sheet, clean dark outlines, cel shading, light from the upper left, about 6 heads tall, 3/4 view FACING RIGHT in every cell.
+
+Quiver marker: do NOT draw the quiver. In every cell, draw one flat pure BLUE (#0000FF) bar on the back exactly where the blue bar is in the draft: top end sticking up behind the near shoulder, slanting down behind the back. Flat colour, no shading, no outline, partly hidden behind the body and cloak.
+
+Hard rules:
+- No bow, crossbow, arrows or other weapons: only the flat sticks described above, 2-3% of the figure height thick (the arrow line thinner), flat single colours with no shading or outline, sticking out of both sides of the fist where the handle would be, fingers wrapped over them. No other magenta, cyan or pure blue anywhere.
+- The face is the only bare skin: paint it in shades of pure yellow (red = green, blue near zero), shaded like normal skin. Small anime face: dark eye lines, a tiny bit of white, short mouth line. Nothing else may be yellow or gold except the thin cloak trim and the buckles.
+- No hair visible: the hood covers it. No pure red anywhere.
+- No text, labels, effects, motion lines, shadows on the ground or background objects.
+- Output one PNG at the canvas's exact size.
+```
