@@ -448,3 +448,24 @@ Colour keys, exactly as in the figures below:
 
 No weapons, no sticks or rods, no shield, nothing in the hands. No text, labels, shadows on the ground, effects or background objects. Output one PNG at the canvas's exact size.
 ```
+
+### Archer step 1 - battle design sheet (2026-11-24, user: "create archer on GPT")
+Same order as the Soldier: design first, poses after (the Soldier's mistakes came from drawing poses before the look
+was fixed). Attach `source/concepts/soldier_final_design.png` (style and proportions) and
+`source/concepts/archer_portrait_ref.png` (the Archer's outfit from the portraits). The user picks the headgear and the
+look; then step 2 = the pose sheets, written with the Soldier lessons (arms named by rod colour and shoulder plate,
+male sheet first, female by a Gemini edit of the finished male sheet, ready poses, red hair key, blue quiver marker,
+one-handed dagger in the dual stance on its own sheet).
+
+```
+Create a character design sheet for a fantasy game's ARCHER class, in exactly the same art style, proportions and level of detail as the first attached image (a Soldier design sheet): Fire Emblem-style anime pixel art, clean dark outlines, cel shading, light from the upper left, about 6 heads tall including the headgear.
+
+The outfit must match the second attached image (the Archer's portrait busts, male and female): a forest-green hooded cloak with a thin gold trim (hood DOWN, lying on the shoulders), a brown leather vest laced at the front over a white shirt, brass buckles; add what an archer wears in battle and the busts do not show: a leather bracer on the bow arm, a shooting glove, brown leather trousers or leggings, soft knee-high boots, a belt with a small pouch.
+
+Show on one sheet, on a plain light background:
+1. Top row: the MALE archer and the FEMALE archer, full body, standing, 3/4 view facing right, empty hands. The male lean and athletic; the female clearly feminine (narrower shoulders, curved waist and hips, slightly fuller chest, soft face with larger eyes and a small chin), with a head NOT bigger than the male's.
+2. Bottom row: three HEADGEAR options on the male's head (head and shoulders only), side by side: (a) a leather archer's cap with a single feather; (b) a light open-face leather-and-steel skullcap; (c) a green cloth hood pulled UP over the head, face open. Each option must leave the back of the neck uncovered so a ponytail could hang out under it.
+3. A back quiver of brown leather with arrows, worn across the back from the right shoulder to the left hip, shown on both full-body figures.
+
+No bow, crossbow or other weapon in the hands (weapons are added in the game). No text other than the small letters a, b, c under the headgear options. Output one image.
+```
