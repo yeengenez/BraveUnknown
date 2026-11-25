@@ -1,38 +1,49 @@
-"""Archer slash 2 (user, 2026-11-25): the near arm must be raised at the same angle as in FINISH, only without the stick.
-Rotates the near arm (with its open hand) of the dagger sheet's slash 2 cell about the shoulder. Works on the ChatGPT
-original (source/concepts/archer_dagger_m_sheet_gpt_raw.png) and writes source/archer_dagger_m_sheet.png."""
-import os, math, numpy as np
-from PIL import Image, ImageDraw
+"""Archer slash 2 (user, 2026-11-25: "copy 2nd pic of 5th row to 1st pic of the 5th row, then remove purple stick"):
+slash 2 = the FINISH figure with its magenta stick removed (hand empty), feet where the original slash 2 stood.
+Works on the ChatGPT original (source/concepts/archer_dagger_m_sheet_gpt_raw.png), writes source/archer_dagger_m_sheet.png."""
+import os, numpy as np, cv2
+from PIL import Image
 from scipy import ndimage as ndi
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 a = np.asarray(Image.open(os.path.join(HERE, 'source', 'concepts', 'archer_dagger_m_sheet_gpt_raw.png')).convert('RGB')).copy()
-r, g, b = [a[..., i].astype(int) for i in range(3)]
-green = (g - r > 60) & (g - b > 60)
-PIV = np.array([1328.0, 468.0])                 # near shoulder
-DEG = 12.0                                      # raise the arm (finish arm ~13 deg above horizontal, slash 2 ~1 deg)
-pm = Image.new('L', (a.shape[1], a.shape[0]), 0)
-ImageDraw.Draw(pm).polygon([(1164, 434), (1300, 432), (1318, 442), (1330, 452), (1330, 492), (1300, 494), (1240, 492), (1164, 488)], fill=1)
-arm = (np.asarray(pm) > 0) & ~green
-t = math.radians(DEG); yy, xx = np.mgrid[:a.shape[0], :a.shape[1]]
-# inverse map: a destination pixel takes the source pixel rotated back (arm tip pointing left goes up)
-dx, dy = xx - PIV[0], yy - PIV[1]
-sx = np.rint(PIV[0] + dx * math.cos(t) + dy * math.sin(t)).astype(int).clip(0, a.shape[1] - 1)
-sy = np.rint(PIV[1] - dx * math.sin(t) + dy * math.cos(t)).astype(int).clip(0, a.shape[0] - 1)
-new = arm[sy, sx]; newc = a[sy, sx]
-out = a.copy()
-old = arm & ~new
-behind = (np.asarray(pm) > 0) & ~new & (xx > 1290) & (yy > 470)                                 # near the shoulder: fill from the body around it
-body = ~green & ~arm
-iy, ix = ndi.distance_transform_edt(~body, return_distances=False, return_indices=True)
-out[behind] = a[iy[behind], ix[behind]]
-poly = np.asarray(pm) > 0
-out[poly & ~new & ~behind] = (0, 255, 0)                    # incl. the soft green-tinted edge pixels
-out[new] = newc[new]
-# drop loose specks left in the air around the arm
-fig = ~((out[..., 1].astype(int) - out[..., 0] > 60) & (out[..., 1].astype(int) - out[..., 2] > 60))
-zone = np.zeros_like(fig); zone[420:510, 1155:1300] = True
-lab, n = ndi.label(fig & zone, np.ones((3, 3))); sz = ndi.sum(fig & zone, lab, range(1, n + 1))
-for i, z in enumerate(sz):
-    if z < 60: out[lab == i + 1] = (0, 255, 0)
+assert a.shape[:2] == (1024, 1536)
+FIN = (0, 683, 768, 1024)            # dual finish cell (row 3, left)
+S2 = (1152, 341, 1536, 683)          # dual slash 2 cell (row 2, right)
+
+
+def figure(c):
+    r, g, b = [c[..., i].astype(int) for i in range(3)]
+    fig = ~((g - r > 60) & (g - b > 60)) & ~((r < 80) & (g > 120) & (b < 120))
+    for y in range(c.shape[0]):
+        if y > 0.8 * c.shape[0] and (c[y].astype(int).sum(-1) < 200).mean() > 0.3: fig[y] = False
+    fig[:4] = fig[-4:] = False; fig[:, :4] = fig[:, -4:] = False
+    lab, n = ndi.label(fig, np.ones((3, 3))); sz = ndi.sum(fig, lab, range(1, n + 1))
+    return np.isin(lab, [i + 1 for i, z in enumerate(sz) if z > 150])
+
+
+crop = lambda b: a[b[1]:b[3], b[0]:b[2]].copy()
+fc = crop(FIN); fm = figure(fc)
+r, g, b = [fc[..., i].astype(int) for i in range(3)]
+mag = (r > 150) & (b > 150) & (g < 140); mag = ndi.binary_dilation(mag, iterations=2) & fm
+inside = mag & ndi.binary_closing(fm & ~mag, iterations=5)     # stick pixels inside the fist -> fill with the fist
+fc = cv2.inpaint(fc, inside.astype(np.uint8) * 255, 3, cv2.INPAINT_TELEA)
+fm = (fm & ~mag) | inside
+lab, n = ndi.label(fm, np.ones((3, 3))); sz = ndi.sum(fm, lab, range(1, n + 1)); fm = np.isin(lab, [i + 1 for i, z in enumerate(sz) if z > 150])
+sc = crop(S2); sm = figure(sc)
+ys, xs = np.where(sm); s_feet = ys.max(); s_fx = xs[ys > s_feet - 14].mean()
+ys, xs = np.where(fm); f_feet = ys.max(); f_fx = xs[ys > f_feet - 14].mean()
+dx, dy = round(s_fx - f_fx), round(s_feet - f_feet)
+xs_ = np.where(fm.any(0))[0]
+if xs_.min() + dx < 6: dx = 6 - xs_.min()
+if xs_.max() + dx > sc.shape[1] - 6: dx = sc.shape[1] - 6 - xs_.max()
+new = sc.copy(); H_ = sc.shape[0]
+keep = np.zeros(sc.shape[:2], bool)                               # only the template's own lines and the cell border stay
+keep[round(0.92 * H_ - 0.78 * H_) - 3:round(0.92 * H_ - 0.78 * H_) + 4] = True
+keep[round(0.92 * H_) - 4:round(0.92 * H_) + 5] = True
+keep[:4] = keep[-4:] = True; keep[:, :4] = keep[:, -4:] = True
+new[~keep] = (0, 255, 0)                                          # wipe the old figure completely
+ys, xs = np.where(fm); ty, tx = ys + dy, xs + dx; k = (ty >= 0) & (ty < sc.shape[0]) & (tx >= 0) & (tx < sc.shape[1])
+new[ty[k], tx[k]] = fc[ys[k], xs[k]]
+out = a.copy(); out[S2[1]:S2[3], S2[0]:S2[2]] = new
 Image.fromarray(out).save(os.path.join(HERE, 'source', 'archer_dagger_m_sheet.png'))
-print('done')
+print('shift', dx, dy)

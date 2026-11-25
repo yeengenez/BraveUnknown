@@ -14,7 +14,7 @@ import make_refs as M
 
 # hand-placed corrections after the feet alignment, in target-cell px (the smear must start at the swinging hand)
 NUDGE = {('archer', 'm', 'slash_left'): (-28, -8),
-         ('archer', 'm', 'slash_right'): (2, -24)}   # the arm was raised 12 deg to the finish angle (archer_fix_slash2_arm.py)   # user, 2026-11-25: "on pose 7, move slash to match the hands"
+         ('archer', 'm', 'slash_right'): (2, -24)}   # slash 2 = the finish figure without its stick (archer_fix_slash2_arm.py)   # user, 2026-11-25: "on pose 7, move slash to match the hands"
 
 
 def figure(cell):
