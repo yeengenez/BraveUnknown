@@ -121,10 +121,17 @@ ONE = {
 
 
 if __name__ == '__main__':
-    im = Image.open(os.path.join(HERE, 'templates', 'archer_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
-    for (r, c), P in POSES.items(): draw(d, P, c * 384, r * 512)
+    # one combined sheet (user, 2026-11-25): 6 x 3 cells; each mannequin is drawn at full size on a 384 x 512 cell and
+    # scaled into its 256 x 341 cell (head-top and ground lines scale onto the template's own lines)
+    LAYOUT = {(0, c): POSES[(0, c)] for c in range(4)}
+    LAYOUT.update({(1, c): POSES[(1, c)] for c in range(4)})
+    LAYOUT.update({(0, 4): ONE[(0, 0)], (0, 5): ONE[(0, 1)], (1, 4): ONE[(1, 0)], (1, 5): ONE[(1, 1)]})
+    LAYOUT.update({(2, c): DUAL[(c // 3, c % 3)] for c in range(6)})
+    im = Image.open(os.path.join(HERE, 'templates', 'archer_template.png')).convert('RGB')
+    W, H = im.size; cw, ch = W / 6, H / 3
+    for (r, c), P in LAYOUT.items():
+        tmp = Image.new('RGBA', (384, 512), (0, 0, 0, 0)); draw(ImageDraw.Draw(tmp), P, 0, 0)
+        tmp = tmp.resize((round(cw), round(ch)), Image.LANCZOS)
+        al = tmp.getchannel('A').point(lambda v: 255 if v > 110 else 0)
+        im.paste(tmp.convert('RGB'), (round(c * cw), round(r * ch)), al)
     out = os.path.join(HERE, 'refs', 'archer_pose_draft.png'); im.save(out); print(out)
-    for name, poses, cw, dx in (('dual', DUAL, 512, 64), ('1h', ONE, 768, 192)):
-        im = Image.open(os.path.join(HERE, 'templates', f'archer_{name}_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
-        for (r, c), P in poses.items(): draw(d, P, c * cw + dx, r * 512)
-        out = os.path.join(HERE, 'refs', f'archer_{name}_pose_draft.png'); im.save(out); print(out)
