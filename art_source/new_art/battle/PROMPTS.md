@@ -502,3 +502,35 @@ Hard rules:
 - No text, labels, effects, motion lines, shadows on the ground or background objects.
 - Output one PNG at the canvas's exact size.
 ```
+
+### Archer dagger / dual daggers - Gemini edit of the finished Soldier dual sheet (2026-11-25)
+One sheet covers both loadouts: one dagger (no shield) plays stand -> slash 2 -> finish with the main hand only; two
+daggers play the whole sheet. The poses, sticks, slash arcs and smears are already right on the Soldier dual sheets, so
+Gemini only changes the outfit. One message per sex. Attach (1) `source/concepts/soldier_dual_<m|f>_sheet_gemini_smear.png`
+and (2) `source/concepts/archer_design.png`; save the result as `source/concepts/archer_dual_<m|f>_sheet_gemini_smear.png`
+(its arc and smear are lifted off the green with `tools/green_fx_split.py`, like the Soldier's).
+
+```
+Edit the first attached image, a sprite sheet of 2 rows x 3 cells on a flat green screen: an armoured soldier in six poses, two of them with a yellow slash arc and a grey motion smear. Turn the soldier into the <SEX> ARCHER from the second attached image (design sheet) and change nothing else.
+
+Change only the outfit and build:
+- forest-green hooded cloak with a thin gold trim, HOOD UP over the head with the face open; brown leather vest laced at the front over a white shirt, brass buckles, leather bracers, fingerless brown gloves, brown trousers, laced knee-high boots, a belt with a pouch - exactly as on the design sheet;
+- no helmet, no plate armour, no scarf or tabard;
+- a lighter, leaner build than the soldier: <BUILD>;
+- no hair visible (the hood covers it) and no red anywhere;
+- one flat pure BLUE (#0000FF) bar on the back in every cell where the quiver would be: top end sticking up behind the shoulder on the left of the picture, slanting down behind the back, partly hidden by the body and cloak; flat colour, no shading, no outline. Do not draw the quiver itself.
+
+Keep exactly as they are:
+- the canvas size, the 2 x 3 grid, the flat pure green background, the dark ground line and the dashed line in each cell;
+- the position, height and feet of every figure;
+- every pose: the same stance, legs, body angle and arm positions in each cell, nothing mirrored;
+- the flat magenta and cyan sticks in the hands: the same stick in the same hand, at the same angle and length, the same flat colours with no shading;
+- the yellow slash arcs and grey smears in the top-right and bottom-left cells: same shape, size, position and colours;
+- the face painted in shades of pure yellow; the pixel-art style, outlines and shading.
+
+No weapons, no bow, no quiver, no new effects, no shadows, no text. Output the whole sheet at the same size.
+```
+`<SEX>` / `<BUILD>`: male = "MALE" / "lean and athletic"; female = "FEMALE" / "clearly feminine - narrower shoulders, curved
+waist and hips, slightly fuller chest, a soft face with larger eyes and a small chin".
+If a cell changes pose or a stick swaps hands: attach Gemini's result together with the Soldier sheet and say "Fix cell
+<N> of the first image so its pose and sticks match cell <N> of the second image exactly. Keep everything else."
