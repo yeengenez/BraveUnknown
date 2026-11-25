@@ -40,11 +40,11 @@ s_down = ref / body_height(down, (0, 512, 512, 1024))        # the downed sheet'
 ROWS = [[(bow, bcell[('bow', s)], 1.0, 'bow', s) for s in ('stand', 'nock', 'attack', 'hit')],
         [(bow, bcell[('crossbow', s)], 1.0, 'crossbow', s) for s in ('stand', 'aim', 'attack', 'hit')],
         [(dag, dcell[('1h', s)], s_dag, '1h', s) for s in ('stand', 'ready', 'attack', 'hit')],
-        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('stand', 'ready')] + [(down, (0, 0, 512, 512), s_down, 'downed', 'downed')],
-        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('slash_left', 'slash_right')],
-        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('finish', 'hit')]]
-ROW_H = [512, 512, 512, 512, 600, 512]          # the slash row is taller: the chop arc rises above the hood
-FX = json.load(open(os.path.join(HERE, 'source', 'archer_dagger_m_fx', 'offsets.json')))['offsets']
+        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('stand', 'ready', 'slash_left')]
+        + [(down, (0, 0, 512, 512), s_down, 'downed', 'downed')],
+        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('slash_right', 'finish', 'hit')]]
+ROW_H = [512] * len(ROWS)
+FX = {}      # (user, 2026-11-25) no slash arcs on this sheet: they are their own layer (source/archer_dagger_m_fx/)
 out = Image.new('RGB', (1536, sum(ROW_H)), GREEN); d = ImageDraw.Draw(out); layout = []; fx_jobs = []
 for r, row in enumerate(ROWS):
     cw = 1536 / len(row)

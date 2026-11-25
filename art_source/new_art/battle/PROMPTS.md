@@ -762,7 +762,7 @@ ChatGPT drew as the downed sheet's standing reference: right outfit, yellow face
 `source/archer_f_all_sheet.png` (same cell layout, `source/archer_m_all_layout.json`).
 
 ```
-Edit the first attached image, a sprite sheet of 19 cells on a flat green screen showing the same hooded male archer in 19 poses. Turn him into the FEMALE archer of the second attached image, in every cell, and change nothing else.
+Edit the first attached image, a sprite sheet of 19 cells on a flat green screen showing the same hooded male archer in 19 poses (the last row has 3 wider cells). Turn him into the FEMALE archer of the second attached image, in every cell, and change nothing else.
 
 Change only the body and face: clearly feminine, like the second image - a smaller, slimmer frame, narrower shoulders, a curved waist and hips, a slightly fuller chest under the vest, slimmer arms and legs, and a soft feminine face with larger eyes and a small chin. Her head and hood are NOT bigger than his; she is about as tall as him, so the top of her hood stays near each cell's dashed line.
 
@@ -772,7 +772,6 @@ Keep exactly as they are:
 - every pose: the same stance, legs, body angle and arm positions in each cell, nothing mirrored;
 - the flat magenta and cyan sticks in the hands: the same stick in the same hand, at the same angle and length, the same flat colours with no shading; open empty hands stay open and empty;
 - the flat pure blue bar on the back in every cell;
-- the yellow slash arc and grey motion smear in the two wide slash cells: same shape, size, position and colours;
 - the outfit and colours: forest-green hood (UP) and cloak with the thin gold trim, brown leather vest laced over a white shirt, brass buckles, bracers, fingerless gloves, brown trousers, laced boots, belt and pouch;
 - the face painted in shades of pure yellow, as in both images; no hair outside the hood, no red anywhere;
 - the pixel-art style, outlines and shading.
@@ -782,5 +781,5 @@ Do not add weapons, a quiver, effects, shadows, text or anything else. Output th
 If a cell changes pose or a stick swaps hands: attach Gemini's result together with the male sheet and say "Fix the cell in
 row <r>, position <c> of the first image so its pose and sticks match the same cell of the second image. Keep everything else."
 If Gemini returns the sheet smaller, that is fine (the build rescales); if it crops or squashes it, do the sheet in two
-halves (rows 1-3, rows 4-6) by cropping the male sheet first. (2026-11-25: the sheet now has 6 rows, 1536 x 3160 - the
-slash 1 / slash 2 row is wide and taller and carries the slash arc + smear, at the user's request.)
+halves (rows 1-3, rows 4-5) by cropping the male sheet first. (2026-11-25: no slash arcs on the sheet - they are their own layer; slash 2's near
+arm is raised to the finish angle, hand empty.)
