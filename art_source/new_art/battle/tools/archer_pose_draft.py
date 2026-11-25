@@ -101,7 +101,7 @@ DUAL = {
     (1, 0): dict(UPD, **LUNGE, En=(120, 186), Wn=(80, 196), **FAR_LOW, quiver=True,
                  rods=[('near', MAG, (64, 192), (176, 232)), ('far', CYAN, (262, 300), (316, 368))]),
     (1, 1): dict(UPD, **LUNGE, En=(122, 160), Wn=(80, 140), **FAR_LOW, quiver=True,
-                 rods=[('near', MAG, (96, 146), (10, 118)), ('far', CYAN, (262, 300), (316, 368))]),
+                 rods=[('near', MAG, (96, 146), (46, 129)), ('far', CYAN, (262, 300), (316, 368))]),
     (1, 2): dict(RECOIL, En=(130, 226), Wn=(124, 280), Ef=(222, 228), Wf=(246, 270), quiver=True,
                  rods=[('near', MAG, (132, 264), (90, 340)), ('far', CYAN, (240, 256), (292, 340))]),
 }
@@ -121,17 +121,17 @@ ONE = {
 
 
 if __name__ == '__main__':
-    # one combined sheet (user, 2026-11-25): 6 x 3 cells; each mannequin is drawn at full size on a 384 x 512 cell and
-    # scaled into its 256 x 341 cell (head-top and ground lines scale onto the template's own lines)
-    LAYOUT = {(0, c): POSES[(0, c)] for c in range(4)}
-    LAYOUT.update({(1, c): POSES[(1, c)] for c in range(4)})
-    LAYOUT.update({(0, 4): ONE[(0, 0)], (0, 5): ONE[(0, 1)], (1, 4): ONE[(1, 0)], (1, 5): ONE[(1, 1)]})
-    LAYOUT.update({(2, c): DUAL[(c // 3, c % 3)] for c in range(6)})
-    im = Image.open(os.path.join(HERE, 'templates', 'archer_template.png')).convert('RGB')
-    W, H = im.size; cw, ch = W / 6, H / 3
+    # bow + crossbow sheet (2 x 4, done 2026-11-25)
+    im = Image.open(os.path.join(HERE, 'templates', 'archer_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
+    for (r, c), P in POSES.items(): draw(d, P, c * 384, r * 512)
+    im.save(os.path.join(HERE, 'refs', 'archer_pose_draft.png'))
+    # dagger sheet (user, 2026-11-25: one task): 5 x 2 cells of 307 x 512 - one dagger, then dual daggers
+    LAYOUT = {(0, 0): ONE[(0, 0)], (0, 1): ONE[(0, 1)], (0, 2): ONE[(1, 0)], (0, 3): ONE[(1, 1)], (0, 4): DUAL[(0, 0)],
+              (1, 0): DUAL[(0, 1)], (1, 1): DUAL[(0, 2)], (1, 2): DUAL[(1, 0)], (1, 3): DUAL[(1, 1)], (1, 4): DUAL[(1, 2)]}
+    im = Image.open(os.path.join(HERE, 'templates', 'archer_dagger_template.png')).convert('RGB')
+    cw = im.size[0] / 5
     for (r, c), P in LAYOUT.items():
         tmp = Image.new('RGBA', (384, 512), (0, 0, 0, 0)); draw(ImageDraw.Draw(tmp), P, 0, 0)
-        tmp = tmp.resize((round(cw), round(ch)), Image.LANCZOS)
-        al = tmp.getchannel('A').point(lambda v: 255 if v > 110 else 0)
-        im.paste(tmp.convert('RGB'), (round(c * cw), round(r * ch)), al)
-    out = os.path.join(HERE, 'refs', 'archer_pose_draft.png'); im.save(out); print(out)
+        tmp = tmp.crop((40, 0, 40 + round(cw), 512))         # poses are centred at x~192 of 384; the cell is ~307 wide
+        im.paste(tmp.convert('RGB'), (round(c * cw), r * 512), tmp.getchannel('A').point(lambda v: 255 if v > 110 else 0))
+    out = os.path.join(HERE, 'refs', 'archer_dagger_pose_draft.png'); im.save(out); print(out)

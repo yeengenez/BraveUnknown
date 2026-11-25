@@ -19,11 +19,8 @@ CLASSES = {
     # v6 (2026-11-21): main sheet = shield, two-handed, spear; the dual weapons get their own sheet (EXTRA_SHEETS)
     'soldier': [('1h', 'sword_shield'), ('2h', 'greataxe'), ('reach', 'longspear')],
     # (2026-11-24) the dagger has no shield -> dual stance on its own sheet, like the Soldier's dual weapons
-    # (2026-11-25, user: "combine them in 1 file") ONE sheet, 6 x 3: bow + one-dagger cells, crossbow + one-dagger cells,
-    # dual daggers. A 'mixed' row lists (stance, state) per cell.
-    'archer':  [('mixed', [('bow', 'stand'), ('bow', 'nock'), ('bow', 'attack'), ('bow', 'hit'), ('1h', 'stand'), ('1h', 'ready')]),
-                ('mixed', [('crossbow', 'stand'), ('crossbow', 'aim'), ('crossbow', 'attack'), ('crossbow', 'hit'), ('1h', 'attack'), ('1h', 'hit')]),
-                ('dual', ['stand', 'ready', 'slash_left', 'slash_right', 'finish', 'hit'])],
+    # main sheet = bow + crossbow (done 2026-11-25); the dagger poses are on the archer 'dagger' sheet (EXTRA_SHEETS)
+    'archer':  [('bow', 'bow'), ('crossbow', None)],
     'acolyte': [('1h', 'mace_shield'), ('2h', 'quarterstaff'), ('reach', 'longspear')],
     'mage':    [('1h', 'staff')],
     'warrior': [('1h', 'unarmed'), ('2h', 'greataxe'), ('reach', 'longspear')],
@@ -44,7 +41,11 @@ CLASS_STATES = {'soldier': {'1h': ['stand', 'ready', 'attack', 'hit'], 'dual': [
 
 # extra sheets per class: name -> rows of (stance, [cell states]). Soldier dual = user's dual-slash concept (2026-11-21):
 # stand, ready (front/cyan arm winds up), slash_left (cyan slashes down), slash_right (magenta sweeps), finish, hit
-EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}   # (the Archer's dual and one-dagger cells are on its single combined sheet)
+EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]},
+                # (user, 2026-11-25: one ChatGPT task) one dagger (off-hand empty) + dual daggers on ONE 5 x 2 sheet;
+                # a 'mixed' row lists (stance, state) per cell
+                'archer': {'dagger': [('mixed', [('1h', 'stand'), ('1h', 'ready'), ('1h', 'attack'), ('1h', 'hit'), ('dual', 'stand')]),
+                                      ('mixed', [('dual', 'ready'), ('dual', 'slash_left'), ('dual', 'slash_right'), ('dual', 'finish'), ('dual', 'hit')])]}}
 # older sheets drawn on an earlier layout: (class, sex) -> rows
 SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v5 male
               ('soldier', 'f'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # Gemini edit of v5 male

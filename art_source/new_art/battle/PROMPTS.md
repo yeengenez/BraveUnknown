@@ -629,3 +629,37 @@ Hard rules:
 If a few cells come out wrong, keep the sheet and fix only those cells in Gemini: attach the sheet and the pose draft and
 say "Fix cell <row>,<column> of the first image so its pose and sticks match the same cell of the second image. Keep
 everything else."
+
+### Archer - dagger sheet: one dagger + dual daggers on ONE sheet (2026-11-25)
+The bow + crossbow sheet is done (`source/archer_m_sheet.png`, the user's ChatGPT result from the 2 x 4 draft), so the
+18-cell combined sheet above is not needed. The dagger poses are one 5 x 2 sheet (one ChatGPT task): row 1 = one dagger
+(stand | ready | attack | hit) + dual stand; row 2 = dual ready | slash 1 | slash 2 | finish | hit.
+Attach, in order: (1) `templates/archer_dagger_template.png`, (2) `refs/archer_dagger_pose_draft.png`,
+(3) `source/archer_m_sheet.png` (the finished Archer: copy the character from it). Save as `source/archer_dagger_m_sheet.png`.
+
+```
+Use the first attached image as the canvas: a grid of 2 rows x 5 cells on flat pure green (#00FF00), each cell with a dark ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are. Draw ONE full-body character per cell (10 figures), feet on that cell's ground line, top of the hood at the dashed line when standing upright, all at the same scale and the same character.
+
+POSES: the second attached image is the pose draft: grey mannequins on the same grid. Copy each mannequin's pose into the same cell: the same stance, legs, body angle, arm positions and the same coloured stick in the same hand at the same angle. Do not invent new poses and do not mirror any figure.
+
+The two arms (check every cell before you finish):
+- The NEAR arm (darker grey in the draft): its shoulder is on the LEFT side of the picture and it is drawn IN FRONT of the body. The near hand ALWAYS holds the MAGENTA stick (#FF00FF).
+- The FAR arm (lighter grey in the draft): its shoulder is on the RIGHT side of the picture, partly hidden BEHIND the body.
+- A stick never moves to the other hand.
+
+Cells:
+- Row 1, cells 1-4 = ONE DAGGER: STAND (guard, near fist at the hip, stick pointing forward) | READY (crouched, near arm drawn back) | ATTACK (deep lunge, near arm thrust straight forward, stick level) | GET HIT (recoiling back, wincing). Only the near hand holds a stick; the FAR hand is OPEN and EMPTY.
+- Row 1, cell 5 and row 2 = TWO DAGGERS: the FAR hand holds a CYAN stick (#00FFFF) as well. STAND (both sticks low) | READY (the far arm raised above the hood, cyan stick angled back) | SLASH 1 (the far arm chopped down in front, cyan stick pointing down toward the front foot) | SLASH 2 (deep lunge, the near arm swung out behind the body at chest height, its magenta stick pointing FORWARD across the waist) | FINISH (the near arm stretched back and up, magenta stick pointing back) | GET HIT (recoiling back, both sticks low).
+
+Character: exactly the archer of the third attached image (same face, same forest-green cloak with the hood up, same brown leather vest, white shirt, bracers, fingerless gloves, trousers, laced boots, belt and pouch, same colours, same size, same pixel-art style). FACING RIGHT in every cell.
+
+Quiver marker: in every cell, the same flat pure BLUE (#0000FF) bar on the back as in the third image, exactly where the blue bar is in the draft. Flat colour, no shading, no outline, partly hidden behind the body and cloak. Do not draw the quiver.
+
+Hard rules:
+- No daggers, knives or other weapons: only the flat sticks, 2-3% of the figure height thick, flat single colours with no shading or outline, sticking out of both sides of the fist where the handle would be, fingers wrapped over them. No other magenta, cyan or pure blue anywhere.
+- The face is the only bare skin, in shades of pure yellow as in the third image. No hair visible; no pure red anywhere.
+- No text, labels, slash effects, motion lines, shadows on the ground or background objects.
+- Output one PNG at the canvas's exact size.
+```
+If a few cells come out wrong, fix only those in Gemini: attach the sheet and the pose draft and say "Fix cell
+<row>,<column> of the first image so its pose and sticks match the same cell of the second image. Keep everything else."
