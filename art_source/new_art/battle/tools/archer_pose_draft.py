@@ -57,7 +57,10 @@ def draw(d, P, ox, oy):
     limb(d, q['Sf'], q['Ef'], 22, FAR); limb(d, q['Ef'], q['Wf'], 18, FAR)
     for who, col, a, b in P['rods']:
         if who == 'far': rod(a, b, col)
-    fist(d, q['Wf'], FAR)
+    if P.get('open_far'):
+        w = q['Wf']; d.polygon([(w[0] - 6, w[1] - 8), (w[0] + 16, w[1] - 14), (w[0] + 18, w[1] + 2), (w[0] - 6, w[1] + 8)], fill=FAR, outline=OUT)
+    else:
+        fist(d, q['Wf'], FAR)
     d.polygon([(q['Sn'][0] - 8, q['Sn'][1] - 4), (q['Sf'][0] + 8, q['Sf'][1] - 4), (q['Sf'][0] + 6, q['Sf'][1] + 44),
                (q['Hf'][0] + 6, q['Hf'][1] + 6), (q['Hn'][0] - 6, q['Hn'][1] + 6), (q['Sn'][0] - 12, q['Sn'][1] + 44)],
               fill=BODY, outline=OUT, width=3)
@@ -79,7 +82,49 @@ def draw(d, P, ox, oy):
     if any(who == 'both' for who, *_ in P['rods']): fist(d, q['Wf'], FAR)
 
 
+LOW = dict(Hn=(172, 290), Hf=(210, 288), Kn=(140, 372), Fn=(118, 466), Kf=(244, 372), Ff=(266, 466))
+LUNGE = dict(Hn=(170, 296), Hf=(204, 292), Kn=(120, 384), Fn=(80, 466), Kf=(270, 372), Ff=(276, 466))
+UPL = dict(head=(196, 122), Sn=(164, 172), Sf=(212, 168))
+UPD = dict(head=(198, 126), Sn=(164, 178), Sf=(208, 174))
+RECOIL = dict(head=(176, 122), Sn=(150, 170), Sf=(194, 164), Hn=(172, 282), Hf=(204, 280), Kn=(150, 376), Fn=(136, 466),
+              Kf=(230, 380), Ff=(252, 466))
+NEAR_LOW = dict(En=(146, 236), Wn=(132, 290))
+FAR_LOW = dict(Ef=(238, 236), Wf=(256, 288))
+# dual daggers (2 x 3 cells of 512): the finished Soldier dual poses - magenta = NEAR hand, cyan = FAR hand
+DUAL = {
+    (0, 0): dict(UPL, **LOW, **NEAR_LOW, Ef=(236, 232), Wf=(254, 286), quiver=True,
+                 rods=[('near', MAG, (150, 270), (96, 350)), ('far', CYAN, (240, 268), (300, 350))]),
+    (0, 1): dict(UPL, **LOW, **NEAR_LOW, Ef=(238, 118), Wf=(230, 62), quiver=True,
+                 rods=[('near', MAG, (150, 270), (96, 350)), ('far', CYAN, (246, 68), (160, 30))]),
+    (0, 2): dict(head=(200, 124), Sn=(166, 172), Sf=(212, 168), **LOW, **NEAR_LOW, Ef=(244, 226), Wf=(262, 282), quiver=True,
+                 rods=[('near', MAG, (150, 270), (96, 350)), ('far', CYAN, (250, 262), (318, 360))]),
+    (1, 0): dict(UPD, **LUNGE, En=(120, 186), Wn=(80, 196), **FAR_LOW, quiver=True,
+                 rods=[('near', MAG, (64, 192), (176, 232)), ('far', CYAN, (262, 300), (316, 368))]),
+    (1, 1): dict(UPD, **LUNGE, En=(122, 160), Wn=(80, 140), **FAR_LOW, quiver=True,
+                 rods=[('near', MAG, (96, 146), (10, 118)), ('far', CYAN, (262, 300), (316, 368))]),
+    (1, 2): dict(RECOIL, En=(130, 226), Wn=(124, 280), Ef=(222, 228), Wf=(246, 270), quiver=True,
+                 rods=[('near', MAG, (132, 264), (90, 340)), ('far', CYAN, (240, 256), (292, 340))]),
+}
+# one dagger (2 x 2 cells of 768 x 512): dagger in the NEAR hand (magenta), the FAR hand open and empty
+ONE = {
+    (0, 0): dict(UP, Hn=(174, 280), Hf=(208, 276), Kn=(150, 372), Fn=(132, 466), Kf=(236, 370), Ff=(254, 466),
+                 En=(156, 232), Wn=(184, 262), Ef=(246, 200), Wf=(276, 190), open_far=True, quiver=True,
+                 rods=[('near', MAG, (172, 262), (246, 254))]),
+    (0, 1): dict(head=(192, 126), Sn=(160, 176), Sf=(206, 172), Hn=(170, 290), Hf=(204, 288), Kn=(136, 378), Fn=(110, 466),
+                 Kf=(250, 376), Ff=(262, 466), En=(132, 214), Wn=(118, 250), Ef=(244, 214), Wf=(272, 206), open_far=True,
+                 quiver=True, rods=[('near', MAG, (104, 254), (176, 236))]),
+    (1, 0): dict(UPD, **LUNGE, En=(214, 214), Wn=(274, 212), Ef=(214, 232), Wf=(198, 268), open_far=True, quiver=True,
+                 rods=[('near', MAG, (258, 212), (340, 212))]),
+    (1, 1): dict(RECOIL, En=(132, 226), Wn=(140, 272), Ef=(222, 222), Wf=(250, 250), open_far=True, quiver=True,
+                 rods=[('near', MAG, (126, 266), (200, 290))]),
+}
+
+
 if __name__ == '__main__':
     im = Image.open(os.path.join(HERE, 'templates', 'archer_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
     for (r, c), P in POSES.items(): draw(d, P, c * 384, r * 512)
     out = os.path.join(HERE, 'refs', 'archer_pose_draft.png'); im.save(out); print(out)
+    for name, poses, cw, dx in (('dual', DUAL, 512, 64), ('1h', ONE, 768, 192)):
+        im = Image.open(os.path.join(HERE, 'templates', f'archer_{name}_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
+        for (r, c), P in poses.items(): draw(d, P, c * cw + dx, r * 512)
+        out = os.path.join(HERE, 'refs', f'archer_{name}_pose_draft.png'); im.save(out); print(out)

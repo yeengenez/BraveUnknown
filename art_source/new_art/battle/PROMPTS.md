@@ -534,3 +534,60 @@ No weapons, no bow, no quiver, no new effects, no shadows, no text. Output the w
 waist and hips, slightly fuller chest, a soft face with larger eyes and a small chin".
 If a cell changes pose or a stick swaps hands: attach Gemini's result together with the Soldier sheet and say "Fix cell
 <N> of the first image so its pose and sticks match cell <N> of the second image exactly. Keep everything else."
+
+### Archer dual daggers + one dagger - two ChatGPT sheets from pose drafts (2026-11-25)
+User chose **two separate sheets** for the Archer: the dual sheet (stand, ready, slash 1, slash 2, finish, hit) and its
+own one-handed sheet (one dagger, off-hand empty: stand, ready, attack, hit). (Supersedes the Gemini-edit idea above.)
+Drafts by `tools/archer_pose_draft.py`: `refs/archer_dual_pose_draft.png`, `refs/archer_1h_pose_draft.png`.
+Male first (ChatGPT); the female is a Gemini edit of each finished male sheet. Attach, in order: (1) the template
+(`templates/archer_dual_template.png` or `templates/archer_1h_template.png`), (2) the matching pose draft,
+(3) `source/concepts/archer_design.png`. The slash arc/smear is added afterwards (code wave, or a Gemini smear like the Soldier's).
+
+Dual sheet:
+```
+Use the first attached image as the canvas: a grid of 2 rows x 3 cells on flat pure green (#00FF00), each cell with a dark ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the hood at the dashed line when standing upright, all 6 figures at the same scale and the same character.
+
+POSES: the second attached image is the pose draft: grey mannequins on the same grid. Copy each mannequin's pose into the same cell: the same stance, legs, body angle, arm positions and the same coloured stick in the same hand at the same angle. Do not invent new poses and do not mirror any figure.
+
+The two arms (check every cell before you finish):
+- The NEAR arm (darker grey in the draft): its shoulder is on the LEFT side of the picture and it is drawn IN FRONT of the body. The near hand ALWAYS holds the MAGENTA stick (#FF00FF).
+- The FAR arm (lighter grey in the draft): its shoulder is on the RIGHT side of the picture, partly hidden BEHIND the body. The far hand ALWAYS holds the CYAN stick (#00FFFF).
+- The sticks never change hands.
+
+Cells, top row left to right: STAND (low guard, both sticks low) | READY (the FAR arm raised high above the hood, its cyan stick angled back) | SLASH 1 (the FAR arm has chopped down in front, cyan stick pointing down toward the front foot). Bottom row left to right: SLASH 2 (deep lunge, the NEAR arm swung out behind the body at chest height, its magenta stick pointing FORWARD across the waist) | FINISH (the NEAR arm stretched back and up at shoulder height, magenta stick pointing back) | GET HIT (recoiling back, wincing, both sticks held low).
+
+Character: MALE ARCHER exactly as on the left of the third attached image (design sheet): forest-green hooded cloak with a thin gold trim, HOOD UP over the head with the face open, brown leather vest laced at the front over a white shirt, brass buckles, leather bracers, fingerless brown gloves, brown trousers, laced knee-high boots, a belt with a pouch. Lean and athletic. Style: Fire Emblem-style anime pixel art matching the design sheet, clean dark outlines, cel shading, light from the upper left, about 6 heads tall, 3/4 view FACING RIGHT in every cell.
+
+Quiver marker: do NOT draw the quiver. In every cell, draw one flat pure BLUE (#0000FF) bar on the back exactly where the blue bar is in the draft. Flat colour, no shading, no outline, partly hidden behind the body and cloak.
+
+Hard rules:
+- No daggers, knives or other weapons: only the flat sticks, 2-3% of the figure height thick, flat single colours with no shading or outline, sticking out of both sides of the fist where the handle would be, fingers wrapped over them. No other magenta, cyan or pure blue anywhere.
+- The face is the only bare skin: paint it in shades of pure yellow (red = green, blue near zero), shaded like normal skin. Small anime face: dark eye lines, a tiny bit of white, short mouth line. Nothing else may be yellow or gold except the thin cloak trim and the buckles.
+- No hair visible: the hood covers it. No pure red anywhere.
+- No text, labels, slash effects, motion lines, shadows on the ground or background objects.
+- Output one PNG at the canvas's exact size.
+```
+
+One-handed sheet:
+```
+Use the first attached image as the canvas: a grid of 2 rows x 2 cells on flat pure green (#00FF00), each cell with a dark ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are. Draw ONE full-body character per cell, feet on that cell's ground line, top of the hood at the dashed line when standing upright, all 4 figures at the same scale and the same character.
+
+POSES: the second attached image is the pose draft: grey mannequins on the same grid. Copy each mannequin's pose into the same cell: the same stance, legs, body angle, arm positions and the magenta stick in the same hand at the same angle. Do not invent new poses and do not mirror any figure.
+
+The two arms (check every cell before you finish):
+- The NEAR arm (darker grey in the draft): its shoulder is on the LEFT side of the picture and it is drawn IN FRONT of the body. The near hand holds the only stick, MAGENTA (#FF00FF) - the dagger.
+- The FAR arm (lighter grey in the draft): its shoulder is on the RIGHT side of the picture, partly hidden BEHIND the body. The far hand is OPEN and EMPTY in every cell.
+
+Cells, top row left to right: STAND (guard: the near fist at the hip with the magenta stick pointing forward, the far hand open in front of the chest) | READY (crouched, weight back, the near arm drawn back, stick pointing forward). Bottom row left to right: ATTACK (deep lunge, the near arm thrust straight forward at shoulder height, stick level and pointing forward; the far arm pulled back) | GET HIT (recoiling back, wincing, the near fist low with the stick, the far hand open).
+
+Character: MALE ARCHER exactly as on the left of the third attached image (design sheet): forest-green hooded cloak with a thin gold trim, HOOD UP over the head with the face open, brown leather vest laced at the front over a white shirt, brass buckles, leather bracers, fingerless brown gloves, brown trousers, laced knee-high boots, a belt with a pouch. Lean and athletic. Style: Fire Emblem-style anime pixel art matching the design sheet, clean dark outlines, cel shading, light from the upper left, about 6 heads tall, 3/4 view FACING RIGHT in every cell.
+
+Quiver marker: do NOT draw the quiver. In every cell, draw one flat pure BLUE (#0000FF) bar on the back exactly where the blue bar is in the draft. Flat colour, no shading, no outline, partly hidden behind the body and cloak.
+
+Hard rules:
+- No dagger, knife or other weapon: only the flat magenta stick, 2-3% of the figure height thick, flat single colour with no shading or outline, sticking out of both sides of the fist where the handle would be, fingers wrapped over it. No cyan anywhere; no other magenta or pure blue.
+- The face is the only bare skin: paint it in shades of pure yellow (red = green, blue near zero), shaded like normal skin. Small anime face: dark eye lines, a tiny bit of white, short mouth line. Nothing else may be yellow or gold except the thin cloak trim and the buckles.
+- No hair visible: the hood covers it. No pure red anywhere.
+- No text, labels, effects, motion lines, shadows on the ground or background objects.
+- Output one PNG at the canvas's exact size.
+```
