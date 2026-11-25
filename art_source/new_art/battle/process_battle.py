@@ -49,7 +49,10 @@ LOADOUTS = {
                 ('longspear', 'reach', {s: [('back', 'longspear', 'over')] for s in ('stand', 'attack', 'hit')})],
 }
 # classes whose battle sprites wear headgear drawn into the body (user, 2026-11-20): no hair layer on the sprite
-HEADGEAR = {'soldier'}
+HEADGEAR = {'soldier', 'archer'}   # archer: hood up (user's headgear choice c)
+# classes whose red-key hair shows for EVERY hairstyle (user, 2026-11-25: the Archer's hood hides long hair, so the hair
+# inside the hood stands for long and short hair alike); other classes show it only for long hairstyles
+HAIR_ALWAYS = {'archer'}
 # plate armour drawn with a rosy tint by ChatGPT/Gemini -> neutral cool steel (user, 2026-11-21: "make them all metallic")
 METAL_ARMOUR = {'soldier'}
 
@@ -486,7 +489,7 @@ def render(cls, data):
                 shielded = any(w == 'shield' for _, w, _ in its)
                 fixed, skin, g, head, hairp = data.get((sex, stance, f'{state}_shield') if shielded else None) or data[(sex, stance, state)]
                 b = tint(fixed, skin, sramp)
-                if hairp is not None and hair in HAIR_LEN[sex]['long']:     # long hair shows under the helmet
+                if hairp is not None and (cls in HAIR_ALWAYS or hair in HAIR_LEN[sex]['long']):     # long hair shows under the helmet
                     hm = hairp[..., 1] > 0
                     b = b.copy(); b[hm, :3] = finish.ramp_rgb(finish.PAL['hair'][hramp], hairp[..., 0][hm].astype(float)).astype(np.uint8); b[hm, 3] = 255
                 fx_, fy = feet(b)
@@ -512,7 +515,7 @@ def render(cls, data):
             if (sex, 'downed', 'downed') in data and ref is not None:
                 fixed, skin, g, head, hairp = data[(sex, 'downed', 'downed')]
                 b = tint(fixed, skin, sramp)
-                if hairp is not None and hair in HAIR_LEN[sex]['long']:
+                if hairp is not None and (cls in HAIR_ALWAYS or hair in HAIR_LEN[sex]['long']):
                     hm = hairp[..., 1] > 0
                     b = b.copy(); b[hm, :3] = finish.ramp_rgb(finish.PAL['hair'][hramp], hairp[..., 0][hm].astype(float)).astype(np.uint8); b[hm, 3] = 255
                 fx_, fy = feet(b)
