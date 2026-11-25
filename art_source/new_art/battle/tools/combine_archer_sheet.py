@@ -1,7 +1,7 @@
 """All male Archer poses on ONE sheet (user, 2026-11-25: "Combine archer sheet into one but only Male Archer").
 Figures are lifted from the three finished sheets, scaled to one size (the bow sheet's) and stood on the ground line of
 fresh 512-tall cells; slash arcs are not included (they are a separate layer).
-Rows: bow (4) | crossbow (4) | one dagger (4) | dual stand, ready, slash 1 + downed | dual slash 2, finish, hit (wide cells).
+Rows: bow (4) | crossbow (4) | one dagger (4) | dual stand, ready + downed | dual slash 1, slash 2 (wide, taller row,\nwith the slash arc + smear drawn on, as approved on review_archer_dagger_fx.png) | dual finish, hit.
 Output: source/archer_m_all_sheet.png (1536 x 2560) + archer_m_all_layout.json (cell -> stance/state)."""
 import os, sys, json, numpy as np
 from PIL import Image, ImageDraw
@@ -40,15 +40,18 @@ s_down = ref / body_height(down, (0, 512, 512, 1024))        # the downed sheet'
 ROWS = [[(bow, bcell[('bow', s)], 1.0, 'bow', s) for s in ('stand', 'nock', 'attack', 'hit')],
         [(bow, bcell[('crossbow', s)], 1.0, 'crossbow', s) for s in ('stand', 'aim', 'attack', 'hit')],
         [(dag, dcell[('1h', s)], s_dag, '1h', s) for s in ('stand', 'ready', 'attack', 'hit')],
-        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('stand', 'ready', 'slash_left')]
-        + [(down, (0, 0, 512, 512), s_down, 'downed', 'downed')],
-        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('slash_right', 'finish', 'hit')]]
-out = Image.new('RGB', (1536, 512 * len(ROWS)), GREEN); d = ImageDraw.Draw(out); layout = []
+        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('stand', 'ready')] + [(down, (0, 0, 512, 512), s_down, 'downed', 'downed')],
+        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('slash_left', 'slash_right')],
+        [(dag, dcell[('dual', s)], s_dag, 'dual', s) for s in ('finish', 'hit')]]
+ROW_H = [512, 512, 512, 512, 600, 512]          # the slash row is taller: the chop arc rises above the hood
+FX = json.load(open(os.path.join(HERE, 'source', 'archer_dagger_m_fx', 'offsets.json')))['offsets']
+out = Image.new('RGB', (1536, sum(ROW_H)), GREEN); d = ImageDraw.Draw(out); layout = []; fx_jobs = []
 for r, row in enumerate(ROWS):
     cw = 1536 / len(row)
     for c, (img, box, s, stance, state) in enumerate(row):
-        x0, y0 = round(c * cw), r * 512
-        d.rectangle([x0, y0, round((c + 1) * cw) - 1, y0 + 511], outline=BORDER, width=3)
+        x0, rh = round(c * cw), ROW_H[r]; y0 = sum(ROW_H[:r]) + rh - 512      # cell content keeps the 512-cell lines
+        top = sum(ROW_H[:r])
+        d.rectangle([x0, top, round((c + 1) * cw) - 1, top + rh - 1], outline=BORDER, width=3)
         d.line([(x0 + 14, y0 + G_Y), (round((c + 1) * cw) - 14, y0 + G_Y)], fill=LINE, width=3)
         for x in range(x0 + 14, round((c + 1) * cw) - 14, 16): d.line([(x, y0 + T_Y), (x + 8, y0 + T_Y)], fill=DASH, width=1)
         cell, fig, feet, fx = lift(img, box)
@@ -59,7 +62,16 @@ for r, row in enumerate(ROWS):
         if L < x0 + 6: ox += round(x0 + 6 - L)
         elif R > x0 + cw - 6: ox -= round(R - (x0 + cw - 6))
         out.paste(fi.convert('RGB'), (ox, oy), fi.getchannel('A').point(lambda v: 255 if v > 128 else 0))
-        layout.append(dict(row=r, col=c, box=[x0, y0, round((c + 1) * cw), y0 + 512], stance=stance, state=state))
+        layout.append(dict(row=r, col=c, box=[x0, top, round((c + 1) * cw), top + rh], stance=stance, state=state))
+        if stance == 'dual' and state in FX:       # the slash arc + smear, as on review_archer_dagger_fx.png
+            fx_jobs.append((state, ox + FX[state][0] * s, oy + FX[state][1] * s, s, (x0, top, round((c + 1) * cw), top + rh)))
+for state, fx0, fy0, s, (bx0, by0, bx1, by1) in fx_jobs:
+    lay = Image.open(os.path.join(HERE, 'source', 'archer_dagger_m_fx', f'{state}.png')).convert('RGBA')
+    lay = lay.resize((round(lay.width * s), round(lay.height * s)), Image.LANCZOS)
+    full = Image.new('RGBA', out.size, (0, 0, 0, 0)); full.alpha_composite(lay, (max(0, round(fx0)), max(0, round(fy0)))) if fx0 >= 0 and fy0 >= 0 else full.paste(lay, (round(fx0), round(fy0)), lay)
+    m = Image.new('L', out.size, 0); ImageDraw.Draw(m).rectangle([bx0 + 3, by0 + 3, bx1 - 4, by1 - 4], fill=255)
+    a = Image.fromarray((np.asarray(full.getchannel('A')).astype(np.uint16) * (np.asarray(m) > 0)).astype(np.uint8))
+    full.putalpha(a); o2 = out.convert('RGBA'); o2.alpha_composite(full); out = o2.convert('RGB')
 out.save(os.path.join(HERE, 'source', 'archer_m_all_sheet.png'))
 json.dump(layout, open(os.path.join(HERE, 'source', 'archer_m_all_layout.json'), 'w'), indent=1)
 print('scales: dagger', round(s_dag, 3), 'downed', round(s_down, 3))
