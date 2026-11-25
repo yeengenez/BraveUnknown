@@ -12,6 +12,10 @@ sys.path.insert(0, HERE)
 import make_refs as M
 
 
+# hand-placed corrections after the feet alignment, in target-cell px (the smear must start at the swinging hand)
+NUDGE = {('archer', 'm', 'slash_left'): (-28, -8)}   # user, 2026-11-25: "on pose 7, move slash to match the hands"
+
+
 def figure(cell):
     a = cell.astype(int); r, g, b = a[..., 0], a[..., 1], a[..., 2]
     fig = ~((g - r > 60) & (g - b > 60)) & ~((r < 80) & (g > 120) & (b < 120))
@@ -49,6 +53,7 @@ def main(cls, sex):
         rgb = pm / np.maximum(am, 1e-6)[..., None]
         lay = Image.fromarray(np.dstack([np.clip(rgb, 0, 255), np.clip(am * 255, 0, 255)]).astype(np.uint8), 'RGBA')
         ox, oy = round(tfx_ - sfx_ * s), round(tfeet - sfeet * s)          # cell-local offset of the effect's top-left
+        nx, ny = NUDGE.get((cls, sex, state), (0, 0)); ox += nx; oy += ny
         lay.save(os.path.join(outd, f'{state}.png')); offs[state] = [ox, oy]
         b = tbox[('dual', state)]; prev.alpha_composite(lay, (b[0] + ox, b[1] + oy)) if b[0] + ox >= 0 else None
         if b[0] + ox < 0:
