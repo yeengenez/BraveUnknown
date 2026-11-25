@@ -729,3 +729,29 @@ Hard rules:
 ```
 If a few cells come out wrong, fix only those in Gemini: attach the sheet and the pose sheet and say "Fix the cell in
 row <r>, position <c> of the first image so its pose and sticks match the same cell of the second image. Keep everything else."
+
+### Archer DOWNED sprite, both sexes (2026-11-25, user: "now work on downed sprite")
+Same as the Soldier's: one downed pose per sex for every Archer loadout, no weapon. Attach (1) `templates/archer_downed_template.png`
+(`tools/make_archer_downed_template.py`: bottom row = male bow stand from the finished sheet with its stick painted out,
+female from the design sheet), (2) `source/soldier_downed_sheet.png` (the Soldier's downed pose, so both classes match).
+Save as `source/archer_downed_sheet.png` (`process_downed()` reads `<cls>_downed_sheet.png`).
+
+```
+Use the first attached image as the canvas: a grid of 2 rows x 3 cells on flat pure green (#00FF00), each cell with a dark ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are, and keep the whole bottom row exactly as it is.
+
+The bottom row shows the same hooded archer, MALE in the bottom-left cell and FEMALE in the bottom-middle cell, standing. Draw each of them DOWNED in the empty cell directly above them:
+- top-left cell: the male archer from the bottom-left cell;
+- top-middle cell: the female archer from the bottom-middle cell;
+- top-right cell: leave empty green.
+
+DOWNED pose: exactly the pose of the kneeling soldiers in the second attached image (copy only the pose, not their armour): collapsed on both knees on the ground line, sitting back on the heels, torso slumped forward, head hanging down so the face is half hidden, both arms hanging limp with the open, empty hands resting on the ground beside the knees. 3/4 view, the body turned toward the right. The hood stays UP.
+
+Same character, same scale: the hood, body and limbs are exactly as big as in the standing figure below (the figure is shorter only because it kneels). Copy the outfit and colours from the figure below: forest-green hooded cloak with a thin gold trim, brown leather vest laced over a white shirt, brass buckles, bracers, fingerless gloves, brown trousers, laced boots, belt and pouch, same pixel-art style. The male lean and athletic, the female clearly feminine, as below.
+
+Colour keys - the SAME for both, like the male figure below (the female reference shows a real face and a quiver: do not copy those two things):
+- the face is the only bare skin and is painted in shades of pure yellow;
+- do NOT draw the quiver; instead one flat pure BLUE (#0000FF) bar on the back where the quiver is worn, like the male figure below (top end sticking up behind the shoulder, slanting down behind the back, partly hidden by the body and cloak), flat colour, no shading, no outline;
+- no hair visible, no red anywhere.
+
+No weapons, no sticks or rods, nothing in the hands. No text, labels, shadows on the ground, effects or background objects. Output one PNG at the canvas's exact size.
+```
