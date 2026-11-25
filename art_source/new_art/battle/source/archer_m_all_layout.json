@@ -1,0 +1,230 @@
+[
+ {
+  "row": 0,
+  "col": 0,
+  "box": [
+   0,
+   0,
+   384,
+   512
+  ],
+  "stance": "bow",
+  "state": "stand"
+ },
+ {
+  "row": 0,
+  "col": 1,
+  "box": [
+   384,
+   0,
+   768,
+   512
+  ],
+  "stance": "bow",
+  "state": "nock"
+ },
+ {
+  "row": 0,
+  "col": 2,
+  "box": [
+   768,
+   0,
+   1152,
+   512
+  ],
+  "stance": "bow",
+  "state": "attack"
+ },
+ {
+  "row": 0,
+  "col": 3,
+  "box": [
+   1152,
+   0,
+   1536,
+   512
+  ],
+  "stance": "bow",
+  "state": "hit"
+ },
+ {
+  "row": 1,
+  "col": 0,
+  "box": [
+   0,
+   512,
+   384,
+   1024
+  ],
+  "stance": "crossbow",
+  "state": "stand"
+ },
+ {
+  "row": 1,
+  "col": 1,
+  "box": [
+   384,
+   512,
+   768,
+   1024
+  ],
+  "stance": "crossbow",
+  "state": "aim"
+ },
+ {
+  "row": 1,
+  "col": 2,
+  "box": [
+   768,
+   512,
+   1152,
+   1024
+  ],
+  "stance": "crossbow",
+  "state": "attack"
+ },
+ {
+  "row": 1,
+  "col": 3,
+  "box": [
+   1152,
+   512,
+   1536,
+   1024
+  ],
+  "stance": "crossbow",
+  "state": "hit"
+ },
+ {
+  "row": 2,
+  "col": 0,
+  "box": [
+   0,
+   1024,
+   384,
+   1536
+  ],
+  "stance": "1h",
+  "state": "stand"
+ },
+ {
+  "row": 2,
+  "col": 1,
+  "box": [
+   384,
+   1024,
+   768,
+   1536
+  ],
+  "stance": "1h",
+  "state": "ready"
+ },
+ {
+  "row": 2,
+  "col": 2,
+  "box": [
+   768,
+   1024,
+   1152,
+   1536
+  ],
+  "stance": "1h",
+  "state": "attack"
+ },
+ {
+  "row": 2,
+  "col": 3,
+  "box": [
+   1152,
+   1024,
+   1536,
+   1536
+  ],
+  "stance": "1h",
+  "state": "hit"
+ },
+ {
+  "row": 3,
+  "col": 0,
+  "box": [
+   0,
+   1536,
+   384,
+   2048
+  ],
+  "stance": "dual",
+  "state": "stand"
+ },
+ {
+  "row": 3,
+  "col": 1,
+  "box": [
+   384,
+   1536,
+   768,
+   2048
+  ],
+  "stance": "dual",
+  "state": "ready"
+ },
+ {
+  "row": 3,
+  "col": 2,
+  "box": [
+   768,
+   1536,
+   1152,
+   2048
+  ],
+  "stance": "dual",
+  "state": "slash_left"
+ },
+ {
+  "row": 3,
+  "col": 3,
+  "box": [
+   1152,
+   1536,
+   1536,
+   2048
+  ],
+  "stance": "downed",
+  "state": "downed"
+ },
+ {
+  "row": 4,
+  "col": 0,
+  "box": [
+   0,
+   2048,
+   512,
+   2560
+  ],
+  "stance": "dual",
+  "state": "slash_right"
+ },
+ {
+  "row": 4,
+  "col": 1,
+  "box": [
+   512,
+   2048,
+   1024,
+   2560
+  ],
+  "stance": "dual",
+  "state": "finish"
+ },
+ {
+  "row": 4,
+  "col": 2,
+  "box": [
+   1024,
+   2048,
+   1536,
+   2560
+  ],
+  "stance": "dual",
+  "state": "hit"
+ }
+]
