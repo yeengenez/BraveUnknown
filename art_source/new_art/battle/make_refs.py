@@ -42,10 +42,10 @@ CLASS_STATES = {'soldier': {'1h': ['stand', 'ready', 'attack', 'hit'], 'dual': [
 # extra sheets per class: name -> rows of (stance, [cell states]). Soldier dual = user's dual-slash concept (2026-11-21):
 # stand, ready (front/cyan arm winds up), slash_left (cyan slashes down), slash_right (magenta sweeps), finish, hit
 EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]},
-                # (user, 2026-11-25: one ChatGPT task) one dagger (off-hand empty) + dual daggers on ONE 5 x 2 sheet;
-                # a 'mixed' row lists (stance, state) per cell
-                'archer': {'dagger': [('mixed', [('1h', 'stand'), ('1h', 'ready'), ('1h', 'attack'), ('1h', 'hit'), ('dual', 'stand')]),
-                                      ('mixed', [('dual', 'ready'), ('dual', 'slash_left'), ('dual', 'slash_right'), ('dual', 'finish'), ('dual', 'hit')])]}}
+                # (user, 2026-11-25) one dagger: its own 2 x 2 sheet (off-hand empty). Dual daggers = the Soldier's finished
+                # dual poses, re-dressed as the Archer by Gemini with the quiver marker added (archer_dual_<sex>_sheet.png)
+                'archer': {'dagger': [('1h', ['stand', 'ready']), ('1h', ['attack', 'hit'])],
+                           'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}
 # older sheets drawn on an earlier layout: (class, sex) -> rows
 SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v5 male
               ('soldier', 'f'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # Gemini edit of v5 male

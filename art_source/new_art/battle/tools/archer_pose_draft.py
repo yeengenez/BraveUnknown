@@ -125,13 +125,7 @@ if __name__ == '__main__':
     im = Image.open(os.path.join(HERE, 'templates', 'archer_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
     for (r, c), P in POSES.items(): draw(d, P, c * 384, r * 512)
     im.save(os.path.join(HERE, 'refs', 'archer_pose_draft.png'))
-    # dagger sheet (user, 2026-11-25: one task): 5 x 2 cells of 307 x 512 - one dagger, then dual daggers
-    LAYOUT = {(0, 0): ONE[(0, 0)], (0, 1): ONE[(0, 1)], (0, 2): ONE[(1, 0)], (0, 3): ONE[(1, 1)], (0, 4): DUAL[(0, 0)],
-              (1, 0): DUAL[(0, 1)], (1, 1): DUAL[(0, 2)], (1, 2): DUAL[(1, 0)], (1, 3): DUAL[(1, 1)], (1, 4): DUAL[(1, 2)]}
-    im = Image.open(os.path.join(HERE, 'templates', 'archer_dagger_template.png')).convert('RGB')
-    cw = im.size[0] / 5
-    for (r, c), P in LAYOUT.items():
-        tmp = Image.new('RGBA', (384, 512), (0, 0, 0, 0)); draw(ImageDraw.Draw(tmp), P, 0, 0)
-        tmp = tmp.crop((40, 0, 40 + round(cw), 512))         # poses are centred at x~192 of 384; the cell is ~307 wide
-        im.paste(tmp.convert('RGB'), (round(c * cw), r * 512), tmp.getchannel('A').point(lambda v: 255 if v > 110 else 0))
+    # one-dagger sheet (2 x 2 cells of 768 x 512); dual daggers come from the Soldier dual sheet (Gemini edit)
+    im = Image.open(os.path.join(HERE, 'templates', 'archer_dagger_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
+    for (r, c), P in ONE.items(): draw(d, P, c * 768 + 192, r * 512)
     out = os.path.join(HERE, 'refs', 'archer_dagger_pose_draft.png'); im.save(out); print(out)

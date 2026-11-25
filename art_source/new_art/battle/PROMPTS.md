@@ -663,3 +663,37 @@ Hard rules:
 ```
 If a few cells come out wrong, fix only those in Gemini: attach the sheet and the pose draft and say "Fix cell
 <row>,<column> of the first image so its pose and sticks match the same cell of the second image. Keep everything else."
+
+### Archer daggers - FINAL plan (user, 2026-11-25: "the dual weapon use the same pose as soldier, but add quiver or bolt")
+Supersedes the 5 x 2 dagger sheet above.
+**Dual daggers** = the Soldier's finished dual sheet re-dressed as the Archer by Gemini, same poses, sticks, slash arcs and
+smears, plus the blue back marker (it stands for the quiver OR the bolt case - both use the same back slot; the game
+shows whichever ammunition is equipped). One Gemini message per sex: attach (1) `source/concepts/soldier_dual_<m|f>_sheet_gemini_smear.png`,
+(2) `source/archer_m_sheet.png` (the finished Archer). Save as `source/concepts/archer_dual_<m|f>_sheet_gemini_smear.png`.
+
+```
+Edit the first attached image, a sprite sheet of 2 rows x 3 cells on a flat green screen: an armoured soldier in six poses, two of them with a yellow slash arc and a grey motion smear. Turn the soldier into the <SEX> ARCHER of the second attached image and change nothing else.
+
+Change only the character:
+- the archer's outfit exactly as in the second image: forest-green hooded cloak with a thin gold trim, HOOD UP over the head with the face open, brown leather vest laced at the front over a white shirt, brass buckles, leather bracers, fingerless brown gloves, brown trousers, laced knee-high boots, a belt with a pouch;
+- no helmet, no plate armour, no scarf or tabard, no red ponytail - no hair visible and no red anywhere;
+- the archer's lighter, leaner build: <BUILD>;
+- add one flat pure BLUE (#0000FF) bar on the back in every cell, like the blue bar in the second image (it marks where the quiver is worn): top end sticking up behind the shoulder on the LEFT side of the picture, slanting down behind the back, partly hidden by the body and cloak; flat colour, no shading, no outline. Do not draw the quiver itself.
+
+Keep exactly as they are:
+- the canvas size, the 2 x 3 grid, the flat pure green background, the dark ground line and the dashed line in each cell;
+- the position, height and feet of every figure;
+- every pose: the same stance, legs, body angle and arm positions in each cell, nothing mirrored;
+- the flat magenta and cyan sticks in the hands: the same stick in the same hand, at the same angle and length, the same flat colours with no shading;
+- the yellow slash arcs and grey smears in the top-right and bottom-left cells: same shape, size, position and colours;
+- the face painted in shades of pure yellow; the pixel-art style, outlines and shading.
+
+No weapons, no bow, no quiver, no new effects, no shadows, no text. Output the whole sheet at the same size.
+```
+`<SEX>` / `<BUILD>`: male = "MALE" / "lean and athletic, like the second image"; female = "FEMALE" / "clearly feminine -
+narrower shoulders, curved waist and hips, slightly fuller chest, a soft face with larger eyes and a small chin".
+
+**One dagger** = its own 2 x 2 ChatGPT sheet (stand | ready / attack | hit, off-hand open and empty). Attach
+(1) `templates/archer_dagger_template.png`, (2) `refs/archer_dagger_pose_draft.png`, (3) `source/archer_m_sheet.png`;
+use the "One-handed sheet" prompt above, with "exactly the archer of the third attached image (same face, outfit,
+colours, size and style)" as the character line and the quiver marker "the same blue bar as in the third image".
