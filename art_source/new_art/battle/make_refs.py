@@ -44,8 +44,11 @@ CLASS_STATES = {'soldier': {'1h': ['stand', 'ready', 'attack', 'hit'], 'dual': [
 EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]},
                 # (user, 2026-11-25) one dagger: its own 2 x 2 sheet (off-hand empty). Dual daggers = the Soldier's finished
                 # dual poses, re-dressed as the Archer by Gemini with the quiver marker added (archer_dual_<sex>_sheet.png)
-                'archer': {'dagger': [('1h', ['stand', 'ready']), ('1h', ['attack', 'hit'])],
-                           'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}
+                # (user, 2026-11-25: "combine 1 handed you design and old dual weapon pose") ONE 5 x 2 dagger sheet:
+                # one dagger (draft poses) + dual daggers (the Soldier's dual poses); 'mixed' rows list (stance, state)
+                'archer': {'dagger': [('1h', ['stand', 'ready', 'attack', 'hit']),
+                                      ('dual', ['stand', 'ready', 'slash_left', 'slash_right']),
+                                      ('dual', ['finish', 'hit'])]}}
 # older sheets drawn on an earlier layout: (class, sex) -> rows
 SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v5 male
               ('soldier', 'f'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # Gemini edit of v5 male

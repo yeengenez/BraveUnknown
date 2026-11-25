@@ -697,3 +697,35 @@ narrower shoulders, curved waist and hips, slightly fuller chest, a soft face wi
 (1) `templates/archer_dagger_template.png`, (2) `refs/archer_dagger_pose_draft.png`, (3) `source/archer_m_sheet.png`;
 use the "One-handed sheet" prompt above, with "exactly the archer of the third attached image (same face, outfit,
 colours, size and style)" as the character line and the quiver marker "the same blue bar as in the third image".
+
+### Archer daggers - ONE sheet, one dagger + the Soldier's dual poses (2026-11-25, user: "combine 1 handed you design and old dual weapon pose")
+Supersedes the dagger plans above. 4 x 3 sheet (`EXTRA_SHEETS['archer']['dagger']`): row 1 = one dagger (stand | ready |
+attack | hit, mannequins); row 2 = dual stand | ready | slash 1 | slash 2; row 3 = dual finish | hit - rows 2-3 show the
+Soldier's finished dual figures, so the Archer copies the exact same poses (and the Soldier's drawn slash arc/smear layer
+can be reused). Attach, in order: (1) `templates/archer_dagger_template.png`, (2) `refs/archer_dagger_pose_draft.png`,
+(3) `source/archer_m_sheet.png`. Save as `source/archer_dagger_m_sheet.png`; the female = Gemini edit of it.
+
+```
+Use the first attached image as the canvas: a grid of 3 rows on flat pure green (#00FF00) - 4 cells in the top and middle rows, 2 wide cells in the bottom row - each cell with a dark ground line and a dashed head-top line. Keep the canvas size, the grid, the lines and the green exactly as they are. Draw ONE full-body character per cell (10 figures), feet on that cell's ground line, top of the hood at the dashed line when standing upright, all at the same scale and the same character.
+
+POSES: the second attached image is the pose sheet. Copy each figure's pose into the same cell: the same stance, legs, body angle, arm positions and the same coloured stick in the same hand at the same angle. The top row shows grey mannequins; the middle and bottom rows show an armoured soldier - copy ONLY its pose, never its armour, helmet, scarf, tabard or red hair. The grey patch on the soldier's waist in the middle row's last cell only marks the hidden torso. Do not invent new poses and do not mirror any figure.
+
+The two arms (check every cell before you finish):
+- The NEAR arm: its shoulder is on the LEFT side of the picture and it is drawn IN FRONT of the body (the darker grey arm on the mannequins; on the soldier, the arm whose big shoulder plate covers the chest). The near hand always holds the MAGENTA stick (#FF00FF).
+- The FAR arm: its shoulder is on the RIGHT side of the picture, partly hidden BEHIND the body. In the middle and bottom rows it holds the CYAN stick (#00FFFF); in the top row it is OPEN and EMPTY.
+- A stick never moves to the other hand. Where the pose sheet shows a hand WITHOUT a stick (the far hand in the middle row's 3rd cell, the near hand in its 4th cell - the weapon is lost in the swing), draw that hand empty too.
+
+Cells: top row = ONE DAGGER: STAND | READY | ATTACK | GET HIT. Middle row = TWO DAGGERS: STAND | READY | SLASH 1 | SLASH 2. Bottom row = TWO DAGGERS: FINISH | GET HIT.
+
+Character: exactly the archer of the third attached image (same face, same forest-green cloak with the hood up, same brown leather vest, white shirt, bracers, fingerless gloves, trousers, laced boots, belt and pouch, same colours, same size, same pixel-art style), FACING RIGHT in every cell.
+
+Quiver marker: in every cell, the same flat pure BLUE (#0000FF) bar on the back as in the third image: top end sticking up behind the near shoulder, slanting down behind the back, partly hidden by the body and cloak. Flat colour, no shading, no outline. Do not draw the quiver.
+
+Hard rules:
+- No daggers, knives or other weapons: only the flat sticks, 2-3% of the figure height thick, flat single colours with no shading or outline, sticking out of both sides of the fist where the handle would be, fingers wrapped over them. No other magenta, cyan or pure blue anywhere.
+- The face is the only bare skin, in shades of pure yellow as in the third image. No hair visible; no red anywhere.
+- No text, labels, slash arcs, effects, motion lines, shadows on the ground or background objects.
+- Output one PNG at the canvas's exact size.
+```
+If a few cells come out wrong, fix only those in Gemini: attach the sheet and the pose sheet and say "Fix the cell in
+row <r>, position <c> of the first image so its pose and sticks match the same cell of the second image. Keep everything else."

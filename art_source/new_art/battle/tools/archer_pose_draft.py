@@ -125,7 +125,52 @@ if __name__ == '__main__':
     im = Image.open(os.path.join(HERE, 'templates', 'archer_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
     for (r, c), P in POSES.items(): draw(d, P, c * 384, r * 512)
     im.save(os.path.join(HERE, 'refs', 'archer_pose_draft.png'))
-    # one-dagger sheet (2 x 2 cells of 768 x 512); dual daggers come from the Soldier dual sheet (Gemini edit)
-    im = Image.open(os.path.join(HERE, 'templates', 'archer_dagger_template.png')).convert('RGB'); d = ImageDraw.Draw(im)
-    for (r, c), P in ONE.items(): draw(d, P, c * 768 + 192, r * 512)
+    # dagger sheet (user, 2026-11-25): rows of 341 px - one dagger (draft mannequins) | dual stand, ready, slash 1, slash 2 |
+    # dual finish, hit. The dual cells show the Soldier's finished dual figures (same poses as the Soldier, so its drawn
+    # slash arcs fit the Archer too), arcs faint, with a blue quiver bar.
+    import numpy as np
+    from scipy import ndimage as ndi
+    im = Image.open(os.path.join(HERE, 'templates', 'archer_dagger_template.png')).convert('RGB')
+    RH = 1024 / 3; G = 0.92 * RH; K = RH / 512                         # ground line in the cell; mannequin scale
+    for c, P in enumerate([ONE[(0, 0)], ONE[(0, 1)], ONE[(1, 0)], ONE[(1, 1)]]):
+        tmp = Image.new('RGBA', (384, 512), (0, 0, 0, 0)); draw(ImageDraw.Draw(tmp), P, 0, 0)
+        tmp = tmp.resize((round(384 * K), round(512 * K)), Image.LANCZOS)
+        im.paste(tmp.convert('RGB'), (round(c * 384 + (384 - tmp.width) / 2), 0), tmp.getchannel('A').point(lambda v: 255 if v > 110 else 0))
+    sol = np.asarray(Image.open(os.path.join(HERE, 'source', 'soldier_dual_m_sheet.png')).convert('RGB').resize((1536, 1024), Image.LANCZOS)).astype(int)
+    fx = np.asarray(Image.open(os.path.join(HERE, 'source', 'soldier_dual_m_fx.png')).convert('RGBA').resize((1536, 1024), Image.LANCZOS)).astype(float)
+    def figure(k):
+        sr, sc = divmod(k, 3)
+        cell = sol[sr * 512 + 4:sr * 512 + 508, sc * 512 + 4:sc * 512 + 508]; f = fx[sr * 512 + 4:sr * 512 + 508, sc * 512 + 4:sc * 512 + 508]
+        r_, g_, b_ = cell[..., 0], cell[..., 1], cell[..., 2]
+        fig = ~((g_ - r_ > 60) & (g_ - b_ > 60))
+        dark = cell.sum(-1) < 200
+        for y in range(fig.shape[0]):                                   # drop the ground line rows
+            if dark[y].mean() > 0.3: fig[y] = False
+        fig &= ~((r_ < 80) & (g_ > 120) & (b_ < 120))                    # dashed guide (mid green)
+        lab, n = ndi.label(fig, np.ones((3, 3))); sz = ndi.sum(fig, lab, range(1, n + 1))
+        fig = np.isin(lab, [i + 1 for i, z in enumerate(sz) if z > 300])
+        rgb = cell.astype(float).copy()
+        if k == 3:                                                      # torso hidden under the waist sweep: grey mannequin
+            from PIL import ImageDraw as _D
+            pm = Image.new('L', (504, 504), 0)
+            _D.Draw(pm).polygon([(x - 4, y - 4) for x, y in [(225, 248), (320, 243), (345, 268), (352, 300), (340, 312), (190, 312), (192, 285)]], fill=1)
+            hid = np.asarray(pm) > 0
+            rgb[hid] = (150, 150, 165); edge = hid & ~ndi.binary_erosion(hid, iterations=2); rgb[edge] = (45, 45, 55)
+            fig = fig | hid
+        return rgb, fig, fig
+    _, _, f0 = figure(0); ys = np.where(f0.any(1))[0]; S = (0.78 * RH) / (ys.max() - ys.min())
+    cells_ = [(1, c) for c in range(4)] + [(2, 0), (2, 1)]
+    for k, (tr, tc) in enumerate(cells_):
+        rgb, show, fig = figure(k)
+        cw = 1536 / (4 if tr == 1 else 2)
+        ys, xs = np.where(fig); feet = ys.max(); x0, x1 = xs.min(), xs.max()
+        ox = round(tc * cw + cw / 2 - (x0 + x1) / 2 * S); oy = round(tr * RH + G - feet * S)
+        top = ys.min(); tx = np.where(fig[top:top + 4].any(0))[0].mean()
+        hx = np.where(fig[top:top + 50].any(0))[0]; hx = hx[np.abs(hx - tx) < 34]   # the helmet, not a raised arm
+        dd = ImageDraw.Draw(im)                                       # quiver bar behind the near shoulder, under the figure
+        bx, by = ox + (hx.min() - 16) * S, oy + (top + 30) * S
+        dd.line([(bx, by), (bx + 54 * S, by + 130 * S)], fill=(0, 0, 255), width=max(6, round(15 * S)))
+        fi = Image.fromarray(np.dstack([np.clip(rgb, 0, 255).astype(np.uint8), (show * 255).astype(np.uint8)]), 'RGBA')
+        fi = fi.resize((round(fi.width * S), round(fi.height * S)), Image.LANCZOS)
+        im.paste(fi.convert('RGB'), (ox, oy), fi.getchannel('A').point(lambda v: 255 if v > 110 else 0))
     out = os.path.join(HERE, 'refs', 'archer_dagger_pose_draft.png'); im.save(out); print(out)
