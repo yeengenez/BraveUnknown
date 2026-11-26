@@ -70,6 +70,12 @@ def draw(d, P, ox, oy):
     d.polygon([(h[0] + 4, h[1] - 14), (h[0] + 24, h[1] - 10), (h[0] + 28, h[1] + 8), (h[0] + 18, h[1] + 24), (h[0] + 6, h[1] + 20)],
               fill=FACE, outline=OUT)                         # face: small, at the front of the hood
     d.line([(h[0] + 14, h[1] - 2), (h[0] + 22, h[1] - 2)], fill=OUT, width=2)
+    if P.get('shield'):                                       # round shield on the far forearm, in front of the body
+        cx, cy, r = P['shield']; cx, cy = o((cx, cy))
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(222, 222, 228), outline=OUT, width=4)
+        d.ellipse([cx - r + 9, cy - r + 9, cx + r - 9, cy + r - 9], outline=(150, 150, 160), width=3)
+        d.line([(cx, cy - r + 16), (cx, cy + r - 16)], fill=(150, 150, 160), width=6)
+        d.line([(cx - r + 22, cy - 6), (cx + r - 22, cy - 6)], fill=(150, 150, 160), width=6)
     limb(d, q['Hn'], q['Kn'], 30, NEAR); limb(d, q['Kn'], q['Fn'], 24, NEAR)
     d.ellipse([q['Fn'][0] - 6, q['Fn'][1] - 8, q['Fn'][0] + 22, q['Fn'][1] + 4], fill=NEAR, outline=OUT, width=2)
     limb(d, q['Sn'], q['En'], 22, NEAR); limb(d, q['En'], q['Wn'], 18, NEAR)

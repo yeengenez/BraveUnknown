@@ -49,12 +49,14 @@ EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']),
                 'archer': {'dagger': [('1h', ['stand', 'ready', 'attack', 'hit']),
                                       ('dual', ['stand', 'ready', 'slash_left', 'slash_right']),
                                       ('dual', ['finish', 'hit'])]},
-                # Acolyte (user, 2026-11-26): one sheet per combat animation, made by Gemini re-dressing the finished
-                # Soldier's poses (tools/make_acolyte_pose_sheets.py); 2 x 2 cells of 768 x 512, dual = 2 x 3
-                'acolyte': {'shield': [('1h', ['stand', 'ready']), ('1h', ['attack', 'hit'])],
-                            '2h': [('2h', ['stand', 'ready']), ('2h', ['attack', 'hit'])],
-                            'reach': [('reach', ['stand', 'ready']), ('reach', ['attack', 'hit'])],
-                            'dual': [('dual', ['stand', 'ready', 'slash_left']), ('dual', ['slash_right', 'finish', 'hit'])]}}
+                # Acolyte (user, 2026-11-26): its own calmer priest poses (tools/acolyte_pose_draft.py), one 2 x 3 sheet per
+                # stance; weapon = ready + attack, spell/cantrip = channel + cast (weapon raised as the holy focus).
+                # No dual wield for the Acolyte (dual wield: Soldier, Archer, Warrior, Rogue for now).
+                'acolyte': {'shield': [('1h', ['stand', 'ready', 'attack']), ('1h', ['hit', 'channel', 'cast'])],
+                            '1h': [('dual', ['stand', 'ready', 'attack']), ('dual', ['hit', 'channel', 'cast'])],
+                            'staff': [('2h', ['stand', 'ready', 'attack']), ('2h', ['hit', 'channel', 'cast'])],
+                            'reach': [('reach', ['stand', 'ready', 'attack']), ('reach', ['hit', 'channel', 'cast'])],
+                            'crossbow': [('crossbow', ['stand', 'aim', 'attack']), ('crossbow', ['hit', 'channel', 'cast'])]}}
 # older sheets drawn on an earlier layout: (class, sex) -> rows
 SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v5 male
               ('soldier', 'f'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # Gemini edit of v5 male

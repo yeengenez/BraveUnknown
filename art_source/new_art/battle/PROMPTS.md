@@ -784,43 +784,36 @@ If Gemini returns the sheet smaller, that is fine (the build rescales); if it cr
 halves (rows 1-3, rows 4-5) by cropping the male sheet first. (2026-11-25: no slash arcs on the sheet - they are their own layer; slash 2's near
 arm is raised to the finish angle, hand empty.)
 
-### Acolyte - Gemini re-dresses the Soldier's finished poses, one sheet per combat animation (2026-11-26)
-User's concept: `source/concepts/acolyte_design.png` (white hooded robe with gold trim, gold cross on the capelet,
-teal undercoat and stole with gold fleurs-de-lis, brown belt, pouch, fingerless gloves and boots, hood UP with a gold
-ornament). Pose sheets by `tools/make_acolyte_pose_sheets.py` from the finished Soldier sheets (ponytail removed):
-`templates/acolyte_<shield|2h|reach|dual>_<m|f>_pose.png` (2 x 2 cells; dual 2 x 3) and `templates/acolyte_downed_pose.png`
-(both sexes). One Gemini message per sheet (9 in all), each with 2 attachments: (1) the pose sheet, (2) the concept.
-Save as `source/acolyte_<anim>_<m|f>_sheet.png` and `source/acolyte_downed_sheet.png`.
-Key notes: the hair that shows inside the hood is painted in the red key (one piece for every hairstyle, like the
-Archer); the gold trim must stay a warm orange-gold so it is never taken for the pure-yellow face key.
+### Acolyte - own priest poses from mannequin drafts, one sheet per stance (2026-11-26)
+Supersedes the Soldier-pose Acolyte sheets (removed; the user: "the pose is different from soldier, check weapon access
+first"). From the weapon sheet + class table, the user picked: one-handed + round shield, one-handed without shield
+(off-hand open), two-handed staff (quarterstaff / spear), reach (longspear), crossbow; each with weapon frames
+(ready + attack) and spell/cantrip frames (channel + cast) where the held weapon is raised as the holy focus. No dual
+wield (dual wield is for Soldier, Archer, Warrior, Rogue for now), no sling/thrown poses. Calmer priest stances.
+Drafts: `tools/acolyte_pose_draft.py` -> `refs/acolyte_<shield|1h|staff|reach|crossbow>_pose_draft.png` (2 x 3 cells:
+stand | ready | attack / hit | channel | cast; crossbow: stand | aim | release / hit | channel | cast).
+Concept: `source/concepts/acolyte_design.png`. Male first, one Gemini message per draft (5), attachments: (1) the draft,
+(2) the concept. Save as `source/acolyte_<stance>_m_sheet.png`. Female = a Gemini edit of each finished male sheet
+(the "Female Soldier" prompt pattern). Downed comes after, like the Archer's.
 
 ```
-Edit the first attached image, a sprite sheet on a flat green screen: an armoured soldier in several poses. Turn the soldier into the <SEX> ACOLYTE of the second attached image (design sheet), in every cell, and change nothing else.
+Edit the first attached image: a pose sheet of 2 rows x 3 cells on a flat pure green (#00FF00) screen, each cell with a grey mannequin, a dark ground line and a dashed head-top line. Replace every mannequin with the MALE ACOLYTE of the second attached image (design sheet), in exactly the mannequin's pose, and change nothing else.
 
-Change only the character:
-- the acolyte's outfit exactly as in the second image: white hooded robe with gold trim, HOOD UP with the small gold ornament on top and the face open, short white capelet with a gold cross on the chest, teal undercoat and sleeves with teal cuffs, a teal stole hanging down the front with gold fleurs-de-lis, layered white robe skirt to below the knees, brown belt with a gold buckle and a pouch, brown fingerless gloves, brown boots;
-- no helmet, no plate armour, no scarf or tabard;
-- <BUILD>;
-- the hair that shows inside the hood (fringe, locks beside the face) is painted ONLY in shades of pure red (#FF0000 family: very dark red for the outline and shadows, mid red, bright red highlights), no black outline; no hair outside the hood;
-- the face is painted in shades of pure yellow, as in the first image; the gold trim, cross and fleurs-de-lis stay a warm orange-gold, clearly different from the pure yellow of the face;
+POSES: copy each mannequin exactly: the same stance, legs, body angle and arm positions, and the same magenta stick in the same hand at the same angle and length. Do not invent new poses and do not mirror any figure.
+- The NEAR arm (darker grey) has its shoulder on the LEFT side of the picture and is drawn IN FRONT of the body; it holds the MAGENTA stick (#FF00FF). Where a mannequin holds the stick in both fists, both hands grip the same stick.
+- The FAR arm (lighter grey) has its shoulder on the RIGHT side of the picture, partly hidden BEHIND the body. An open grey hand stays OPEN and EMPTY.
 <SHIELD>
-Keep exactly as they are:
-- the canvas size, the grid, the flat pure green background, the dark ground line and the dashed line in each cell;
-- the position, height and feet of every figure;
-- every pose: the same stance, legs, body angle and arm positions in each cell, nothing mirrored;
-- the flat magenta and cyan sticks in the hands: the same stick in the same hand, at the same angle and length, the same flat colours with no shading; empty hands stay empty;
-- the pixel-art style, clean dark outlines and cel shading of the first image.
+The ACOLYTE, exactly as in the second image: white hooded robe with gold trim, HOOD UP with the small gold ornament on top and the face open, short white capelet with a gold cross on the chest, teal undercoat and sleeves with teal cuffs, a teal stole hanging down the front with gold fleurs-de-lis, layered white robe skirt to below the knees, brown belt with a gold buckle and a pouch, brown fingerless gloves, brown boots. A broad, sturdy man, about 6 heads tall, feet on each cell's ground line, top of the hood at the dashed line when standing upright, the same size in every cell. Style: Fire Emblem-style anime pixel art matching the second image, clean dark outlines, cel shading, light from the upper left, 3/4 view FACING RIGHT in every cell.
 
-Pure red is used ONLY for the hair. No weapons, effects, shadows or text. Output the whole sheet at the same size.
+Colour keys:
+- the face is the only bare skin: paint it in shades of pure yellow (red = green, blue near zero), shaded like normal skin; small anime face;
+- the hair that shows inside the hood (fringe, locks beside the face) is painted ONLY in shades of pure red (#FF0000 family: very dark red outline and shadows, mid red, bright red highlights), no black outline; no hair outside the hood;
+- the gold trim, cross and fleurs-de-lis stay a warm orange-gold, clearly different from the pure yellow of the face; no other pure red, magenta or cyan anywhere.
+
+No weapons (only the flat magenta sticks, flat colour, no shading, fingers wrapped over them), no effects, glow, shadows on the ground or text. Keep the canvas size, the grid, the green and the lines exactly. Output the whole sheet at the same size.
 ```
-Fill in:
-- `<SEX>` / `<BUILD>`: male = "MALE" / "a broad, sturdy build, as in the first image"; female = "FEMALE" / "clearly feminine,
-  as in the first image - narrower shoulders, curved waist and hips, a soft face with larger eyes and a small chin".
-- `<SHIELD>` on the shield sheets: "- the square shield becomes the acolyte's ROUND shield, on the same arm, at the same
-  angle and about the same size: white face with a gold cross, a thick gold rim and a thin teal ring inside the rim, no
-  other symbols;" - on the other sheets delete the line.
-- Downed sheet (`templates/acolyte_downed_pose.png`): use "the soldier (MALE in the left column, FEMALE in the middle
-  column)" in place of "<SEX> ACOLYTE ... in every cell" wording: "Turn both soldiers into the ACOLYTE of the second image -
-  the left column MALE, the middle column FEMALE - in every cell", and `<BUILD>` = "each keeps its own build".
-If a cell changes pose or a stick swaps hands: attach Gemini's result together with the pose sheet and say "Fix the cell in
-row <r>, position <c> of the first image so its pose and sticks match the same cell of the second image. Keep everything else."
+`<SHIELD>` on the shield sheet: "- The far forearm carries the acolyte's ROUND shield where the grey disc is, in front of the
+body, the same size and angle: white face with a gold cross, a thick gold rim and a thin teal ring inside the rim, no other
+symbols." On the other sheets delete the line.
+If a cell changes pose or a stick swaps hands: attach the result together with the draft and say "Fix the cell in row <r>,
+position <c> of the first image so its pose and stick match the same cell of the second image. Keep everything else."
