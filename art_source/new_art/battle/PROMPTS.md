@@ -784,7 +784,7 @@ If Gemini returns the sheet smaller, that is fine (the build rescales); if it cr
 halves (rows 1-3, rows 4-5) by cropping the male sheet first. (2026-11-25: no slash arcs on the sheet - they are their own layer; slash 2's near
 arm is raised to the finish angle, hand empty.)
 
-### Acolyte (Cleric) - Gemini re-dresses the Soldier's finished poses, one sheet per combat animation (2026-11-26)
+### Acolyte - Gemini re-dresses the Soldier's finished poses, one sheet per combat animation (2026-11-26)
 User's concept: `source/concepts/acolyte_design.png` (white hooded robe with gold trim, gold cross on the capelet,
 teal undercoat and stole with gold fleurs-de-lis, brown belt, pouch, fingerless gloves and boots, hood UP with a gold
 ornament). Pose sheets by `tools/make_acolyte_pose_sheets.py` from the finished Soldier sheets (ponytail removed):
@@ -795,10 +795,10 @@ Key notes: the hair that shows inside the hood is painted in the red key (one pi
 Archer); the gold trim must stay a warm orange-gold so it is never taken for the pure-yellow face key.
 
 ```
-Edit the first attached image, a sprite sheet on a flat green screen: an armoured soldier in several poses. Turn the soldier into the <SEX> CLERIC of the second attached image (design sheet), in every cell, and change nothing else.
+Edit the first attached image, a sprite sheet on a flat green screen: an armoured soldier in several poses. Turn the soldier into the <SEX> ACOLYTE of the second attached image (design sheet), in every cell, and change nothing else.
 
 Change only the character:
-- the cleric's outfit exactly as in the second image: white hooded robe with gold trim, HOOD UP with the small gold ornament on top and the face open, short white capelet with a gold cross on the chest, teal undercoat and sleeves with teal cuffs, a teal stole hanging down the front with gold fleurs-de-lis, layered white robe skirt to below the knees, brown belt with a gold buckle and a pouch, brown fingerless gloves, brown boots;
+- the acolyte's outfit exactly as in the second image: white hooded robe with gold trim, HOOD UP with the small gold ornament on top and the face open, short white capelet with a gold cross on the chest, teal undercoat and sleeves with teal cuffs, a teal stole hanging down the front with gold fleurs-de-lis, layered white robe skirt to below the knees, brown belt with a gold buckle and a pouch, brown fingerless gloves, brown boots;
 - no helmet, no plate armour, no scarf or tabard;
 - <BUILD>;
 - the hair that shows inside the hood (fringe, locks beside the face) is painted ONLY in shades of pure red (#FF0000 family: very dark red for the outline and shadows, mid red, bright red highlights), no black outline; no hair outside the hood;
@@ -816,11 +816,11 @@ Pure red is used ONLY for the hair. No weapons, effects, shadows or text. Output
 Fill in:
 - `<SEX>` / `<BUILD>`: male = "MALE" / "a broad, sturdy build, as in the first image"; female = "FEMALE" / "clearly feminine,
   as in the first image - narrower shoulders, curved waist and hips, a soft face with larger eyes and a small chin".
-- `<SHIELD>` on the shield sheets: "- the square shield becomes the cleric's ROUND shield, on the same arm, at the same
+- `<SHIELD>` on the shield sheets: "- the square shield becomes the acolyte's ROUND shield, on the same arm, at the same
   angle and about the same size: white face with a gold cross, a thick gold rim and a thin teal ring inside the rim, no
   other symbols;" - on the other sheets delete the line.
 - Downed sheet (`templates/acolyte_downed_pose.png`): use "the soldier (MALE in the left column, FEMALE in the middle
-  column)" in place of "<SEX> CLERIC ... in every cell" wording: "Turn both soldiers into the CLERIC of the second image -
+  column)" in place of "<SEX> ACOLYTE ... in every cell" wording: "Turn both soldiers into the ACOLYTE of the second image -
   the left column MALE, the middle column FEMALE - in every cell", and `<BUILD>` = "each keeps its own build".
 If a cell changes pose or a stick swaps hands: attach Gemini's result together with the pose sheet and say "Fix the cell in
 row <r>, position <c> of the first image so its pose and sticks match the same cell of the second image. Keep everything else."
