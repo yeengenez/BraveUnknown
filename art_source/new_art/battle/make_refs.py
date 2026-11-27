@@ -55,8 +55,7 @@ EXTRA_SHEETS = {'soldier': {'dual': [('dual', ['stand', 'ready', 'slash_left']),
                 'acolyte': {'shield': [('1h', ['stand', 'ready', 'attack']), ('1h', ['hit', 'channel', 'cast'])],
                             '1h': [('dual', ['stand', 'ready', 'attack']), ('dual', ['hit', 'channel', 'cast'])],
                             'staff': [('2h', ['stand', 'ready', 'attack']), ('2h', ['hit', 'channel', 'cast'])],
-                            'reach': [('reach', ['stand', 'ready', 'attack']), ('reach', ['hit', 'channel', 'cast'])],
-                            'crossbow': [('crossbow', ['stand', 'aim', 'attack']), ('crossbow', ['hit', 'channel', 'cast'])]}}
+                            'reach': [('reach', ['stand', 'ready', 'attack']), ('reach', ['hit', 'channel', 'cast'])]}}   # no crossbow: crossbows are Archer-only (user, 2026-11-27)
 # older sheets drawn on an earlier layout: (class, sex) -> rows
 SHEET_ROWS = {('soldier', 'm'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')],   # v5 male
               ('soldier', 'f'): [('1h', 'sword_shield'), ('dual', None), ('2h', 'greataxe'), ('reach', 'longspear')]}   # Gemini edit of v5 male

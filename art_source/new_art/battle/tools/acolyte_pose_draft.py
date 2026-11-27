@@ -1,8 +1,9 @@
 """Acolyte pose drafts (user, 2026-11-26): calmer priest stances, not the Soldier's. One sheet per stance, 2 x 3 cells of
-512: stand | ready | attack / hit | channel | cast (crossbow: stand | aim | release / hit | channel | cast).
+512: stand | ready | attack / hit | channel | cast.
 Weapon attacks = prepare (ready) + attack; spells and cantrips = channel + cast, with the held weapon raised as the holy
 focus (user's choice); the far arm keeps what it has (round shield / open hand). Stances (user's picks): one-handed +
-round shield, one-handed without shield (off-hand open), two-handed staff, reach (longspear), crossbow.
+round shield, one-handed without shield (off-hand open), two-handed staff, reach (longspear). (Crossbow dropped 2026-11-27:
+crossbows are Archer-only.)
 Mannequins as for the Archer (archer_pose_draft.draw): NEAR arm darker, FAR arm lighter, hood up, face in the yellow key.
 Output: refs/acolyte_<stance>_pose_draft.png on templates/acolyte_<stance>_template.png. Cell coords 384 x 512 (+64)."""
 import os, sys
@@ -66,13 +67,7 @@ REACH = {
     (1, 1): dict(UPWARD, En=(180, 214), Wn=(204, 226), Ef=(234, 192), Wf=(214, 182), rods=[('both', MAG, (196, 430), (222, 12))]),
     (1, 2): dict(LEAN, En=(186, 204), Wn=(206, 200), Ef=(242, 184), Wf=(250, 178), rods=[('both', MAG, (110, 246), (390, 104))]),
 }
-XB = {
-    (0, 0): dict(A.POSES[(1, 0)], quiver=False), (0, 1): dict(A.POSES[(1, 1)], quiver=False),
-    (0, 2): dict(A.POSES[(1, 2)], quiver=False), (1, 0): dict(A.POSES[(1, 3)], quiver=False),
-    (1, 1): dict(UPWARD, En=(176, 214), Wn=(198, 238), Ef=(230, 206), Wf=(206, 196), rods=[('both', MAG, (194, 290), (210, 146))]),
-    (1, 2): dict(LEAN, En=(194, 190), Wn=(214, 192), Ef=(244, 180), Wf=(248, 172), rods=[('both', MAG, (196, 198), (300, 152))]),
-}
-SHEETS = {'shield': SHIELD, '1h': ONE, 'staff': STAFF, 'reach': REACH, 'crossbow': XB}
+SHEETS = {'shield': SHIELD, '1h': ONE, 'staff': STAFF, 'reach': REACH}   # no crossbow (Archer-only, user 2026-11-27)
 
 if __name__ == '__main__':
     for name, poses in SHEETS.items():

@@ -787,12 +787,13 @@ arm is raised to the finish angle, hand empty.)
 ### Acolyte - own priest poses from mannequin drafts, one sheet per stance (2026-11-26)
 Supersedes the Soldier-pose Acolyte sheets (removed; the user: "the pose is different from soldier, check weapon access
 first"). From the weapon sheet + class table, the user picked: one-handed + round shield, one-handed without shield
-(off-hand open), two-handed staff (quarterstaff / spear), reach (longspear), crossbow; each with weapon frames
+(off-hand open), two-handed staff (quarterstaff / spear), reach (longspear); each with weapon frames
 (ready + attack) and spell/cantrip frames (channel + cast) where the held weapon is raised as the holy focus. No dual
-wield (dual wield is for Soldier, Archer, Warrior, Rogue for now), no sling/thrown poses. Calmer priest stances.
-Drafts: `tools/acolyte_pose_draft.py` -> `refs/acolyte_<shield|1h|staff|reach|crossbow>_pose_draft.png` (2 x 3 cells:
-stand | ready | attack / hit | channel | cast; crossbow: stand | aim | release / hit | channel | cast).
-Concept: `source/concepts/acolyte_design.png`. Male first, one Gemini message per draft (5), attachments: (1) the draft,
+wield (dual wield is for Soldier, Archer, Warrior, Rogue for now), no sling/thrown poses, no crossbow (Archer-only,
+user 2026-11-27). Calmer priest stances.
+Drafts: `tools/acolyte_pose_draft.py` -> `refs/acolyte_<shield|1h|staff|reach>_pose_draft.png` (2 x 3 cells:
+stand | ready | attack / hit | channel | cast).
+Concept: `source/concepts/acolyte_design.png`. Male first, one Gemini message per draft (4), attachments: (1) the draft,
 (2) the concept. Save as `source/acolyte_<stance>_m_sheet.png`. Female = a Gemini edit of each finished male sheet
 (the "Female Soldier" prompt pattern). Downed comes after, like the Archer's.
 
