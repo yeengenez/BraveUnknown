@@ -812,6 +812,10 @@ Colour keys:
 
 No weapons (only the flat magenta sticks, flat colour, no shading, fingers wrapped over them), no effects, glow, shadows on the ground or text. Keep the canvas size, the grid, the green and the lines exactly. Output the whole sheet at the same size.
 ```
+Shield and one-handed sheets (user, 2026-11-27: the raised mace looked like a wand) - add after the arm rules:
+"- In the bottom-middle and bottom-right cells (channel, cast) the near hand holds the magenta stick UPRIGHT against the
+middle of the chest like a holy symbol, the head bowed in prayer in the bottom-middle cell; in the bottom-right cell the far
+arm reaches forward (open empty hand thrust toward the target, or the round shield raised a little)."
 `<SHIELD>` on the shield sheet: "- The far forearm carries the acolyte's ROUND shield where the grey disc is, in front of the
 body, the same size and angle: white face with a gold cross, a thick gold rim and a thin teal ring inside the rim, no other
 symbols." On the other sheets delete the line.
